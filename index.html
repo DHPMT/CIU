@@ -805,7 +805,7 @@
     /* Task Record Page Styles */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       margin-bottom: 25px;
     }
@@ -883,75 +883,95 @@
       margin-bottom: 15px;
     }
 
-    /* Team Report Page Styles */
-    .team-section {
-      margin-bottom: 25px;
+    /* Team Report Page Styles - UPDATED for 3 columns */
+    .team-report-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
     }
-
-    .team-letter {
-      font-size: 1.5rem;
+    
+    .team-column {
+      flex: 1;
+      background: #f9f9f9;
+      border-radius: 15px;
+      padding: 12px;
+      border: 1px solid #e0d0eb;
+    }
+    
+    .team-column .team-letter {
+      font-size: 1.3rem;
       font-weight: 700;
       color: #7d5ba6;
       margin-bottom: 10px;
+      text-align: center;
+      border-bottom: 2px solid #7d5ba6;
+      padding-bottom: 5px;
     }
-
+    
     .team-member {
-      padding: 8px 0 8px 20px;
+      padding: 6px 0;
       border-bottom: 1px solid #f0f0f0;
-      font-size: 0.95rem;
+      font-size: 0.8rem;
     }
-
+    
+    .team-member:last-child {
+      border-bottom: none;
+    }
+    
     .member-phone {
       font-weight: 600;
+      display: block;
     }
-
+    
     .member-level {
       color: #666;
-      margin-left: 5px;
+      font-size: 0.7rem;
     }
-
+    
     .member-deposit {
       color: #ff0000;
       font-weight: 600;
-      margin-left: 5px;
+      font-size: 0.7rem;
     }
-
+    
     .member-tasks {
       color: #7d5ba6;
-      margin-left: 5px;
+      font-size: 0.7rem;
     }
-
-    .section-total {
-      margin-top: 10px;
-      padding: 10px 0 10px 20px;
-      background: #f9f9f9;
-      border-radius: 10px;
+    
+    .empty-section {
+      padding: 8px 0;
+      color: #999;
+      font-style: italic;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+    
+    .column-total {
+      margin-top: 8px;
+      padding: 6px;
+      background: #f0f0f0;
+      border-radius: 8px;
       font-weight: 600;
+      font-size: 0.75rem;
+      text-align: center;
     }
-
+    
     .total-deposit {
       color: #ff0000;
     }
-
+    
     .total-tasks {
       color: #7d5ba6;
-      margin-left: 10px;
     }
-
-    .empty-section {
-      padding: 8px 0 8px 20px;
-      color: #999;
-      font-style: italic;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
+    
     .team-stats {
       background: #f5edff;
       border-radius: 15px;
       padding: 15px;
       margin-top: 20px;
     }
-
+    
     .team-stats div {
       display: flex;
       justify-content: space-between;
@@ -2986,7 +3006,7 @@
       </div>
     </div>
 
-    <!-- TASK RECORD PAGE -->
+    <!-- TASK RECORD PAGE - UPDATED: Removed pending books stat -->
     <div id="taskRecordPage">
       <div class="scroll-content">
         <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
@@ -3000,10 +3020,7 @@
             <div class="stat-value" id="completeBooks">0</div>
             <div class="stat-label">Complete Books</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-value" id="pendingBooks">0</div>
-            <div class="stat-label">Pending Books</div>
-          </div>
+          <!-- Pending Books stat removed -->
         </div>
         <div class="section-title">📚 Book History</div>
         <table class="task-table" id="taskHistoryTable">
@@ -3027,22 +3044,13 @@
       </div>
     </div>
 
-    <!-- TEAM REPORT PAGE -->
+    <!-- TEAM REPORT PAGE - UPDATED for 3 columns -->
     <div id="teamReportPage">
       <div class="scroll-content">
         <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
         <h3 style="margin-bottom:20px;">👥 Team Report</h3>
-        <div class="team-section">
-          <div class="team-letter">A</div>
-          <div id="teamASection"></div>
-        </div>
-        <div class="team-section">
-          <div class="team-letter">B</div>
-          <div id="teamBSection"></div>
-        </div>
-        <div class="team-section">
-          <div class="team-letter">C</div>
-          <div id="teamCSection"></div>
+        <div class="team-report-container" id="teamReportContainer">
+          <!-- Columns will be filled by JavaScript -->
         </div>
         <div class="team-stats">
           <div><span>Total Team Members:</span> <span id="totalTeamMembers">0</span></div>
@@ -4550,11 +4558,27 @@ function handleLogin(e) {
 
 // ========== PAGE NAVIGATION ==========
 function showPage(page) {
-  // Clear any active reading timer when changing pages
+  // Clear any active reading timer when changing pages - FIXED: Remove pending task from database
   if (activeReadingTimer) {
     clearInterval(activeReadingTimer);
     activeReadingTimer = null;
   }
+  
+  // If there was an active reading, remove the pending task from database
+  if (activeReadingBookId && currentUser && users[currentUser]) {
+    const user = users[currentUser];
+    const today = new Date().toLocaleDateString();
+    if (user.taskHistory) {
+      // Remove the pending task for this book
+      user.taskHistory = user.taskHistory.filter(task => 
+        !(task.book === activeReadingBookId && task.date === today && task.status === 'pending')
+      );
+      saveUsers();
+    }
+  }
+  
+  activeReadingBookId = null;
+  activeReadingPage = null;
   
   document.getElementById('authContainer').style.display = 'none';
   document.getElementById('mainDashboard').style.display = page === 'home' ? 'flex' : 'none';
@@ -5285,7 +5309,7 @@ function saveModalHarvestAccount() {
 
 function saveHarvestAccount() { saveModalHarvestAccount(); }
 
-// ========== TEAM REPORT ==========
+// ========== TEAM REPORT - UPDATED for 3 columns ==========
 function maskPhone(phone) {
   if (!phone || phone.length < 7) return phone;
   return phone.substring(0, 4) + '***' + phone.substring(phone.length - 3);
@@ -5314,11 +5338,13 @@ function loadTeamReport() {
     cMembers.push(...bReferrals);
   });
 
-  const aSection = document.getElementById('teamASection');
+  const container = document.getElementById('teamReportContainer');
+  
+  // Build A column
+  let aHtml = '<div class="team-column"><div class="team-letter">A</div>';
   if (aMembers.length === 0) {
-    aSection.innerHTML = '<div class="empty-section">(empty)</div>';
+    aHtml += '<div class="empty-section">(empty)</div>';
   } else {
-    let html = '';
     let aTotalDeposit = 0;
     let aTotalTasks = 0;
     
@@ -5328,24 +5354,33 @@ function loadTeamReport() {
       const deposit = member.operatingWallet || 0;
       aTotalDeposit += deposit;
       
+      aHtml += `<div class="team-member">`;
+      aHtml += `<span class="member-phone">${maskedPhone}</span> `;
+      aHtml += `<span class="member-level">${levelText}</span><br>`;
+      aHtml += `<span class="member-deposit">💰 ${deposit.toLocaleString()}</span>`;
+      
       if (member.memberLevel > 0) {
         const tasks = countCompletedTasks(member);
         aTotalTasks += tasks;
-        html += `<div class="team-member"><span class="member-phone">${maskedPhone}</span> <span class="member-level">${levelText}</span> | <span class="member-deposit">💰 ${deposit.toLocaleString()} UGX</span> | <span class="member-tasks">📚 ${tasks} tasks</span></div>`;
-      } else {
-        html += `<div class="team-member"><span class="member-phone">${maskedPhone}</span> <span class="member-level">${levelText}</span> | <span class="member-deposit">💰 ${deposit.toLocaleString()} UGX</span></div>`;
+        aHtml += ` <span class="member-tasks">📚 ${tasks}</span>`;
       }
+      aHtml += `</div>`;
     });
     
-    html += `<div class="section-total"><span class="total-deposit">🔴 A Total: ${aTotalDeposit.toLocaleString()} UGX</span> | <span class="total-tasks">📚 Active Tasks: ${aTotalTasks}</span></div>`;
-    aSection.innerHTML = html;
+    aHtml += `<div class="column-total">`;
+    aHtml += `<span class="total-deposit">🔴 ${aTotalDeposit.toLocaleString()}</span>`;
+    if (aTotalTasks > 0) {
+      aHtml += ` | <span class="total-tasks">📚 ${aTotalTasks}</span>`;
+    }
+    aHtml += `</div>`;
   }
+  aHtml += '</div>';
 
-  const bSection = document.getElementById('teamBSection');
+  // Build B column
+  let bHtml = '<div class="team-column"><div class="team-letter">B</div>';
   if (bMembers.length === 0) {
-    bSection.innerHTML = '<div class="empty-section">(empty)</div>';
+    bHtml += '<div class="empty-section">(empty)</div>';
   } else {
-    let html = '';
     let bTotalDeposit = 0;
     let bTotalTasks = 0;
     
@@ -5355,24 +5390,33 @@ function loadTeamReport() {
       const deposit = member.operatingWallet || 0;
       bTotalDeposit += deposit;
       
+      bHtml += `<div class="team-member">`;
+      bHtml += `<span class="member-phone">${maskedPhone}</span> `;
+      bHtml += `<span class="member-level">${levelText}</span><br>`;
+      bHtml += `<span class="member-deposit">💰 ${deposit.toLocaleString()}</span>`;
+      
       if (member.memberLevel > 0) {
         const tasks = countCompletedTasks(member);
         bTotalTasks += tasks;
-        html += `<div class="team-member"><span class="member-phone">${maskedPhone}</span> <span class="member-level">${levelText}</span> | <span class="member-deposit">💰 ${deposit.toLocaleString()} UGX</span> | <span class="member-tasks">📚 ${tasks} tasks</span></div>`;
-      } else {
-        html += `<div class="team-member"><span class="member-phone">${maskedPhone}</span> <span class="member-level">${levelText}</span> | <span class="member-deposit">💰 ${deposit.toLocaleString()} UGX</span></div>`;
+        bHtml += ` <span class="member-tasks">📚 ${tasks}</span>`;
       }
+      bHtml += `</div>`;
     });
     
-    html += `<div class="section-total"><span class="total-deposit">🔴 B Total: ${bTotalDeposit.toLocaleString()} UGX</span> | <span class="total-tasks">📚 Active Tasks: ${bTotalTasks}</span></div>`;
-    bSection.innerHTML = html;
+    bHtml += `<div class="column-total">`;
+    bHtml += `<span class="total-deposit">🔴 ${bTotalDeposit.toLocaleString()}</span>`;
+    if (bTotalTasks > 0) {
+      bHtml += ` | <span class="total-tasks">📚 ${bTotalTasks}</span>`;
+    }
+    bHtml += `</div>`;
   }
+  bHtml += '</div>';
 
-  const cSection = document.getElementById('teamCSection');
+  // Build C column
+  let cHtml = '<div class="team-column"><div class="team-letter">C</div>';
   if (cMembers.length === 0) {
-    cSection.innerHTML = '<div class="empty-section">(empty)</div>';
+    cHtml += '<div class="empty-section">(empty)</div>';
   } else {
-    let html = '';
     let cTotalDeposit = 0;
     let cTotalTasks = 0;
     
@@ -5382,18 +5426,29 @@ function loadTeamReport() {
       const deposit = member.operatingWallet || 0;
       cTotalDeposit += deposit;
       
+      cHtml += `<div class="team-member">`;
+      cHtml += `<span class="member-phone">${maskedPhone}</span> `;
+      cHtml += `<span class="member-level">${levelText}</span><br>`;
+      cHtml += `<span class="member-deposit">💰 ${deposit.toLocaleString()}</span>`;
+      
       if (member.memberLevel > 0) {
         const tasks = countCompletedTasks(member);
         cTotalTasks += tasks;
-        html += `<div class="team-member"><span class="member-phone">${maskedPhone}</span> <span class="member-level">${levelText}</span> | <span class="member-deposit">💰 ${deposit.toLocaleString()} UGX</span> | <span class="member-tasks">📚 ${tasks} tasks</span></div>`;
-      } else {
-        html += `<div class="team-member"><span class="member-phone">${maskedPhone}</span> <span class="member-level">${levelText}</span> | <span class="member-deposit">💰 ${deposit.toLocaleString()} UGX</span></div>`;
+        cHtml += ` <span class="member-tasks">📚 ${tasks}</span>`;
       }
+      cHtml += `</div>`;
     });
     
-    html += `<div class="section-total"><span class="total-deposit">🔴 C Total: ${cTotalDeposit.toLocaleString()} UGX</span> | <span class="total-tasks">📚 Active Tasks: ${cTotalTasks}</span></div>`;
-    cSection.innerHTML = html;
+    cHtml += `<div class="column-total">`;
+    cHtml += `<span class="total-deposit">🔴 ${cTotalDeposit.toLocaleString()}</span>`;
+    if (cTotalTasks > 0) {
+      cHtml += ` | <span class="total-tasks">📚 ${cTotalTasks}</span>`;
+    }
+    cHtml += `</div>`;
   }
+  cHtml += '</div>';
+
+  container.innerHTML = aHtml + bHtml + cHtml;
 
   const total = aMembers.length + bMembers.length + cMembers.length;
   document.getElementById('totalTeamMembers').textContent = total;
@@ -5403,18 +5458,17 @@ function loadTeamReport() {
   document.getElementById('activeTeamMembers').textContent = activeCount;
 }
 
-// ========== TASK RECORD ==========
+// ========== TASK RECORD - UPDATED: Removed pending books ==========
 function loadTaskRecord() {
   const user = users[currentUser];
   if (!user) return;
 
   const history = user.taskHistory || [];
   const completed = history.filter(task => task.status === 'complete');
-  const pending = history.filter(task => task.status === 'pending');
   
   document.getElementById('totalReadBooks').textContent = history.length;
   document.getElementById('completeBooks').textContent = completed.length;
-  document.getElementById('pendingBooks').textContent = pending.length;
+  // Pending books stat removed
 
   const tbody = document.getElementById('taskHistoryBody');
   if (history.length === 0) {
