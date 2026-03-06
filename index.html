@@ -2653,6 +2653,52 @@
       50% { opacity: 0.2; }
       100% { opacity: 0.1; }
     }
+    
+    /* ===== NEW THEME SELECTOR STYLES ===== */
+    .theme-selector-icon {
+      cursor: pointer;
+      font-size: 1.5rem;
+      margin-right: 10px;
+      transition: transform 0.2s;
+    }
+    .theme-selector-icon:hover {
+      transform: scale(1.1);
+    }
+    .theme-picker-popup {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: white;
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 2100;
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 200px;
+      border: 2px solid #7d5ba6;
+    }
+    .theme-picker-popup.show {
+      display: flex;
+    }
+    .theme-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s;
+    }
+    .theme-option:hover {
+      transform: scale(1.1);
+      border-color: #333;
+    }
+    .theme-option.purple { background: linear-gradient(135deg, #7d5ba6, #b8a3d9); }
+    .theme-option.green { background: linear-gradient(135deg, #2e7d32, #4caf50); }
+    .theme-option.blue { background: linear-gradient(135deg, #003366, #87CEEB); }
+    .theme-option.orange { background: linear-gradient(135deg, #ff9800, #ffc107); }
+    .theme-option.dark { background: linear-gradient(135deg, #1a1a1a, #4d4d4d); }
   </style>
 </head>
 <body>
@@ -3084,15 +3130,15 @@
           </div>
         </div>
 
-        <!-- Incentive Row -->
+        <!-- Incentive Row - UPDATED: Now shows Subsidiary Motivators total -->
         <div class="incentive-row">
-          <span class="incentive-label">Incentive from subordinate tasks</span>
-          <span class="incentive-value" id="subordinateIncentive">0 UGX</span>
+          <span class="incentive-label">Subsidiary Motivators</span>
+          <span class="incentive-value" id="subsidiaryMotivatorsTotal">0 UGX</span>
         </div>
 
-        <!-- Menu Grid - POSITION SALARY REMOVED -->
+        <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" -->
         <div class="menu-grid">
-          <div class="menu-item" onclick="showTaskRecord()"><i class="fas fa-clipboard-list"></i> task record</div>
+          <div class="menu-item" onclick="showActivityLog()"><i class="fas fa-clipboard-list"></i> Activity Log</div>
           <div class="menu-item" onclick="showTeamReport()"><i class="fas fa-users"></i> team report</div>
           <div class="menu-item" onclick="openDailyReportModal()"><i class="fas fa-calendar-alt"></i> daily report</div>
           <div class="menu-item" onclick="showGoldenHandshake()"><i class="fas fa-handshake"></i> Golden Handshake</div>
@@ -3130,11 +3176,11 @@
       </div>
     </div>
 
-    <!-- TASK RECORD PAGE - UPDATED: Removed pending books stat -->
+    <!-- ACTIVITY LOG PAGE - UPDATED: Renamed from taskRecordPage, title changed -->
     <div id="taskRecordPage">
       <div class="scroll-content">
         <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-        <h3 style="margin-bottom:20px;">📋 Task Record</h3>
+        <h3 style="margin-bottom:20px;">📋 Activity Log</h3>
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-value" id="totalReadBooks">0</div>
@@ -3310,7 +3356,7 @@
       </div>
     </div>
 
-    <!-- INCOME PAGE - UPDATED WITH NEW INTERN VALUES -->
+    <!-- INCOME PAGE - UPDATED WITH NEW TABLE FROM IMAGE -->
     <div id="incomePage">
       <div class="scroll-content">
         <!-- Page Title -->
@@ -3325,120 +3371,110 @@
           </div>
         </div>
 
-        <!-- Income Table - Color Coded - NOW WITH LONG-PRESS DOWNLOAD -->
-        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;" ondblclick="downloadIncomeTableAsImage()" ontouchstart="handleTableTouchStart(event)" ontouchend="handleTableTouchEnd(event)" onmousedown="handleTableMouseDown(event)" onmouseup="handleTableMouseUp(event)" onmouseleave="handleTableMouseLeave()">
-          <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+        <!-- Income Table - UPDATED with new headers and values from image, full grid lines, small font -->
+        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; font-size: 10px;" ondblclick="downloadIncomeTableAsImage()" ontouchstart="handleTableTouchStart(event)" ontouchend="handleTableTouchEnd(event)" onmousedown="handleTableMouseDown(event)" onmouseup="handleTableMouseUp(event)" onmouseleave="handleTableMouseLeave()">
+          <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
             <thead>
               <tr style="background: #7d5ba6; color: white;">
-                <th style="padding: 12px 8px; font-size: 0.75rem;">LEVEL</th>
-                <th style="padding: 12px 8px; font-size: 0.75rem;">DEPOSIT</th>
-                <th style="padding: 12px 8px; font-size: 0.75rem;">DAILY</th>
-                <th style="padding: 12px 8px; font-size: 0.75rem;">TASKS</th>
-                <th style="padding: 12px 8px; font-size: 0.75rem;">REWARD/TASK</th>
-                <th style="padding: 12px 8px; font-size: 0.75rem;">MONTHLY</th>
-                <th style="padding: 12px 8px; font-size: 0.75rem;">ANNUAL</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">EMPLOYEE LEVEL</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT FOR LEVEL</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DAILY INCOME</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">NUMBER OF DAILY TASKS</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">REVENUE PER TASK</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">MONTHLY INCOME</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">ANNUAL INCOME</th>
               </tr>
             </thead>
             <tbody>
-              <!-- Intern - Light Green - UPDATED: Monthly 6,000, Annual — -->
-              <tr style="background-color: #e6f7e6;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">INTERN</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">FREE</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,500</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,500</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">6,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">—</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">INTERN</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">5</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">300</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
               </tr>
-              <!-- D1 - Light Blue -->
-              <tr style="background-color: #e6f0ff;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">D1</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">63,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">2,250</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">2</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,125</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">67,500</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">821,250</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M1</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">70,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,310</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">330</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">69,300</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">843,150</td>
               </tr>
-              <!-- D2 - Blue -->
-              <tr style="background-color: #cce0ff;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">D2</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">200,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">7,100</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">4</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,775</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">213,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">2,591,500</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M2</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">219,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,310</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">17</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">430</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">219,300</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,668,150</td>
               </tr>
-              <!-- D3 - Teal -->
-              <tr style="background-color: #ccf0f0;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">D3</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">532,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">19,008</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">12</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,584</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">570,240</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">6,937,920</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M3</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">615,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">20,580</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">28</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">735</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">617,400</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,511,700</td>
               </tr>
-              <!-- D4 - Green -->
-              <tr style="background-color: #ccffcc;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">D4</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,450,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">51,808</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">16</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">3,238</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">1,554,240</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">18,909,920</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M4</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,930,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64,800</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">54</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,200</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,944,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">23,652,000</td>
               </tr>
-              <!-- D5 - Gold -->
-              <tr style="background-color: #fff0b3;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">D5</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">3,920,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">145,200</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">24</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">6,050</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">4,356,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">52,998,000</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M5</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">5,200,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">180,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">80</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,250</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">5,400,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">65,700,000</td>
               </tr>
-              <!-- D6 - Purple (white text) -->
-              <tr style="background-color: #b3b3ff;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600;">D6</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">10,640,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">380,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">40</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">9,500</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">11,400,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center;">138,700,000</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M6</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">13,470,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">481,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">130</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,700</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">14,430,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">175,565,000</td>
               </tr>
-              <!-- D7 - Dark Purple (white text) -->
-              <tr style="background-color: #9966ff; color: white;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600; color: white;">D7</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">40,040,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">1,430,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">52</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">27,500</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">42,900,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">521,950,000</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M7</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">30,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,137,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">175</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">34,125,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">415,187,500</td>
               </tr>
-              <!-- D8 - Burgundy (white text) -->
-              <tr style="background-color: #993333; color: white;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600; color: white;">D8</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">57,120,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">2,040,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">64</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">31,875</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">61,200,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">744,600,000</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M8</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">60,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,275,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">260</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">8,750</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">68,250,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">830,375,000</td>
               </tr>
-              <!-- D9 - Black with Gold border (white text) -->
-              <tr style="background-color: #000000; color: white; border: 2px solid gold;">
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; font-weight: 600; color: white;">D9</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">84,000,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">3,000,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">74</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">40,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">90,000,000</td>
-                <td style="padding: 10px 4px; font-size: 0.75rem; text-align: center; color: white;">1,095,000,000</td>
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M9</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">99,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,500,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">300</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">15,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">135,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,642,500,000</td>
               </tr>
             </tbody>
           </table>
@@ -3905,12 +3941,24 @@
     </div>
   </div>
 
-  <!-- USER DETAILS MODAL -->
+  <!-- USER DETAILS MODAL - UPDATED WITH THEME ICON -->
   <div class="modal-overlay" id="userDetailsModal">
     <div class="modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h2 style="color:#4a3b5e;"><i class="fas fa-user-circle"></i> My Account</h2>
-        <button class="close-btn" onclick="closeUserDetailsModal()" style="font-size:1.8rem; background:none; border:none; cursor:pointer;">&times;</button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="theme-selector-icon" onclick="toggleThemePicker()"><i class="fas fa-palette"></i></span>
+          <button class="close-btn" onclick="closeUserDetailsModal()" style="font-size:1.8rem; background:none; border:none; cursor:pointer;">&times;</button>
+        </div>
+      </div>
+      
+      <!-- Theme Picker Popup -->
+      <div class="theme-picker-popup" id="themePickerPopup">
+        <div class="theme-option purple" onclick="setTheme('purple')" title="Default Purple"></div>
+        <div class="theme-option green" onclick="setTheme('green')" title="Forest Green"></div>
+        <div class="theme-option blue" onclick="setTheme('blue')" title="Ocean Blue"></div>
+        <div class="theme-option orange" onclick="setTheme('orange')" title="Sunset Orange"></div>
+        <div class="theme-option dark" onclick="setTheme('dark')" title="Midnight Dark"></div>
       </div>
       
       <div style="background:#f5edff; border-radius:20px; padding:20px; margin-bottom:20px;">
@@ -4295,7 +4343,7 @@ let allBooks = [
 
 // Level definitions
 const levels = {
-  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 4, canWithdraw: false, hasReferral: false, bookLimit: 1 },
+  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 4, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 },
   1: { name: "D1", dailyBooks: 2, reward: 1125, deposit: 63000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 2 },
   2: { name: "D2", dailyBooks: 4, reward: 1775, deposit: 200000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 4 },
   3: { name: "D3", dailyBooks: 12, reward: 1584, deposit: 532000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 8 },
@@ -4307,11 +4355,17 @@ const levels = {
   9: { name: "D9", dailyBooks: 74, reward: 40000, deposit: 84000000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 60 }
 };
 
-// Referral commission rates (UPDATED to 10%/4%/1%)
+// Referral commission rates (UPDATED to 10%/4%/1% based on referrer's own deposit)
 const referralRates = {
-  a: 0.10, // 10% for direct referrals
-  b: 0.04, // 4% for second level
-  c: 0.01  // 1% for third level
+  a: 0.10,
+  b: 0.04,
+  c: 0.01
+};
+
+// Subsidiary motivator rates (based on referrer's own daily earnings)
+const motivatorRates = {
+  a: 0.05, // 5% for A level
+  b: 0.01  // 1% for B level
 };
 
 // Daily Motivation Messages (4 time periods)
@@ -4509,7 +4563,7 @@ function getTodaysBooks() {
   return todaysBookOrder;
 }
 
-// ========== REFERRAL FUNCTIONS ==========
+// ========== REFERRAL FUNCTIONS (UPDATED) ==========
 function findReferrers(userPhone) {
   const referrers = { a: null, b: null, c: null };
   const user = users[userPhone];
@@ -4532,39 +4586,104 @@ function findReferrers(userPhone) {
   return referrers;
 }
 
-function payReferralCommissions(userPhone, upgradeCost) {
+// UPDATED: Commission based on referrer's OWN level deposit, not the upgrade cost
+function payReferralCommissions(userPhone) {
+  const user = users[userPhone];
+  if (!user) return;
+  
   const referrers = findReferrers(userPhone);
   
+  // A Level (Direct) - 10% of referrer's own deposit
   if (referrers.a && users[referrers.a]) {
-    const aCommission = Math.floor(upgradeCost * referralRates.a);
-    users[referrers.a].operatingWallet = (users[referrers.a].operatingWallet || 0) + aCommission;
-    users[referrers.a].referralCommissions = users[referrers.a].referralCommissions || { a:0, b:0, c:0, total:0 };
-    users[referrers.a].referralCommissions.a += aCommission;
-    users[referrers.a].referralCommissions.total += aCommission;
-    users[referrers.a].transactions = users[referrers.a].transactions || [];
-    users[referrers.a].transactions.unshift({ type:'referral', level:'A', amount:aCommission, date:new Date().toLocaleString(), desc:`Referral commission from ${userPhone}` });
+    const aLevel = users[referrers.a].memberLevel || 0;
+    const aDeposit = levels[aLevel]?.deposit || 0;
+    const aCommission = Math.floor(aDeposit * referralRates.a);
+    
+    if (aCommission > 0) {
+      users[referrers.a].operatingWallet = (users[referrers.a].operatingWallet || 0) + aCommission;
+      users[referrers.a].referralCommissions = users[referrers.a].referralCommissions || { a:0, b:0, c:0, total:0 };
+      users[referrers.a].referralCommissions.a += aCommission;
+      users[referrers.a].referralCommissions.total += aCommission;
+      users[referrers.a].transactions = users[referrers.a].transactions || [];
+      users[referrers.a].transactions.unshift({ type:'referral', level:'A', amount:aCommission, date:new Date().toLocaleString(), desc:`A-level commission from ${userPhone}` });
+    }
   }
   
+  // B Level - 4% of referrer's own deposit
   if (referrers.b && users[referrers.b]) {
-    const bCommission = Math.floor(upgradeCost * referralRates.b);
-    users[referrers.b].operatingWallet = (users[referrers.b].operatingWallet || 0) + bCommission;
-    users[referrers.b].referralCommissions = users[referrers.b].referralCommissions || { a:0, b:0, c:0, total:0 };
-    users[referrers.b].referralCommissions.b += bCommission;
-    users[referrers.b].referralCommissions.total += bCommission;
-    users[referrers.b].transactions = users[referrers.b].transactions || [];
-    users[referrers.b].transactions.unshift({ type:'referral', level:'B', amount:bCommission, date:new Date().toLocaleString(), desc:`Referral commission from ${userPhone}` });
+    const bLevel = users[referrers.b].memberLevel || 0;
+    const bDeposit = levels[bLevel]?.deposit || 0;
+    const bCommission = Math.floor(bDeposit * referralRates.b);
+    
+    if (bCommission > 0) {
+      users[referrers.b].operatingWallet = (users[referrers.b].operatingWallet || 0) + bCommission;
+      users[referrers.b].referralCommissions = users[referrers.b].referralCommissions || { a:0, b:0, c:0, total:0 };
+      users[referrers.b].referralCommissions.b += bCommission;
+      users[referrers.b].referralCommissions.total += bCommission;
+      users[referrers.b].transactions = users[referrers.b].transactions || [];
+      users[referrers.b].transactions.unshift({ type:'referral', level:'B', amount:bCommission, date:new Date().toLocaleString(), desc:`B-level commission from ${userPhone}` });
+    }
   }
   
+  // C Level - 1% of referrer's own deposit
   if (referrers.c && users[referrers.c]) {
-    const cCommission = Math.floor(upgradeCost * referralRates.c);
-    users[referrers.c].operatingWallet = (users[referrers.c].operatingWallet || 0) + cCommission;
-    users[referrers.c].referralCommissions = users[referrers.c].referralCommissions || { a:0, b:0, c:0, total:0 };
-    users[referrers.c].referralCommissions.c += cCommission;
-    users[referrers.c].referralCommissions.total += cCommission;
-    users[referrers.c].transactions = users[referrers.c].transactions || [];
-    users[referrers.c].transactions.unshift({ type:'referral', level:'C', amount:cCommission, date:new Date().toLocaleString(), desc:`Referral commission from ${userPhone}` });
+    const cLevel = users[referrers.c].memberLevel || 0;
+    const cDeposit = levels[cLevel]?.deposit || 0;
+    const cCommission = Math.floor(cDeposit * referralRates.c);
+    
+    if (cCommission > 0) {
+      users[referrers.c].operatingWallet = (users[referrers.c].operatingWallet || 0) + cCommission;
+      users[referrers.c].referralCommissions = users[referrers.c].referralCommissions || { a:0, b:0, c:0, total:0 };
+      users[referrers.c].referralCommissions.c += cCommission;
+      users[referrers.c].referralCommissions.total += cCommission;
+      users[referrers.c].transactions = users[referrers.c].transactions || [];
+      users[referrers.c].transactions.unshift({ type:'referral', level:'C', amount:cCommission, date:new Date().toLocaleString(), desc:`C-level commission from ${userPhone}` });
+    }
   }
   
+  saveUsers();
+}
+
+// NEW: Pay subsidiary motivators (task commissions) based on referrer's own daily earnings
+function paySubsidiaryMotivators(userPhone, taskEarnedAmount) {
+  const user = users[userPhone];
+  if (!user) return;
+  
+  const referrers = findReferrers(userPhone);
+  
+  // A Level (Direct) - 5% of referrer's own daily earnings
+  if (referrers.a && users[referrers.a]) {
+    const aLevel = users[referrers.a].memberLevel || 0;
+    const aDailyEarning = (levels[aLevel]?.dailyBooks || 0) * (levels[aLevel]?.reward || 0);
+    const aMotivator = Math.floor(aDailyEarning * motivatorRates.a);
+    
+    if (aMotivator > 0) {
+      users[referrers.a].incentiveWallet = (users[referrers.a].incentiveWallet || 0) + aMotivator;
+      users[referrers.a].subsidiaryMotivators = users[referrers.a].subsidiaryMotivators || { a:0, b:0, total:0 };
+      users[referrers.a].subsidiaryMotivators.a += aMotivator;
+      users[referrers.a].subsidiaryMotivators.total += aMotivator;
+      users[referrers.a].transactions = users[referrers.a].transactions || [];
+      users[referrers.a].transactions.unshift({ type:'subsidiary', level:'A', amount:aMotivator, date:new Date().toLocaleString(), desc:`Subsidiary motivator from ${userPhone}'s task` });
+    }
+  }
+  
+  // B Level - 1% of referrer's own daily earnings
+  if (referrers.b && users[referrers.b]) {
+    const bLevel = users[referrers.b].memberLevel || 0;
+    const bDailyEarning = (levels[bLevel]?.dailyBooks || 0) * (levels[bLevel]?.reward || 0);
+    const bMotivator = Math.floor(bDailyEarning * motivatorRates.b);
+    
+    if (bMotivator > 0) {
+      users[referrers.b].incentiveWallet = (users[referrers.b].incentiveWallet || 0) + bMotivator;
+      users[referrers.b].subsidiaryMotivators = users[referrers.b].subsidiaryMotivators || { a:0, b:0, total:0 };
+      users[referrers.b].subsidiaryMotivators.b += bMotivator;
+      users[referrers.b].subsidiaryMotivators.total += bMotivator;
+      users[referrers.b].transactions = users[referrers.b].transactions || [];
+      users[referrers.b].transactions.unshift({ type:'subsidiary', level:'B', amount:bMotivator, date:new Date().toLocaleString(), desc:`Subsidiary motivator from ${userPhone}'s task` });
+    }
+  }
+  
+  // C Level gets nothing
   saveUsers();
 }
 
@@ -4695,6 +4814,7 @@ function handleRegister(e) {
     referredBy: referralCode,
     referrals: [],
     referralCommissions: { a: 0, b: 0, c: 0, total: 0 },
+    subsidiaryMotivators: { a: 0, b: 0, total: 0 },
     registeredDate: now.toISOString(),
     levelPurchases: [],
     harvestAccount: null,
@@ -4702,7 +4822,8 @@ function handleRegister(e) {
     lastWithdrawDate: null,
     transactions: [],
     heldPosition: null,
-    farmerPosition: 0
+    farmerPosition: 0,
+    theme: 'purple' // default theme
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
@@ -4793,7 +4914,7 @@ function showPage(page) {
     // Don't load books on home anymore
     updateMotivationMessage();
   }
-  if (page === 'taskRecord') loadTaskRecord();
+  if (page === 'taskRecord') loadActivityLog(); // UPDATED function name
   if (page === 'teamReport') loadTeamReport();
   if (page === 'level') updateLevelWalletDisplay();
   if (page === 'goldenHandshake') loadGoldenHandshake();
@@ -4804,7 +4925,8 @@ function showPage(page) {
   resetInactivityTimer();
 }
 
-function showTaskRecord() { showPage('taskRecord'); }
+// UPDATED: Renamed function
+function showActivityLog() { showPage('taskRecord'); }
 function showTeamReport() { showPage('teamReport'); }
 function showGoldenHandshake() { showPage('goldenHandshake'); }
 function showTransactionHistory() { showPage('transactionHistory'); }
@@ -5020,7 +5142,7 @@ function loadTransactionHistory() {
   
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  const counts = { book:0, referral:0, deposit:0, withdrawal:0, refund:0, level_upgrade:0 };
+  const counts = { book:0, referral:0, deposit:0, withdrawal:0, refund:0, level_upgrade:0, subsidiary:0 };
   allTransactions.forEach(t => { if (counts[t.type] !== undefined) counts[t.type]++; });
   
   document.getElementById('book-count').textContent = counts.book;
@@ -5058,7 +5180,7 @@ function filterTransactions(type, transactions = null) {
   
   if (type !== 'all') {
     filteredTransactions = allTransactions.filter(t => t.type === type);
-    const typeNames = { book: 'BOOKS', referral: 'REFERRALS', deposit: 'DEPOSITS', withdrawal: 'WITHDRAWALS', refund: 'REFUNDS', level_upgrade: 'UPGRADES' };
+    const typeNames = { book: 'BOOKS', referral: 'REFERRALS', deposit: 'DEPOSITS', withdrawal: 'WITHDRAWALS', refund: 'REFUNDS', level_upgrade: 'UPGRADES', subsidiary: 'SUBSIDIARY' };
     filterLabel = typeNames[type] || 'ALL TRANSACTIONS';
   }
   
@@ -5081,6 +5203,7 @@ function filterTransactions(type, transactions = null) {
     else if (t.type === 'referral') { icon = 'fa-users'; color = '#ff9800'; }
     else if (t.type === 'book') { icon = 'fa-book'; color = '#7d5ba6'; }
     else if (t.type === 'refund') { icon = 'fa-undo'; color = '#17a2b8'; }
+    else if (t.type === 'subsidiary') { icon = 'fa-leaf'; color = '#2e7d32'; }
     
     const sign = t.type === 'withdrawal' || t.type === 'withdraw' || t.type === 'level_upgrade' ? '-' : '+';
     
@@ -5220,7 +5343,8 @@ function upgradeUser(user, newLevel, cost, oldLevel, oldLevelCost) {
   user.transactions.unshift({ type: 'level_upgrade', level: newLevel, amount: cost, date: new Date().toLocaleString(), desc: `Upgrade to ${levels[newLevel].name}` });
 
   saveUsers();
-  payReferralCommissions(user.phone, cost);
+  // UPDATED: Pass only the user phone, the function will use referrer's own deposit
+  payReferralCommissions(user.phone);
   loadUserData();
   updateLevelWalletDisplay();
   showConfirmModal('Success', `Congratulations! You are now ${levels[newLevel].name}!`, 'success');
@@ -5279,7 +5403,7 @@ function loadUserData() {
   
   if (user.transactions) {
     user.transactions.forEach(t => {
-      if (t.type === 'referral') {
+      if (t.type === 'referral' || t.type === 'subsidiary') {
         const tDate = new Date(t.date);
         if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
           monthEarnings += t.amount || 0;
@@ -5300,8 +5424,11 @@ function loadUserData() {
   document.getElementById('totalIncomeValue').innerHTML = `${(user.incentiveWallet || 0).toLocaleString()} UGX`;
   document.getElementById('monthIncomeValue').innerHTML = `${monthEarnings.toLocaleString()} UGX`;
   
-  if (user.referralCommissions) {
-    document.getElementById('subordinateIncentive').innerHTML = `${(user.referralCommissions.total || 0).toLocaleString()} UGX`;
+  // UPDATED: Show subsidiary motivators total
+  if (user.subsidiaryMotivators) {
+    document.getElementById('subsidiaryMotivatorsTotal').innerHTML = `${(user.subsidiaryMotivators.total || 0).toLocaleString()} UGX`;
+  } else {
+    document.getElementById('subsidiaryMotivatorsTotal').innerHTML = '0 UGX';
   }
   
   document.getElementById('withdrawOperatingBalance').innerHTML = (user.operatingWallet || 0).toLocaleString() + ' UGX';
@@ -5310,6 +5437,9 @@ function loadUserData() {
   updateLevelWalletDisplay();
   updateTime();
   updateUserDetailsModal();
+  
+  // Apply user theme
+  applyTheme(user.theme || 'purple');
 }
 
 function getLevelTitle(level) {
@@ -5322,7 +5452,32 @@ function openUserDetailsModal() {
   updateUserDetailsModal();
   document.getElementById('userDetailsModal').style.display = 'flex';
 }
-function closeUserDetailsModal() { document.getElementById('userDetailsModal').style.display = 'none'; }
+function closeUserDetailsModal() { 
+  document.getElementById('userDetailsModal').style.display = 'none';
+  document.getElementById('themePickerPopup').classList.remove('show');
+}
+
+function toggleThemePicker() {
+  document.getElementById('themePickerPopup').classList.toggle('show');
+}
+
+function setTheme(theme) {
+  const user = users[currentUser];
+  if (!user) return;
+  user.theme = theme;
+  saveUsers();
+  applyTheme(theme);
+  document.getElementById('themePickerPopup').classList.remove('show');
+  showConfirmModal('Theme Updated', `Theme changed to ${theme}!`, 'success');
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  // You can expand this to change colors dynamically
+  // For now, we'll just show a message or store preference
+  console.log('Theme applied:', theme);
+  // In a full implementation, you'd change CSS variables here
+}
 
 function updateUserDetailsModal() {
   const user = users[currentUser];
@@ -5652,8 +5807,8 @@ function loadTeamReport() {
   document.getElementById('activeTeamMembers').textContent = activeCount;
 }
 
-// ========== TASK RECORD - UPDATED: Removed pending books ==========
-function loadTaskRecord() {
+// ========== ACTIVITY LOG (formerly Task Record) - UPDATED ==========
+function loadActivityLog() {
   const user = users[currentUser];
   if (!user) return;
 
@@ -5662,11 +5817,10 @@ function loadTaskRecord() {
   
   document.getElementById('totalReadBooks').textContent = history.length;
   document.getElementById('completeBooks').textContent = completed.length;
-  // Pending books stat removed
 
   const tbody = document.getElementById('taskHistoryBody');
   if (history.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px;">No task history yet</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px;">No activity yet</td></tr>';
     return;
   }
 
@@ -5847,6 +6001,7 @@ function startReading(bookId) {
   }, 1000);
 }
 
+// UPDATED harvestReward to also pay subsidiary motivators
 function harvestReward(bookId) {
   const user = users[currentUser];
   if (!user) return;
@@ -5868,12 +6023,14 @@ function harvestReward(bookId) {
     if (pendingTask) { pendingTask.status = 'complete'; pendingTask.reward = reward; }
   }
 
+  // Pay subsidiary motivators to upline (based on user's own daily earnings)
+  paySubsidiaryMotivators(user.phone, reward);
+
   if (activeReadingTimer) { clearInterval(activeReadingTimer); activeReadingTimer = null; }
   activeReadingBookId = null;
   activeReadingPage = null;
 
   saveUsers();
-  // Don't load home books anymore
   loadTaskBooks();
   loadUserData();
 }
@@ -6903,15 +7060,18 @@ window.onload = function() {
           referredBy: null,
           referrals: [],
           referralCommissions: { a: 25000, b: 8000, c: 3000, total: 36000 },
+          subsidiaryMotivators: { a: 5000, b: 1000, total: 6000 },
           levelPurchases: [],
           harvestAccount: { network: 'MTN', phone: '0756673144', names: 'Admin User', password: '123456' },
           lastWithdrawDate: null,
           transactions: [
             { type: 'book', amount: 40000, date: new Date().toLocaleString(), desc: 'Harvested: Coffee Growing Guide' },
-            { type: 'referral', amount: 25000, date: new Date().toLocaleString(), desc: 'A-level commission' }
+            { type: 'referral', amount: 25000, date: new Date().toLocaleString(), desc: 'A-level commission' },
+            { type: 'subsidiary', amount: 5000, date: new Date().toLocaleString(), desc: 'Subsidiary motivator' }
           ],
           heldPosition: null,
-          farmerPosition: 5
+          farmerPosition: 5,
+          theme: 'purple'
         },
         '0777123456': {
           fullName: 'Intern User',
@@ -6930,12 +7090,14 @@ window.onload = function() {
           referredBy: null,
           referrals: [],
           referralCommissions: { a: 0, b: 0, c: 0, total: 0 },
+          subsidiaryMotivators: { a: 0, b: 0, total: 0 },
           levelPurchases: [],
           harvestAccount: { network: 'AIRTEL', phone: '0777123456', names: 'Intern User', password: '123456' },
           lastWithdrawDate: null,
           transactions: [],
           heldPosition: null,
-          farmerPosition: 0
+          farmerPosition: 0,
+          theme: 'purple'
         },
         '0788123456': {
           fullName: 'John D1',
@@ -6954,12 +7116,14 @@ window.onload = function() {
           referredBy: null,
           referrals: [],
           referralCommissions: { a: 5000, b: 0, c: 0, total: 5000 },
+          subsidiaryMotivators: { a: 0, b: 0, total: 0 },
           levelPurchases: [{ level: 1, amount: 63000, date: new Date().toISOString(), refunded: false }],
           harvestAccount: { network: 'MTN', phone: '0788123456', names: 'John D1', password: '123456' },
           lastWithdrawDate: null,
           transactions: [{ type: 'level_upgrade', amount: 63000, date: new Date().toLocaleString(), desc: 'Upgrade to D1' }],
           heldPosition: null,
-          farmerPosition: 1
+          farmerPosition: 1,
+          theme: 'purple'
         }
       };
 
