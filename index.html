@@ -11,6 +11,8 @@
   <!-- Firebase SDKs (added for cloud sync) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <!-- html2canvas for image download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     /* ===== ALL YOUR ORIGINAL STYLES - UNCHANGED ===== */
     * {
@@ -349,7 +351,7 @@
     }
 
     /* Main Dashboard Pages */
-    #mainDashboard, #profilePage, #levelPage, #taskPage, #incomePage, #taskRecordPage, #teamReportPage, #goldenHandshakePage, #transactionHistoryPage, #growthJourneyPage {
+    #mainDashboard, #profilePage, #levelPage, #taskPage, #incomePage, #taskRecordPage, #teamReportPage, #goldenHandshakePage, #transactionHistoryPage, #growthJourneyPage, #stakesPage {
       display: none;
       flex-direction: column;
       height: 100%;
@@ -2544,6 +2546,113 @@
       color: #8a7a9c;
       font-style: italic;
     }
+
+    /* ===== NEW STAKES PAGE STYLES ===== */
+    #stakesPage {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .stakes-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      padding: 10px 0;
+    }
+    
+    .stakes-header i {
+      font-size: 2.5rem;
+      color: #7d5ba6;
+    }
+    
+    .stakes-header h2 {
+      color: #7d5ba6;
+      font-size: 2rem;
+    }
+    
+    .stakes-card {
+      background: linear-gradient(135deg, #7d5ba6, #b8a3d9);
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+      margin-bottom: 20px;
+    }
+    
+    .stakes-card i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    
+    .stakes-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .stakes-card p {
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    /* ===== NEW ACTION ROW STYLES FOR 2x2 GRID ===== */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .action-grid-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      color: #4a3b5e;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 15px;
+      border-radius: 15px;
+      transition: all 0.2s;
+    }
+    
+    .action-grid-item:hover {
+      background: #f5edff;
+    }
+    
+    .action-grid-item i {
+      font-size: 1.5rem;
+      color: #7d5ba6;
+    }
+    
+    .action-grid-item.girare i {
+      color: #ff9800;
+    }
+    
+    .action-grid-item.stakes i {
+      color: #28a745;
+    }
+
+    /* ===== GREEN BACKGROUND ANIMATIONS ===== */
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(-15deg); }
+      50% { transform: translateY(-20px) rotate(-15deg); }
+      100% { transform: translateY(0px) rotate(-15deg); }
+    }
+    
+    @keyframes float2 {
+      0% { transform: translateY(0px) rotate(10deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+      100% { transform: translateY(0px) rotate(10deg); }
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.1; }
+      50% { opacity: 0.2; }
+      100% { opacity: 0.1; }
+    }
   </style>
 </head>
 <body>
@@ -2830,8 +2939,20 @@
     <!-- MAIN DASHBOARD (Home Page) -->
     <div id="mainDashboard">
       <div class="scroll-content">
-        <div class="welcome-title">WELCOME</div>
-        <div class="welcome-subtitle">Learn about coffee growing and earn rewards</div>
+        <!-- Green Background Section with UIC Watermark -->
+        <div style="background: linear-gradient(135deg, #2e7d32, #4caf50); padding: 30px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(46,125,50,0.3);">
+          
+          <!-- Animated UIC Watermarks in Background -->
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; pointer-events: none;">
+            <div style="position: absolute; top: 10px; left: 10px; font-size: 3rem; font-weight: 900; color: white; transform: rotate(-15deg); animation: float 6s infinite ease-in-out;">UIC</div>
+            <div style="position: absolute; bottom: 10px; right: 10px; font-size: 4rem; font-weight: 900; color: white; transform: rotate(10deg); animation: float2 8s infinite ease-in-out reverse;">UIC</div>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-weight: 900; color: white; opacity: 0.15; animation: pulse 4s infinite;">UIC</div>
+          </div>
+          
+          <!-- Welcome Text (unchanged) -->
+          <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 2;">WELCOME</div>
+          <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); position: relative; z-index: 2;">Learn about coffee growing and earn rewards</div>
+        </div>
         
         <!-- NEW: Photo Gallery -->
         <div class="photo-gallery-container">
@@ -2869,20 +2990,23 @@
           <div class="motivation-time" id="motivationTime">Morning Motivation</div>
         </div>
 
-        <!-- Actions -->
-        <div class="action-row">
-          <div class="action-item" onclick="openDepositModal()">
+        <!-- Actions - NEW 2x2 Grid Layout -->
+        <div class="action-grid">
+          <div class="action-grid-item" onclick="openDepositModal()">
             <i class="fas fa-wallet"></i>
             <span>Recharge</span>
           </div>
-          <div class="action-item" id="withdrawBtn" onclick="openWithdrawModal()">
+          <div class="action-grid-item" id="withdrawBtn" onclick="openWithdrawModal()">
             <i class="fas fa-hand-holding-usd"></i>
             <span>Withdraw</span>
           </div>
-          <!-- Company action now opens modal instead of alert -->
-          <div class="action-item" onclick="openCompanyProfileModal()">
-            <i class="fas fa-building"></i>
-            <span>Company</span>
+          <div class="action-grid-item girare" onclick="showPage('stakes'); showGirareMessage()">
+            <i class="fas fa-dice"></i>
+            <span>Girare</span>
+          </div>
+          <div class="action-grid-item stakes" onclick="showPage('stakes')">
+            <i class="fas fa-trophy"></i>
+            <span>Stakes</span>
           </div>
         </div>
 
@@ -3190,13 +3314,19 @@
     <div id="incomePage">
       <div class="scroll-content">
         <!-- Page Title -->
-        <div style="margin-bottom: 20px;">
-          <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
-          <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
+            <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
+          </div>
+          <!-- Download hint - subtle -->
+          <div style="font-size: 0.7rem; color: #999; text-align: right;">
+            <i class="fas fa-download"></i> Long press to save
+          </div>
         </div>
 
-        <!-- Income Table - Color Coded -->
-        <div style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <!-- Income Table - Color Coded - NOW WITH LONG-PRESS DOWNLOAD -->
+        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer;" ondblclick="downloadIncomeTableAsImage()" ontouchstart="handleTableTouchStart(event)" ontouchend="handleTableTouchEnd(event)" onmousedown="handleTableMouseDown(event)" onmouseup="handleTableMouseUp(event)" onmouseleave="handleTableMouseLeave()">
           <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
             <thead>
               <tr style="background: #7d5ba6; color: white;">
@@ -3499,6 +3629,41 @@
       </div>
     </div>
 
+    <!-- STAKES PAGE - NEW PAGE -->
+    <div id="stakesPage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+        
+        <div class="stakes-header">
+          <i class="fas fa-trophy"></i>
+          <h2>STAKES</h2>
+        </div>
+        
+        <div class="stakes-card">
+          <i class="fas fa-coins"></i>
+          <h3>Coming Soon!</h3>
+          <p>Place your stakes and win big rewards. This feature is under development.</p>
+        </div>
+        
+        <div style="background: #f5edff; border-radius: 15px; padding: 20px; margin-top: 20px;">
+          <h4 style="color: #4a3b5e; margin-bottom: 15px;">How Stakes Will Work:</h4>
+          <ul style="padding-left: 20px; color: #666;">
+            <li>🔹 Stake your earnings for a chance to win more</li>
+            <li>🔹 Higher stakes = higher rewards</li>
+            <li>🔹 Daily and weekly stake options</li>
+            <li>🔹 Special events with bonus prizes</li>
+          </ul>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
     <!-- TRANSACTION HISTORY PAGE - UPDATED WITH FILTERS -->
     <div id="transactionHistoryPage">
       <div class="scroll-content">
@@ -3720,6 +3885,22 @@
       </div>
       <div class="toast-footer">
         <button class="toast-dismiss" onclick="dismissToast()">DISMISS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD TOAST NOTIFICATION -->
+  <div class="toast-notification" id="downloadToast" style="background: #28a745;">
+    <div class="toast-content">
+      <div class="toast-header">
+        <i class="fas fa-check-circle" style="color: white;"></i>
+        <h3 style="color: white;">Download Started</h3>
+      </div>
+      <div class="toast-body" style="color: white;">
+        <p>Income table saved to gallery!</p>
+      </div>
+      <div class="toast-footer">
+        <button class="toast-dismiss" onclick="dismissDownloadToast()" style="background: white; color: #28a745;">DISMISS</button>
       </div>
     </div>
   </div>
@@ -3979,6 +4160,10 @@ const depositAmountPresets = [20000, 63000, 150000, 200000, 532000, 1000000, 145
 // Custom confirm modal variables
 let confirmActionCallback = null;
 let confirmActionType = '';
+
+// Long press variables for table download
+let pressTimer = null;
+let longPressDuration = 500; // 500ms
 
 // Farmer positions
 const farmerPositions = {
@@ -4591,6 +4776,7 @@ function showPage(page) {
   document.getElementById('goldenHandshakePage').style.display = page === 'goldenHandshake' ? 'flex' : 'none';
   document.getElementById('transactionHistoryPage').style.display = page === 'transactionHistory' ? 'flex' : 'none';
   document.getElementById('growthJourneyPage').style.display = page === 'growthJourney' ? 'flex' : 'none';
+  document.getElementById('stakesPage').style.display = page === 'stakes' ? 'flex' : 'none';
 
   document.querySelectorAll('.bottom-nav').forEach(nav => {
     const items = nav.querySelectorAll('.nav-item');
@@ -4613,6 +4799,7 @@ function showPage(page) {
   if (page === 'goldenHandshake') loadGoldenHandshake();
   if (page === 'transactionHistory') loadTransactionHistory();
   if (page === 'growthJourney') loadGrowthJourney();
+  if (page === 'stakes') loadStakesPage();
   
   resetInactivityTimer();
 }
@@ -4622,6 +4809,13 @@ function showTeamReport() { showPage('teamReport'); }
 function showGoldenHandshake() { showPage('goldenHandshake'); }
 function showTransactionHistory() { showPage('transactionHistory'); }
 function showGrowthJourney() { showPage('growthJourney'); }
+function showGirareMessage() { showConfirmModal('Girare', 'Girare feature coming soon!', 'success'); }
+
+// ========== STAKES PAGE ==========
+function loadStakesPage() {
+  // Just a placeholder for now
+  console.log('Stakes page loaded');
+}
 
 // ========== GROWTH JOURNEY ==========
 function loadGrowthJourney() {
@@ -6018,6 +6212,80 @@ function submitWithdraw() {
 
 function dismissToast() { document.getElementById('withdrawToast').style.display = 'none'; }
 
+// ========== DOWNLOAD FUNCTIONS ==========
+function dismissDownloadToast() { document.getElementById('downloadToast').style.display = 'none'; }
+
+function handleTableTouchStart(e) {
+  e.preventDefault();
+  pressTimer = setTimeout(() => {
+    downloadIncomeTableAsImage();
+  }, longPressDuration);
+}
+
+function handleTableTouchEnd(e) {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+  }
+}
+
+function handleTableMouseDown(e) {
+  pressTimer = setTimeout(() => {
+    downloadIncomeTableAsImage();
+  }, longPressDuration);
+}
+
+function handleTableMouseUp(e) {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+  }
+}
+
+function handleTableMouseLeave() {
+  if (pressTimer) {
+    clearTimeout(pressTimer);
+    pressTimer = null;
+  }
+}
+
+function downloadIncomeTableAsImage() {
+  const container = document.getElementById('incomeTableContainer');
+  if (!container) return;
+  
+  // Show loading message
+  showConfirmModal('Processing', 'Generating image...', 'success');
+  
+  html2canvas(container, {
+    scale: 2,
+    backgroundColor: '#ffffff',
+    logging: false,
+    allowTaint: false,
+    useCORS: true
+  }).then(canvas => {
+    // Convert to image and download
+    const link = document.createElement('a');
+    const date = new Date();
+    const dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
+    link.download = `UIC_Income_${dateStr}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    
+    // Show success toast
+    setTimeout(() => {
+      document.getElementById('downloadToast').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('downloadToast').style.display = 'none';
+      }, 3000);
+    }, 500);
+    
+    closeConfirmModal();
+  }).catch(error => {
+    console.error('Error generating image:', error);
+    showConfirmModal('Error', 'Failed to generate image. Please try again.', 'warning');
+  });
+}
+
 // ========== UTILITY ==========
 function updateTime() {
   const now = new Date();
@@ -6046,6 +6314,7 @@ function logout() {
   document.getElementById('goldenHandshakePage').style.display = 'none';
   document.getElementById('transactionHistoryPage').style.display = 'none';
   document.getElementById('growthJourneyPage').style.display = 'none';
+  document.getElementById('stakesPage').style.display = 'none';
   closeUserDetailsModal();
   
   if (inactivityTimer) clearTimeout(inactivityTimer);
