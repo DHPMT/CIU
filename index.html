@@ -5560,7 +5560,9 @@ function loadTaskBooks() {
       buttonHtml = `<button class="read-btn" onclick="startReading(${book.id})" id="task-book-${book.id}" ${disabled}>READ +${reward}</button><div id="task-timer-${book.id}" class="timer-display" style="display:none;">10s</div>`;
     }
     
-    html += `<div class="book-card ${(isPending || isCompleted) ? 'disabled' : ''}"><div class="book-title">${book.title}</div><div class="book-desc">${book.desc}</div>${statusBadge}${buttonHtml}</div>`;
+    // FIX: Don't disable the entire card for pending books - only completed books should be disabled
+    const cardDisabled = isCompleted ? 'disabled' : '';
+    html += `<div class="book-card ${cardDisabled}"><div class="book-title">${book.title}</div><div class="book-desc">${book.desc}</div>${statusBadge}${buttonHtml}</div>`;
   });
   
   grid.innerHTML = html;
@@ -5636,6 +5638,7 @@ function startReading(bookId) {
         currentHomeBtn.style.display = 'block';
         currentHomeBtn.textContent = `🌾 HARVEST +${reward}`;
         currentHomeBtn.classList.add('harvest-ready');
+        currentHomeBtn.disabled = false; // Ensure button is enabled
         currentHomeBtn.onclick = () => harvestReward(bookId);
       }
       if (currentTaskBtn && currentTaskTimer) {
@@ -5643,6 +5646,7 @@ function startReading(bookId) {
         currentTaskBtn.style.display = 'block';
         currentTaskBtn.textContent = `🌾 HARVEST +${reward}`;
         currentTaskBtn.classList.add('harvest-ready');
+        currentTaskBtn.disabled = false; // Ensure button is enabled
         currentTaskBtn.onclick = () => harvestReward(bookId);
       }
     }
