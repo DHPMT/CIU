@@ -6584,6 +6584,36 @@ function goToDepositScreen4() {
   document.getElementById('depositScreen4').classList.add('active');
 }
 
+// ===== FIX: Proper goToDepositScreen4 function that actually works =====
+function goToDepositScreen4() {
+  console.log("Continue button clicked - navigating to Screen 4");
+  
+  // Check if we have all required data
+  if (!selectedDepositNetwork) {
+    alert("Please select a network first");
+    return;
+  }
+  
+  if (!selectedDepositPhone) {
+    alert("Please enter a valid phone number");
+    return;
+  }
+  
+  // Hide Screen 3, show Screen 4
+  document.getElementById('depositScreen3').classList.remove('active');
+  document.getElementById('depositScreen4').classList.add('active');
+  
+  // Update Screen 4 with the correct information
+  updateDepositScreen4();
+  
+  console.log("Successfully navigated to Screen 4 with:", {
+    network: selectedDepositNetwork,
+    phone: selectedDepositPhone,
+    amount: selectedDepositAmount,
+    method: selectedDepositMethod
+  });
+}
+
 // ===== NEW FUNCTION: Update Screen 4 with network-specific details =====
 function updateDepositScreen4() {
   const network = selectedDepositNetwork.toLowerCase();
