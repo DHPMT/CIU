@@ -2815,6 +2815,145 @@
     .company-setting-row button:hover {
       background: #218838;
     }
+
+    /* ===== FIXED SCREEN 3 STYLES - MORE COMFORTABLE CONTINUE BUTTON ===== */
+    #depositScreen3 {
+      display: flex;
+      flex-direction: column;
+      min-height: 450px;
+      position: relative;
+    }
+
+    /* Better spacing for network buttons */
+    #depositScreen3 .deposit-amount-grid {
+      margin: 15px 0 20px 0;
+    }
+
+    #depositScreen3 .deposit-amount-btn {
+      padding: 18px 5px;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+
+    #depositScreen3 .deposit-amount-btn.selected {
+      background: #FFD700;
+      color: #1A1A1A;
+      border-color: #FFD700;
+      transform: scale(1.02);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+
+    /* Improved phone input field */
+    #depositScreen3 .deposit-custom-amount {
+      margin: 15px 0 25px 0;
+    }
+
+    #depositScreen3 .deposit-custom-amount input {
+      padding: 18px 15px;
+      font-size: 1.2rem;
+      border-width: 3px;
+      transition: all 0.2s;
+    }
+
+    #depositScreen3 .deposit-custom-amount input:focus {
+      border-color: #FFD700;
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    }
+
+    /* Valid state for phone input */
+    #depositScreen3 .deposit-custom-amount.valid input {
+      border-color: #00ff00 !important;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+      background: rgba(0, 255, 0, 0.05);
+    }
+
+    /* Hint text styling */
+    #depositScreen3 .hint {
+      font-size: 0.9rem;
+      margin-top: 8px;
+      color: #FFD700;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    /* Spacer to push buttons to bottom */
+    .screen3-spacer {
+      flex: 1;
+      min-height: 20px;
+    }
+
+    /* Button container at bottom - FIXED POSITIONING */
+    .screen3-button-container {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 215, 0, 0.2);
+      background: linear-gradient(to top, #2E7D32, transparent);
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    /* Improved CONTINUE button */
+    #depositScreen3 .deposit-continue-btn {
+      margin: 0 0 10px 0;
+      padding: 18px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: #FFD700;
+      color: #1A1A1A;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+      width: 100%;
+    }
+
+    #depositScreen3 .deposit-continue-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+      background: #ffed4a;
+    }
+
+    #depositScreen3 .deposit-continue-btn:disabled {
+      background: #666;
+      color: #999;
+      box-shadow: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Back button styling */
+    #depositScreen3 .deposit-back-btn {
+      margin-top: 5px;
+      padding: 12px;
+      font-size: 1rem;
+      opacity: 0.8;
+      text-align: center;
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #FFD700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    #depositScreen3 .deposit-back-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    /* Animation for button enable state */
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+    }
+
+    #depositScreen3 .deposit-continue-btn:not(:disabled) {
+      animation: pulse-green 2s infinite;
+    }
   </style>
 </head>
 <body>
@@ -3965,7 +4104,7 @@
         <button class="deposit-back-btn" onclick="goToDepositScreen1()">← Back</button>
       </div>
       
-      <!-- Screen 3 (NEW): Network and Phone Number -->
+      <!-- Screen 3 (FIXED): Network and Phone Number - More Comfortable Continue Button -->
       <div id="depositScreen3" class="deposit-screen">
         <div class="deposit-method-label">Payment Method:</div>
         <div class="deposit-method-value" id="selectedMethodDisplay2">PEAR PAY</div>
@@ -3982,13 +4121,19 @@
           <div class="deposit-amount-btn" onclick="selectNetwork('AIRTEL')" id="network-airtel">Airtel Uganda</div>
         </div>
         
-        <div class="deposit-custom-amount">
+        <div class="deposit-custom-amount" id="phoneInputContainer">
           <input type="tel" id="depositPhoneNumber" placeholder="07XXXXXXXX" maxlength="10" oninput="validatePhoneNumber()">
           <div class="hint">10 digits, must start with 07</div>
         </div>
         
-        <button class="deposit-continue-btn" id="depositContinueBtn3" onclick="goToDepositScreen4()" disabled>CONTINUE</button>
-        <button class="deposit-back-btn" onclick="goToDepositScreen2()">← Back</button>
+        <!-- Spacer to push buttons to bottom -->
+        <div class="screen3-spacer"></div>
+        
+        <!-- Button container at bottom - FIXED POSITIONING -->
+        <div class="screen3-button-container">
+          <button class="deposit-continue-btn" id="depositContinueBtn3" onclick="goToDepositScreen4()" disabled>CONTINUE</button>
+          <button class="deposit-back-btn" onclick="goToDepositScreen2()">← Back</button>
+        </div>
       </div>
       
       <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection -->
@@ -6339,6 +6484,10 @@ function resetDepositModal() {
   document.getElementById('detectionStatus').style.display = 'none';
   document.getElementById('detectedInfo').style.display = 'none';
   document.getElementById('depositConfirmBtn').disabled = true;
+  
+  // Remove valid class from phone input container
+  const phoneContainer = document.getElementById('phoneInputContainer');
+  if (phoneContainer) phoneContainer.classList.remove('valid');
 }
 
 function selectDepositMethod(method) {
@@ -6361,12 +6510,15 @@ function selectNetwork(network) {
 function validatePhoneNumber() {
   const phone = document.getElementById('depositPhoneNumber').value;
   const isValid = phone.length === 10 && phone.startsWith('07');
+  const phoneContainer = document.getElementById('phoneInputContainer');
   
   if (isValid && selectedDepositNetwork) {
     selectedDepositPhone = phone;
     document.getElementById('depositContinueBtn3').disabled = false;
+    if (phoneContainer) phoneContainer.classList.add('valid');
   } else {
     document.getElementById('depositContinueBtn3').disabled = true;
+    if (phoneContainer) phoneContainer.classList.remove('valid');
   }
 }
 
@@ -6403,6 +6555,10 @@ function goToDepositScreen3() {
   document.getElementById('network-mtn').classList.remove('selected');
   document.getElementById('network-airtel').classList.remove('selected');
   document.getElementById('depositContinueBtn3').disabled = true;
+  
+  // Remove valid class
+  const phoneContainer = document.getElementById('phoneInputContainer');
+  if (phoneContainer) phoneContainer.classList.remove('valid');
   
   document.getElementById('depositScreen1').classList.remove('active');
   document.getElementById('depositScreen2').classList.remove('active');
