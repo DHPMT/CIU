@@ -4872,7 +4872,7 @@ const db = firebase.database();
 
 // ========== GLOBAL VARIABLES ==========
 let users = {};
-let currentUser = localStorage.getItem('currentUser');
+let currentUser = null; // Start with null, will be set from localStorage after checking referral
 let pendingDeposits = [];
 let pendingWithdrawals = [];
 let selectedWallet = 'operating';
@@ -5310,7 +5310,12 @@ function getUrlParameter(name) {
 // ========== INACTIVITY TIMER ==========
 function resetInactivityTimer() {
   if (inactivityTimer) clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(() => { if (currentUser) logout(); }, 20 * 60 * 1000);
+  inactivityTimer = setTimeout(() => { 
+    if (currentUser) {
+      console.log('20-minute inactivity timeout - logging out');
+      logout(); 
+    }
+  }, 20 * 60 * 1000);
 }
 document.addEventListener('mousemove', resetInactivityTimer);
 document.addEventListener('keypress', resetInactivityTimer);
@@ -5456,18 +5461,25 @@ function payReferralCommissions(userPhone) {
   saveUsers();
 }
 
-// ===== SYSTEM 1: SUBSIDIARY MOTIVATORS - MODIFIED WITH DEBUG LOGS =====
-// Upline gets 1% of what Direct Referrer earns
+// ===== SYSTEM 1: SUBSIDIARY MOTIVATORS - FIXED TO PAY ONCE PER DAY AFTER ALL BOOKS COMPLETED =====
+// ===== ALSO IGNORES INTERN READERS =====
 function paySubsidiaryMotivators(readerPhone) {
   const reader = users[readerPhone];
   if (!reader) return;
   
+  // IGNORE INTERNS - No one earns from Intern readers
+  if (reader.memberLevel === 0) {
+    console.log('ℹ️ Reader is Intern - no subsidiary motivators paid');
+    return;
+  }
+
   console.log('🔍 ===== SUBSIDIARY MOTIVATORS DEBUG =====');
   console.log(`📱 Reader: ${reader.phone} (${reader.fullName})`);
 
   // Get reader's level and daily earnings
   const readerLevel = reader.memberLevel || 0;
-  const readerDaily = (levels[readerLevel]?.dailyBooks || 0) * (levels[readerLevel]?.reward || 0);
+  const levelData = levels[readerLevel];
+  const readerDaily = (levelData.dailyBooks || 0) * (levelData.reward || 0);
   
   console.log(`   Level: D${readerLevel}, Daily potential: ${readerDaily.toLocaleString()} UGX`);
 
@@ -5493,27 +5505,30 @@ function paySubsidiaryMotivators(readerPhone) {
   }
 
   const directLevel = directReferrer.memberLevel || 0;
-  const directDaily = (levels[directLevel]?.dailyBooks || 0) * (levels[directLevel]?.reward || 0);
+  const directLevelData = levels[directLevel];
+  const directDaily = (directLevelData.dailyBooks || 0) * (directLevelData.reward || 0);
 
   console.log(`👤 Direct Referrer (A): ${directReferrer.phone} (${directReferrer.fullName})`);
   console.log(`   Level: D${directLevel}, Daily potential: ${directDaily.toLocaleString()} UGX`);
 
   let directBonus = 0;
+  let baseUsed = 0;
 
   // Compare direct referrer's level with reader's level
   if (directLevel >= readerLevel) {
     // Direct referrer is HIGHER or EQUAL than reader
     // Use MIN of both daily earnings
-    const minDaily = Math.min(directDaily, readerDaily);
-    directBonus = Math.floor(minDaily * 0.04); // 4%
-    console.log(`🔢 Calculation: Referrer level (D${directLevel}) >= Reader level (D${readerLevel}) → using MIN(${directDaily.toLocaleString()}, ${readerDaily.toLocaleString()}) = ${minDaily.toLocaleString()}`);
-    console.log(`   4% of ${minDaily.toLocaleString()} = ${directBonus} UGX`);
+    baseUsed = Math.min(directDaily, readerDaily);
+    directBonus = Math.floor(baseUsed * 0.04); // 4%
+    console.log(`🔢 Calculation: Referrer level (D${directLevel}) >= Reader level (D${readerLevel}) → using MIN(${directDaily.toLocaleString()}, ${readerDaily.toLocaleString()}) = ${baseUsed.toLocaleString()}`);
+    console.log(`   4% of ${baseUsed.toLocaleString()} = ${directBonus} UGX`);
   } else {
     // Direct referrer is LOWER than reader
     // Use direct referrer's own daily earnings
-    directBonus = Math.floor(directDaily * 0.04); // 4%
-    console.log(`🔢 Calculation: Referrer level (D${directLevel}) < Reader level (D${readerLevel}) → using referrer's own daily: ${directDaily.toLocaleString()}`);
-    console.log(`   4% of ${directDaily.toLocaleString()} = ${directBonus} UGX`);
+    baseUsed = directDaily;
+    directBonus = Math.floor(baseUsed * 0.04); // 4%
+    console.log(`🔢 Calculation: Referrer level (D${directLevel}) < Reader level (D${readerLevel}) → using referrer's own daily: ${baseUsed.toLocaleString()}`);
+    console.log(`   4% of ${baseUsed.toLocaleString()} = ${directBonus} UGX`);
   }
 
   // Pay direct referrer
@@ -5528,14 +5543,14 @@ function paySubsidiaryMotivators(readerPhone) {
     directReferrer.subsidiaryMotivators.a += directBonus;
     directReferrer.subsidiaryMotivators.total += directBonus;
 
-    // Add transaction record
+    // Add transaction record - UPDATED description to indicate it's for completing all daily books
     directReferrer.transactions = directReferrer.transactions || [];
     directReferrer.transactions.unshift({
       type: 'subsidiary',
       level: 'A',
       amount: directBonus,
       date: new Date().toLocaleString(),
-      desc: `🎁 4% bonus from D${readerLevel} team member ${reader.phone}'s reading`
+      desc: `🎁 4% bonus from D${readerLevel} team member ${reader.phone} (completed all ${levelData.dailyBooks} daily books)`
     });
   } else {
     console.log(`ℹ️ Direct bonus was 0, nothing paid.`);
@@ -5583,6 +5598,43 @@ function paySubsidiaryMotivators(readerPhone) {
   console.log('✅ ===== SUBSIDIARY MOTIVATORS COMPLETE =====\n');
 
   saveUsers();
+}
+
+// ===== NEW HELPER FUNCTION: Check if user has completed all daily books =====
+function hasCompletedAllDailyBooks(user) {
+  const level = user.memberLevel || 0;
+  const dailyLimit = levels[level].dailyBooks;
+  const booksRead = user.booksReadToday || 0;
+  return booksRead >= dailyLimit;
+}
+
+// ===== NEW FUNCTION: Check and pay subsidiary motivators if all books completed =====
+function checkAndPayDailyBonus(readerPhone) {
+  const reader = users[readerPhone];
+  if (!reader) return false;
+  
+  // Ignore Interns
+  if (reader.memberLevel === 0) return false;
+  
+  // Check if all books completed
+  if (!hasCompletedAllDailyBooks(reader)) return false;
+  
+  // Check if bonus already paid today
+  const today = new Date().toDateString();
+  if (reader.dailyBonusPaidDate === today) {
+    console.log('ℹ️ Daily bonus already paid today for', readerPhone);
+    return false;
+  }
+  
+  // Pay the bonus
+  paySubsidiaryMotivators(readerPhone);
+  
+  // Mark as paid
+  reader.dailyBonusPaidDate = today;
+  saveUsers();
+  
+  console.log('✅ Daily subsidiary motivators paid for', readerPhone);
+  return true;
 }
 
 // ========== WITHDRAWAL TIME CHECK ==========
@@ -5722,9 +5774,10 @@ function handleRegister(e) {
     heldPosition: null,
     farmerPosition: 0,
     theme: 'purple', // default theme
-    // ===== SYSTEM 2 & 3: NEW FIELDS =====
+    // ===== NEW FIELDS =====
     pendingRefund: null,
-    lostCommissions: []
+    lostCommissions: [],
+    dailyBonusPaidDate: null // Track when daily bonus was last paid
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
@@ -6395,6 +6448,8 @@ function loadUserData() {
   if (user.lastReadDate !== today) {
     user.booksReadToday = 0;
     user.lastReadDate = today;
+    // Reset daily bonus flag for new day
+    user.dailyBonusPaidDate = null;
     saveUsers();
   }
 
@@ -7043,7 +7098,7 @@ function startReading(bookId) {
   }, 1000);
 }
 
-// UPDATED harvestReward to use new subsidiary motivators function
+// UPDATED harvestReward to check for daily completion and pay bonus
 function harvestReward(bookId) {
   const user = users[currentUser];
   if (!user) return;
@@ -7065,8 +7120,8 @@ function harvestReward(bookId) {
     if (pendingTask) { pendingTask.status = 'complete'; pendingTask.reward = reward; }
   }
 
-  // Pay subsidiary motivators (System 1)
-  paySubsidiaryMotivators(user.phone);
+  // Check if user has completed all daily books and pay subsidiary motivators if needed
+  checkAndPayDailyBonus(user.phone);
 
   if (activeReadingTimer) { clearInterval(activeReadingTimer); activeReadingTimer = null; }
   activeReadingBookId = null;
@@ -7770,13 +7825,36 @@ function updateTime() {
   document.getElementById('currentTime').textContent = `${hours}:${mins} ${ampm}`;
 }
 
+// ===== IMPROVED LOGOUT FUNCTION - CLEARS ALL SESSION DATA =====
 function logout() {
-  if (activeReadingTimer) { clearInterval(activeReadingTimer); activeReadingTimer = null; }
+  console.log('Logging out - clearing all session data');
+  
+  // Clear timers
+  if (activeReadingTimer) { 
+    clearInterval(activeReadingTimer); 
+    activeReadingTimer = null; 
+  }
   activeReadingBookId = null;
   activeReadingPage = null;
   
-  localStorage.removeItem('currentUser');
+  // Clear ALL localStorage items except book shuffle (UI preference)
+  // Keep book shuffle so daily book order persists
+  const bookShuffleDate = localStorage.getItem('bookShuffleDate');
+  const bookShuffleOrder = localStorage.getItem('bookShuffleOrder');
+  
+  localStorage.clear();
+  
+  // Restore book shuffle if they were there
+  if (bookShuffleDate) localStorage.setItem('bookShuffleDate', bookShuffleDate);
+  if (bookShuffleOrder) localStorage.setItem('bookShuffleOrder', bookShuffleOrder);
+  
+  // Clear sessionStorage completely
+  sessionStorage.clear();
+  
+  // Reset global variables
   currentUser = null;
+  
+  // Hide all dashboard pages and show auth container
   document.getElementById('authContainer').style.display = 'block';
   document.getElementById('mainDashboard').style.display = 'none';
   document.getElementById('profilePage').style.display = 'none';
@@ -7789,9 +7867,18 @@ function logout() {
   document.getElementById('transactionHistoryPage').style.display = 'none';
   document.getElementById('growthJourneyPage').style.display = 'none';
   document.getElementById('stakesPage').style.display = 'none';
+  
   closeUserDetailsModal();
   
   if (inactivityTimer) clearTimeout(inactivityTimer);
+  
+  // Show login form by default
+  document.getElementById('loginForm').classList.add('active');
+  document.getElementById('registerForm').classList.remove('active');
+  document.getElementById('loginTab').classList.add('active');
+  document.getElementById('registerTab').classList.remove('active');
+  
+  console.log('Logout complete - login page shown');
 }
 
 // ========== ADMIN CROWN CLICK ==========
@@ -8336,27 +8423,43 @@ function clearAllData() {
         });
 }
 
-// ========== REFERRAL HANDLER ==========
+// ========== REFERRAL HANDLER - IMPROVED TO PRIORITIZE REFERRAL LINKS ==========
 function handleReferralLink() {
-  if (currentUser && users[currentUser]) {
-    loadUserData();
-    showPage('home');
-    return;
-  }
-
   const refCode = getUrlParameter('ref');
   
   if (refCode) {
+    // Store referral code in sessionStorage
     sessionStorage.setItem('pendingReferralCode', refCode);
     
+    // Clear any existing user session
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('sessionState');
+    
+    // Hide all dashboard pages
+    document.getElementById('mainDashboard').style.display = 'none';
+    document.getElementById('profilePage').style.display = 'none';
+    document.getElementById('levelPage').style.display = 'none';
+    document.getElementById('taskPage').style.display = 'none';
+    document.getElementById('incomePage').style.display = 'none';
+    document.getElementById('taskRecordPage').style.display = 'none';
+    document.getElementById('teamReportPage').style.display = 'none';
+    document.getElementById('goldenHandshakePage').style.display = 'none';
+    document.getElementById('transactionHistoryPage').style.display = 'none';
+    document.getElementById('growthJourneyPage').style.display = 'none';
+    document.getElementById('stakesPage').style.display = 'none';
+    
+    // Show auth container
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('accessRestricted').style.display = 'none';
     
+    // Force registration form to be active
     document.getElementById('registerForm').classList.add('active');
     document.getElementById('loginForm').classList.remove('active');
     document.getElementById('registerTab').classList.add('active');
     document.getElementById('loginTab').classList.remove('active');
     
+    // Set referral code field
     const refField = document.getElementById('regReferralCode');
     if (refField) {
       refField.value = refCode;
@@ -8365,15 +8468,12 @@ function handleReferralLink() {
     }
     
     updateCountryCode();
-  } else {
-    document.getElementById('authContainer').style.display = 'block';
-    document.getElementById('accessRestricted').style.display = 'none';
     
-    document.getElementById('loginForm').classList.add('active');
-    document.getElementById('registerForm').classList.remove('active');
-    document.getElementById('loginTab').classList.add('active');
-    document.getElementById('registerTab').classList.remove('active');
+    console.log('Referral link detected - showing registration form with code:', refCode);
+    return true;
   }
+  
+  return false;
 }
 
 // ========== PULL-TO-REFRESH FUNCTIONS (NEW) ==========
@@ -8505,7 +8605,15 @@ function getCurrentPage() {
   return 'home';
 }
 
+// ===== IMPROVED SESSION RESTORE - NOW CHECKS FOR REFERRAL LINK FIRST =====
 async function restoreSessionState(useCacheOnly = false) {
+  // IMPORTANT: Do NOT restore session if there's a referral link
+  const refCode = getUrlParameter('ref');
+  if (refCode) {
+    console.log('ℹ️ Referral link detected - skipping session restore');
+    return;
+  }
+  
   const saved = localStorage.getItem('sessionState');
   if (!saved) {
     console.log('ℹ️ No saved session found.');
@@ -8515,6 +8623,14 @@ async function restoreSessionState(useCacheOnly = false) {
   try {
     const session = JSON.parse(saved);
     console.log('📂 Restoring session:', session);
+
+    // Only restore if the session is less than 24 hours old (optional)
+    const sessionAge = Date.now() - session.timestamp;
+    if (sessionAge > 24 * 60 * 60 * 1000) {
+      console.log('ℹ️ Session too old - not restoring');
+      localStorage.removeItem('sessionState');
+      return;
+    }
 
     // Restore user if not already logged in
     if (!currentUser && session.user && users[session.user]) {
@@ -8557,10 +8673,16 @@ window.onload = function() {
     scrollContent.addEventListener('touchend', handleTouchEnd, { passive: false });
   }
 
-  // Try to restore session on load
-  setTimeout(() => {
-    restoreSessionState();
-  }, 500);
+  // Check for referral link FIRST - this overrides everything
+  const hasReferral = handleReferralLink();
+  
+  // Only try to restore session if no referral link
+  if (!hasReferral) {
+    // Try to restore session after a short delay
+    setTimeout(() => {
+      restoreSessionState();
+    }, 500);
+  }
 
   db.ref('users').once('value', (snapshot) => {
     if (!snapshot.exists()) {
@@ -8601,7 +8723,8 @@ window.onload = function() {
           theme: 'purple',
           // ===== NEW FIELDS =====
           pendingRefund: null,
-          lostCommissions: []
+          lostCommissions: [],
+          dailyBonusPaidDate: null
         },
         '0777123456': {
           fullName: 'Intern User',
@@ -8630,7 +8753,8 @@ window.onload = function() {
           theme: 'purple',
           // ===== NEW FIELDS =====
           pendingRefund: null,
-          lostCommissions: []
+          lostCommissions: [],
+          dailyBonusPaidDate: null
         },
         '0788123456': {
           fullName: 'John D1',
@@ -8659,7 +8783,8 @@ window.onload = function() {
           theme: 'purple',
           // ===== NEW FIELDS =====
           pendingRefund: null,
-          lostCommissions: []
+          lostCommissions: [],
+          dailyBonusPaidDate: null
         }
       };
 
@@ -8687,22 +8812,26 @@ window.onload = function() {
     }
   });
 
-  handleReferralLink();
-
-  let checkCount = 0;
-  function checkLoginStatus() {
-    if (users && Object.keys(users).length > 0) {
-      if (currentUser && users[currentUser]) {
-        loadUserData();
-        showPage('home');
-        resetInactivityTimer();
+  // If there was no referral link, check if user is already logged in
+  if (!hasReferral) {
+    let checkCount = 0;
+    function checkLoginStatus() {
+      if (users && Object.keys(users).length > 0) {
+        // Check if there's a saved user in localStorage
+        const savedUser = localStorage.getItem('currentUser');
+        if (savedUser && users[savedUser]) {
+          currentUser = savedUser;
+          loadUserData();
+          showPage('home');
+          resetInactivityTimer();
+        }
+      } else if (checkCount < 20) {
+        checkCount++;
+        setTimeout(checkLoginStatus, 100);
       }
-    } else if (checkCount < 20) {
-      checkCount++;
-      setTimeout(checkLoginStatus, 100);
     }
+    checkLoginStatus();
   }
-  checkLoginStatus();
 
   setInterval(updateTime, 60000);
   updateTime();
