@@ -4540,7 +4540,7 @@
     </div>
   </div>
 
-  <!-- USER DETAILS MODAL - UPDATED WITH THEME ICON -->
+  <!-- USER DETAILS MODAL - UPDATED WITH THEME ICON AND LOST COMMISSION SECTION -->
   <div class="modal-overlay" id="userDetailsModal">
     <div class="modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -4590,6 +4590,18 @@
         <div class="info-row">
           <span class="info-label">🔗 Referral Code:</span>
           <span class="info-value" id="modalReferralCode">Loading...</span>
+        </div>
+      </div>
+
+      <!-- ===== LOST COMMISSION SECTION - ADDED BELOW REFERRAL CODE ===== -->
+      <div id="lostCommissionContainer" style="margin: 20px 0; background: #fff3cd; border-radius: 15px; padding: 15px; border-left: 4px solid #ff9800; display: none;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+          <i class="fas fa-undo-alt" style="color: #ff9800;"></i>
+          <span style="font-weight: 700; color: #b45f06;">LOST COMMISSION</span>
+        </div>
+        <div class="info-row" style="border-bottom: none;">
+          <span class="info-label">Total Recoverable:</span>
+          <span class="info-value" style="color: #ff9800; font-weight: 700;" id="lostCommissionTotal">0 UGX</span>
         </div>
       </div>
 
@@ -4970,12 +4982,6 @@ const referralRates = {
   c: 0.01
 };
 
-// Subsidiary motivator rates (based on referrer's own daily earnings)
-const motivatorRates = {
-  a: 0.05, // 5% for A level
-  b: 0.01  // 1% for B level
-};
-
 // Daily Motivation Messages (4 time periods)
 const motivationMessages = {
   morning: {
@@ -5283,7 +5289,8 @@ function findReferrers(userPhone) {
   return referrers;
 }
 
-// UPDATED: Commission based on referrer's OWN level deposit, not the upgrade cost
+// ===== SYSTEM 3: LOST COMMISSION RECOVERY - MODIFIED FUNCTION =====
+// UPDATED: Commission based on referrer's OWN level deposit, AND track lost commissions
 function payReferralCommissions(userPhone) {
   const user = users[userPhone];
   if (!user) return;
@@ -5292,95 +5299,177 @@ function payReferralCommissions(userPhone) {
   
   // A Level (Direct) - 10% of referrer's own deposit
   if (referrers.a && users[referrers.a]) {
-    const aLevel = users[referrers.a].memberLevel || 0;
+    const aReferrer = users[referrers.a];
+    const aLevel = aReferrer.memberLevel || 0;
     const aDeposit = levels[aLevel]?.deposit || 0;
     const aCommission = Math.floor(aDeposit * referralRates.a);
     
     if (aCommission > 0) {
-      users[referrers.a].operatingWallet = (users[referrers.a].operatingWallet || 0) + aCommission;
-      users[referrers.a].referralCommissions = users[referrers.a].referralCommissions || { a:0, b:0, c:0, total:0 };
-      users[referrers.a].referralCommissions.a += aCommission;
-      users[referrers.a].referralCommissions.total += aCommission;
-      users[referrers.a].transactions = users[referrers.a].transactions || [];
-      users[referrers.a].transactions.unshift({ type:'referral', level:'A', amount:aCommission, date:new Date().toLocaleString(), desc:`A-level commission from ${userPhone}` });
+      // Pay the commission
+      aReferrer.operatingWallet = (aReferrer.operatingWallet || 0) + aCommission;
+      
+      // Track statistics
+      aReferrer.referralCommissions = aReferrer.referralCommissions || { a:0, b:0, c:0, total:0 };
+      aReferrer.referralCommissions.a += aCommission;
+      aReferrer.referralCommissions.total += aCommission;
+      
+      // Add transaction
+      aReferrer.transactions = aReferrer.transactions || [];
+      aReferrer.transactions.unshift({ type:'referral', level:'A', amount:aCommission, date:new Date().toLocaleString(), desc:`A-level commission from ${userPhone}` });
+      
+      // ===== TRACK LOST COMMISSION =====
+      // Calculate what they SHOULD have gotten if they were at downline's level
+      const downlineLevel = user.memberLevel || 0;
+      const downlineDeposit = levels[downlineLevel]?.deposit || 0;
+      const shouldHaveGotten = Math.floor(downlineDeposit * referralRates.a);
+      
+      if (shouldHaveGotten > aCommission) {
+        const lostAmount = shouldHaveGotten - aCommission;
+        const recoverAt = `D${downlineLevel}`;
+        
+        // Initialize lostCommissions array if needed
+        if (!aReferrer.lostCommissions) aReferrer.lostCommissions = [];
+        
+        // Add lost commission record
+        aReferrer.lostCommissions.push({
+          fromUser: userPhone,
+          fromUserName: user.fullName,
+          fromUserLevel: `D${downlineLevel}`,
+          amount: lostAmount,
+          recoverAt: recoverAt,
+          recovered: false,
+          date: new Date().toISOString(),
+          downlineDeposit: downlineDeposit,
+          yourLevelAtThatTime: aLevel
+        });
+        
+        console.log(`📝 Lost commission tracked: ${aReferrer.phone} lost ${lostAmount} from ${userPhone} (${recoverAt})`);
+      }
     }
   }
   
   // B Level - 4% of referrer's own deposit
   if (referrers.b && users[referrers.b]) {
-    const bLevel = users[referrers.b].memberLevel || 0;
+    const bReferrer = users[referrers.b];
+    const bLevel = bReferrer.memberLevel || 0;
     const bDeposit = levels[bLevel]?.deposit || 0;
     const bCommission = Math.floor(bDeposit * referralRates.b);
     
     if (bCommission > 0) {
-      users[referrers.b].operatingWallet = (users[referrers.b].operatingWallet || 0) + bCommission;
-      users[referrers.b].referralCommissions = users[referrers.b].referralCommissions || { a:0, b:0, c:0, total:0 };
-      users[referrers.b].referralCommissions.b += bCommission;
-      users[referrers.b].referralCommissions.total += bCommission;
-      users[referrers.b].transactions = users[referrers.b].transactions || [];
-      users[referrers.b].transactions.unshift({ type:'referral', level:'B', amount:bCommission, date:new Date().toLocaleString(), desc:`B-level commission from ${userPhone}` });
+      bReferrer.operatingWallet = (bReferrer.operatingWallet || 0) + bCommission;
+      bReferrer.referralCommissions = bReferrer.referralCommissions || { a:0, b:0, c:0, total:0 };
+      bReferrer.referralCommissions.b += bCommission;
+      bReferrer.referralCommissions.total += bCommission;
+      bReferrer.transactions = bReferrer.transactions || [];
+      bReferrer.transactions.unshift({ type:'referral', level:'B', amount:bCommission, date:new Date().toLocaleString(), desc:`B-level commission from ${userPhone}` });
     }
   }
   
   // C Level - 1% of referrer's own deposit
   if (referrers.c && users[referrers.c]) {
-    const cLevel = users[referrers.c].memberLevel || 0;
+    const cReferrer = users[referrers.c];
+    const cLevel = cReferrer.memberLevel || 0;
     const cDeposit = levels[cLevel]?.deposit || 0;
     const cCommission = Math.floor(cDeposit * referralRates.c);
     
     if (cCommission > 0) {
-      users[referrers.c].operatingWallet = (users[referrers.c].operatingWallet || 0) + cCommission;
-      users[referrers.c].referralCommissions = users[referrers.c].referralCommissions || { a:0, b:0, c:0, total:0 };
-      users[referrers.c].referralCommissions.c += cCommission;
-      users[referrers.c].referralCommissions.total += cCommission;
-      users[referrers.c].transactions = users[referrers.c].transactions || [];
-      users[referrers.c].transactions.unshift({ type:'referral', level:'C', amount:cCommission, date:new Date().toLocaleString(), desc:`C-level commission from ${userPhone}` });
+      cReferrer.operatingWallet = (cReferrer.operatingWallet || 0) + cCommission;
+      cReferrer.referralCommissions = cReferrer.referralCommissions || { a:0, b:0, c:0, total:0 };
+      cReferrer.referralCommissions.c += cCommission;
+      cReferrer.referralCommissions.total += cCommission;
+      cReferrer.transactions = cReferrer.transactions || [];
+      cReferrer.transactions.unshift({ type:'referral', level:'C', amount:cCommission, date:new Date().toLocaleString(), desc:`C-level commission from ${userPhone}` });
     }
   }
   
   saveUsers();
 }
 
-// NEW: Pay subsidiary motivators (task commissions) based on referrer's own daily earnings
-function paySubsidiaryMotivators(userPhone, taskEarnedAmount) {
-  const user = users[userPhone];
-  if (!user) return;
+// ===== SYSTEM 1: SUBSIDIARY MOTIVATORS - NEW VERSION =====
+// Upline gets 1% of what Direct Referrer earns
+function paySubsidiaryMotivators(readerPhone) {
+  const reader = users[readerPhone];
+  if (!reader) return;
   
-  const referrers = findReferrers(userPhone);
+  // Get reader's level and daily earnings
+  const readerLevel = reader.memberLevel || 0;
+  const readerDaily = (levels[readerLevel]?.dailyBooks || 0) * (levels[readerLevel]?.reward || 0);
   
-  // A Level (Direct) - 5% of referrer's own daily earnings
-  if (referrers.a && users[referrers.a]) {
-    const aLevel = users[referrers.a].memberLevel || 0;
-    const aDailyEarning = (levels[aLevel]?.dailyBooks || 0) * (levels[aLevel]?.reward || 0);
-    const aMotivator = Math.floor(aDailyEarning * motivatorRates.a);
-    
-    if (aMotivator > 0) {
-      users[referrers.a].incentiveWallet = (users[referrers.a].incentiveWallet || 0) + aMotivator;
-      users[referrers.a].subsidiaryMotivators = users[referrers.a].subsidiaryMotivators || { a:0, b:0, total:0 };
-      users[referrers.a].subsidiaryMotivators.a += aMotivator;
-      users[referrers.a].subsidiaryMotivators.total += aMotivator;
-      users[referrers.a].transactions = users[referrers.a].transactions || [];
-      users[referrers.a].transactions.unshift({ type:'subsidiary', level:'A', amount:aMotivator, date:new Date().toLocaleString(), desc:`Subsidiary motivator from ${userPhone}'s task` });
-    }
+  if (readerDaily <= 0) return;
+  
+  // Find referrers chain
+  const referrers = findReferrers(readerPhone);
+  if (!referrers.a) return; // No direct referrer, no bonuses
+  
+  // ===== STEP 1: Calculate and pay DIRECT REFERRER (A-level) =====
+  const directReferrer = users[referrers.a];
+  if (!directReferrer) return;
+  
+  const directLevel = directReferrer.memberLevel || 0;
+  const directDaily = (levels[directLevel]?.dailyBooks || 0) * (levels[directLevel]?.reward || 0);
+  
+  let directBonus = 0;
+  
+  // Compare direct referrer's level with reader's level
+  if (directLevel >= readerLevel) {
+    // Direct referrer is HIGHER or EQUAL than reader
+    // Use MIN of both daily earnings
+    const minDaily = Math.min(directDaily, readerDaily);
+    directBonus = Math.floor(minDaily * 0.04); // 4%
+  } else {
+    // Direct referrer is LOWER than reader
+    // Use direct referrer's own daily earnings
+    directBonus = Math.floor(directDaily * 0.04); // 4%
   }
   
-  // B Level - 1% of referrer's own daily earnings
+  // Pay direct referrer
+  if (directBonus > 0) {
+    directReferrer.incentiveWallet = (directReferrer.incentiveWallet || 0) + directBonus;
+    
+    // Track statistics
+    directReferrer.subsidiaryMotivators = directReferrer.subsidiaryMotivators || { a:0, b:0, total:0 };
+    directReferrer.subsidiaryMotivators.a += directBonus;
+    directReferrer.subsidiaryMotivators.total += directBonus;
+    
+    // Add transaction record
+    directReferrer.transactions = directReferrer.transactions || [];
+    directReferrer.transactions.unshift({ 
+      type: 'subsidiary', 
+      level: 'A', 
+      amount: directBonus, 
+      date: new Date().toLocaleString(), 
+      desc: `🎁 4% bonus from D${readerLevel} team member ${reader.phone}'s reading` 
+    });
+  }
+  
+  // ===== STEP 2: Calculate and pay UPLINE (B-level) =====
+  // Upline gets 1% of what direct referrer earned
   if (referrers.b && users[referrers.b]) {
-    const bLevel = users[referrers.b].memberLevel || 0;
-    const bDailyEarning = (levels[bLevel]?.dailyBooks || 0) * (levels[bLevel]?.reward || 0);
-    const bMotivator = Math.floor(bDailyEarning * motivatorRates.b);
+    const upline = users[referrers.b];
+    const uplineBonus = Math.floor(directBonus * 0.01); // 1% of direct's bonus
     
-    if (bMotivator > 0) {
-      users[referrers.b].incentiveWallet = (users[referrers.b].incentiveWallet || 0) + bMotivator;
-      users[referrers.b].subsidiaryMotivators = users[referrers.b].subsidiaryMotivators || { a:0, b:0, total:0 };
-      users[referrers.b].subsidiaryMotivators.b += bMotivator;
-      users[referrers.b].subsidiaryMotivators.total += bMotivator;
-      users[referrers.b].transactions = users[referrers.b].transactions || [];
-      users[referrers.b].transactions.unshift({ type:'subsidiary', level:'B', amount:bMotivator, date:new Date().toLocaleString(), desc:`Subsidiary motivator from ${userPhone}'s task` });
+    if (uplineBonus > 0) {
+      upline.incentiveWallet = (upline.incentiveWallet || 0) + uplineBonus;
+      
+      // Track statistics
+      upline.subsidiaryMotivators = upline.subsidiaryMotivators || { a:0, b:0, total:0 };
+      upline.subsidiaryMotivators.b += uplineBonus;
+      upline.subsidiaryMotivators.total += uplineBonus;
+      
+      // Add transaction record
+      upline.transactions = upline.transactions || [];
+      upline.transactions.unshift({ 
+        type: 'subsidiary', 
+        level: 'B', 
+        amount: uplineBonus, 
+        date: new Date().toLocaleString(), 
+        desc: `🎁 1% of direct referrer's bonus from ${reader.phone}'s reading` 
+      });
     }
   }
   
-  // C Level gets nothing
+  // ===== STEP 3: C-level gets nothing for Subsidiary Motivators =====
+  
   saveUsers();
 }
 
@@ -5520,7 +5609,10 @@ function handleRegister(e) {
     transactions: [],
     heldPosition: null,
     farmerPosition: 0,
-    theme: 'purple' // default theme
+    theme: 'purple', // default theme
+    // ===== SYSTEM 2 & 3: NEW FIELDS =====
+    pendingRefund: null,
+    lostCommissions: []
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
@@ -5971,7 +6063,7 @@ function loadGoldenHandshake() {
   }
 }
 
-// ========== LEVEL PURCHASE ==========
+// ===== SYSTEM 2 & 3: MODIFIED PURCHASE LEVEL FUNCTION =====
 function purchaseLevel(level, cost) {
   const user = users[currentUser];
   if (!user) { showConfirmModal('Error', 'Please login first', 'warning'); return; }
@@ -5984,67 +6076,190 @@ function purchaseLevel(level, cost) {
   const currentLevel = user.memberLevel;
   const currentLevelCost = currentLevel > 0 ? levels[currentLevel].deposit : 0;
 
-  if (user.memberLevel === 0) {
-    if (user.operatingWallet < cost) {
-      showConfirmModal('Error', `Insufficient balance! Need ${cost.toLocaleString()} UGX in Operating Wallet`, 'warning');
-      return;
-    }
-    
-    showConfirmModal('Confirm Upgrade', `Upgrade to ${levels[level].name} for ${cost.toLocaleString()} UGX?`, 'confirm', () => {
-      user.operatingWallet -= cost;
-      upgradeUser(user, level, cost, currentLevel, currentLevelCost);
-    });
-  } else {
-    const totalBalance = (user.operatingWallet || 0) + (user.incentiveWallet || 0);
-    
-    if (totalBalance < cost) {
-      showConfirmModal('Error', `Insufficient balance! Need ${cost.toLocaleString()} UGX total in both wallets`, 'warning');
-      return;
-    }
+  // Check if user has enough money (FULL amount required)
+  const totalBalance = (user.operatingWallet || 0) + (user.incentiveWallet || 0);
+  
+  if (totalBalance < cost) {
+    showConfirmModal('Error', `Insufficient balance! Need ${cost.toLocaleString()} UGX total in both wallets`, 'warning');
+    return;
+  }
 
-    showConfirmModal('Confirm Upgrade', `Upgrade to ${levels[level].name} for ${cost.toLocaleString()} UGX?`, 'confirm', () => {
-      let remaining = cost;
-      if (user.operatingWallet > 0) {
-        const fromOperating = Math.min(user.operatingWallet, remaining);
-        user.operatingWallet -= fromOperating;
-        remaining -= fromOperating;
+  showConfirmModal('Confirm Upgrade', `Upgrade to ${levels[level].name} for ${cost.toLocaleString()} UGX?`, 'confirm', () => {
+    // ===== STEP 1: Deduct FULL amount from wallets =====
+    let remaining = cost;
+    if (user.operatingWallet > 0) {
+      const fromOperating = Math.min(user.operatingWallet, remaining);
+      user.operatingWallet -= fromOperating;
+      remaining -= fromOperating;
+    }
+    if (remaining > 0 && user.incentiveWallet > 0) {
+      const fromIncentive = Math.min(user.incentiveWallet, remaining);
+      user.incentiveWallet -= fromIncentive;
+      remaining -= fromIncentive;
+    }
+    
+    // ===== STEP 2: Update user level immediately =====
+    const oldLevel = user.memberLevel;
+    user.memberLevel = level;
+    
+    // Update expiry
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 365);
+    user.memberExpiry = expiry.toISOString();
+    
+    // Record purchase
+    if (!user.levelPurchases) user.levelPurchases = [];
+    user.levelPurchases.push({ level: level, amount: cost, date: new Date().toISOString(), refunded: false });
+    
+    // Add transaction
+    if (!user.transactions) user.transactions = [];
+    user.transactions.unshift({ type: 'level_upgrade', level: level, amount: cost, date: new Date().toLocaleString(), desc: `Upgrade to ${levels[level].name}` });
+    
+    // ===== STEP 3: Pay referral commissions =====
+    payReferralCommissions(user.phone);
+    
+    // ===== STEP 4: Process LOST COMMISSION RECOVERY (System 3) =====
+    let totalRecovered = 0;
+    if (user.lostCommissions && user.lostCommissions.length > 0) {
+      const targetLevel = `D${level}`;
+      const recoverable = user.lostCommissions.filter(l => !l.recovered && l.recoverAt === targetLevel);
+      
+      recoverable.forEach(loss => {
+        user.operatingWallet = (user.operatingWallet || 0) + loss.amount;
+        loss.recovered = true;
+        totalRecovered += loss.amount;
+        
+        // Add recovery transaction
+        user.transactions.unshift({ 
+          type: 'refund', 
+          amount: loss.amount, 
+          date: new Date().toLocaleString(), 
+          desc: `🎉 Recovered lost commission from ${loss.fromUserName} (${loss.fromUserLevel})` 
+        });
+      });
+      
+      if (totalRecovered > 0) {
+        showConfirmModal('Commission Recovered!', `You recovered ${totalRecovered.toLocaleString()} UGX in lost commissions!`, 'success');
       }
-      if (remaining > 0 && user.incentiveWallet > 0) {
-        const fromIncentive = Math.min(user.incentiveWallet, remaining);
-        user.incentiveWallet -= fromIncentive;
-        remaining -= fromIncentive;
-      }
-      upgradeUser(user, level, cost, currentLevel, currentLevelCost);
+    }
+    
+    // ===== STEP 5: Set up PENDING REFUND (System 2) =====
+    if (oldLevel > 0 && currentLevelCost > 0) {
+      const now = Date.now();
+      const releaseTime = now + (2 * 60 * 1000); // 2 minutes
+      
+      user.pendingRefund = {
+        amount: currentLevelCost,
+        level: oldLevel,
+        timestamp: now,
+        releaseTime: releaseTime
+      };
+      
+      showConfirmModal('Refund Pending', `Your refund of ${currentLevelCost.toLocaleString()} UGX will be available in 2 minutes.`, 'success');
+    }
+    
+    saveUsers();
+    loadUserData();
+    updateLevelWalletDisplay();
+    
+    // Show success message
+    let message = `Congratulations! You are now ${levels[level].name}!`;
+    if (totalRecovered > 0) {
+      message += `\n\n🎁 You also recovered ${totalRecovered.toLocaleString()} UGX in lost commissions!`;
+    }
+    showConfirmModal('Success', message, 'success');
+  });
+}
+
+// ===== SYSTEM 2: PROCESS PENDING REFUNDS =====
+function processPendingRefunds() {
+  if (!currentUser || !users[currentUser]) return;
+  
+  const user = users[currentUser];
+  if (!user.pendingRefund) return;
+  
+  const now = Date.now();
+  if (now >= user.pendingRefund.releaseTime) {
+    // Release the refund
+    user.operatingWallet = (user.operatingWallet || 0) + user.pendingRefund.amount;
+    
+    // Add transaction
+    if (!user.transactions) user.transactions = [];
+    user.transactions.unshift({ 
+      type: 'refund', 
+      amount: user.pendingRefund.amount, 
+      date: new Date().toLocaleString(), 
+      desc: `Refund from D${user.pendingRefund.level} upgrade` 
     });
+    
+    // Clear pending refund
+    user.pendingRefund = null;
+    
+    saveUsers();
+    loadUserData();
+    
+    // Show notification
+    showConfirmModal('Refund Received!', `Your refund has been added to your operating wallet!`, 'success');
+  }
+}
+
+// ===== SYSTEM 2: GET REMAINING REFUND TIME =====
+function getRemainingRefundTime() {
+  if (!currentUser || !users[currentUser]) return null;
+  
+  const user = users[currentUser];
+  if (!user.pendingRefund) return null;
+  
+  const now = Date.now();
+  const remaining = user.pendingRefund.releaseTime - now;
+  
+  if (remaining <= 0) {
+    processPendingRefunds();
+    return null;
+  }
+  
+  const seconds = Math.floor(remaining / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  
+  return {
+    minutes,
+    seconds: remainingSeconds,
+    totalSeconds: seconds,
+    amount: user.pendingRefund.amount
+  };
+}
+
+// ===== SYSTEM 3: LOAD LOST COMMISSION TOTAL =====
+function loadLostCommissionTotal() {
+  const user = users[currentUser];
+  if (!user) return;
+  
+  const container = document.getElementById('lostCommissionContainer');
+  const totalSpan = document.getElementById('lostCommissionTotal');
+  
+  if (!user.lostCommissions || user.lostCommissions.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  // Calculate total of unrecovered commissions
+  const total = user.lostCommissions
+    .filter(loss => !loss.recovered)
+    .reduce((sum, loss) => sum + loss.amount, 0);
+  
+  if (total > 0) {
+    container.style.display = 'block';
+    totalSpan.textContent = total.toLocaleString() + ' UGX';
+  } else {
+    container.style.display = 'none';
   }
 }
 
 function upgradeUser(user, newLevel, cost, oldLevel, oldLevelCost) {
-  if (!user.levelPurchases) user.levelPurchases = [];
-  
-  user.levelPurchases.push({ level: newLevel, amount: cost, date: new Date().toISOString(), refunded: false });
-  
-  if (oldLevel > 0 && oldLevelCost > 0) {
-    user.operatingWallet += oldLevelCost;
-    const prevPurchase = user.levelPurchases.find(p => p.level === oldLevel && !p.refunded);
-    if (prevPurchase) prevPurchase.refunded = true;
-  }
-  
-  user.memberLevel = newLevel;
-  
-  const expiry = new Date();
-  expiry.setDate(expiry.getDate() + 365);
-  user.memberExpiry = expiry.toISOString();
-
-  if (!user.transactions) user.transactions = [];
-  user.transactions.unshift({ type: 'level_upgrade', level: newLevel, amount: cost, date: new Date().toLocaleString(), desc: `Upgrade to ${levels[newLevel].name}` });
-
-  saveUsers();
-  // UPDATED: Pass only the user phone, the function will use referrer's own deposit
-  payReferralCommissions(user.phone);
-  loadUserData();
-  updateLevelWalletDisplay();
-  showConfirmModal('Success', `Congratulations! You are now ${levels[newLevel].name}!`, 'success');
+  // This function is replaced by the new purchaseLevel logic
+  // Kept for compatibility but should not be called
+  console.log('upgradeUser is deprecated, using purchaseLevel instead');
 }
 
 function updateLevelWalletDisplay() {
@@ -6135,6 +6350,12 @@ function loadUserData() {
   updateTime();
   updateUserDetailsModal();
   
+  // Load lost commission total
+  loadLostCommissionTotal();
+  
+  // Process any pending refunds
+  processPendingRefunds();
+  
   // Apply user theme
   applyTheme(user.theme || 'purple');
 }
@@ -6200,6 +6421,9 @@ function updateUserDetailsModal() {
   document.getElementById('modalOldPassword').value = '';
   document.getElementById('modalNewPassword').value = '';
   document.getElementById('modalConfirmPassword').value = '';
+  
+  // Load lost commission total
+  loadLostCommissionTotal();
 }
 
 // ========== HARVEST ACCOUNT SECTION ==========
@@ -6704,7 +6928,7 @@ function startReading(bookId) {
   }, 1000);
 }
 
-// UPDATED harvestReward to also pay subsidiary motivators
+// UPDATED harvestReward to use new subsidiary motivators function
 function harvestReward(bookId) {
   const user = users[currentUser];
   if (!user) return;
@@ -6726,8 +6950,8 @@ function harvestReward(bookId) {
     if (pendingTask) { pendingTask.status = 'complete'; pendingTask.reward = reward; }
   }
 
-  // Pay subsidiary motivators to upline (based on user's own daily earnings)
-  paySubsidiaryMotivators(user.phone, reward);
+  // Pay subsidiary motivators (System 1)
+  paySubsidiaryMotivators(user.phone);
 
   if (activeReadingTimer) { clearInterval(activeReadingTimer); activeReadingTimer = null; }
   activeReadingBookId = null;
@@ -8077,7 +8301,10 @@ window.onload = function() {
           ],
           heldPosition: null,
           farmerPosition: 5,
-          theme: 'purple'
+          theme: 'purple',
+          // ===== NEW FIELDS =====
+          pendingRefund: null,
+          lostCommissions: []
         },
         '0777123456': {
           fullName: 'Intern User',
@@ -8103,7 +8330,10 @@ window.onload = function() {
           transactions: [],
           heldPosition: null,
           farmerPosition: 0,
-          theme: 'purple'
+          theme: 'purple',
+          // ===== NEW FIELDS =====
+          pendingRefund: null,
+          lostCommissions: []
         },
         '0788123456': {
           fullName: 'John D1',
@@ -8129,7 +8359,10 @@ window.onload = function() {
           transactions: [{ type: 'level_upgrade', amount: 63000, date: new Date().toLocaleString(), desc: 'Upgrade to D1' }],
           heldPosition: null,
           farmerPosition: 1,
-          theme: 'purple'
+          theme: 'purple',
+          // ===== NEW FIELDS =====
+          pendingRefund: null,
+          lostCommissions: []
         }
       };
 
@@ -8178,6 +8411,13 @@ window.onload = function() {
   updateTime();
 
   setTimeout(() => { initGallery(); }, 500);
+  
+  // ===== SYSTEM 2: Set up interval to check pending refunds =====
+  setInterval(() => {
+    if (currentUser && users[currentUser]) {
+      processPendingRefunds();
+    }
+  }, 1000);
 };
   </script>
 </body>
