@@ -2699,6 +2699,122 @@
     .theme-option.blue { background: linear-gradient(135deg, #003366, #87CEEB); }
     .theme-option.orange { background: linear-gradient(135deg, #ff9800, #ffc107); }
     .theme-option.dark { background: linear-gradient(135deg, #1a1a1a, #4d4d4d); }
+
+    /* ===== NEW STYLES FOR ENHANCED DEPOSIT SYSTEM ===== */
+    .deposit-step {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+    }
+    
+    .copy-number-btn {
+      background: #FFD700;
+      color: #1A1A1A;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    
+    .message-input {
+      width: 100%;
+      padding: 15px;
+      background: #1A1A1A;
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      color: #FFD700;
+      font-size: 0.9rem;
+      min-height: 100px;
+      margin: 10px 0;
+      font-family: monospace;
+    }
+    
+    .detection-status {
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+      font-size: 0.9rem;
+    }
+    
+    .status-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .status-error {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .status-warning {
+      background: #ffc107;
+      color: #1A1A1A;
+    }
+    
+    .detected-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px dashed #FFD700;
+    }
+    
+    .detected-label {
+      color: #FFD700;
+      font-weight: 600;
+    }
+    
+    .detected-value {
+      color: white;
+    }
+    
+    .admin-company-settings {
+      background: #f5edff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .company-setting-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+    }
+    
+    .company-setting-row label {
+      width: 80px;
+      font-weight: 600;
+      color: #4a3b5e;
+    }
+    
+    .company-setting-row input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #e0d0eb;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    
+    .company-setting-row button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .company-setting-row button:hover {
+      background: #218838;
+    }
   </style>
 </head>
 <body>
@@ -2728,7 +2844,7 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs -->
+        <!-- Tabs - ADDED COMPANY SETTINGS TAB -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
@@ -2736,9 +2852,11 @@
           <div class="admin-tab" onclick="switchAdminTab('system')"><i class="fas fa-chart-bar"></i> System</div>
           <div class="admin-tab" onclick="switchAdminTab('positionMembers')"><i class="fas fa-trophy"></i> Position Members</div>
           <div class="admin-tab" onclick="switchAdminTab('referralNetwork')"><i class="fas fa-network-wired"></i> Referral Network</div>
+          <!-- NEW COMPANY SETTINGS TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('companySettings')"><i class="fas fa-building"></i> Company Settings</div>
         </div>
 
-        <!-- Deposits Section -->
+        <!-- Deposits Section - UPDATED WITH NEW COLUMNS -->
         <div id="adminDepositsSection" class="admin-section active">
           <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
             <input type="text" id="searchDepositInput" placeholder="Search by user phone or name..." style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 30px;">
@@ -2752,8 +2870,9 @@
                 <th>User</th>
                 <th>Phone</th>
                 <th>Amount</th>
+                <th>TID</th>
+                <th>Detected #</th>
                 <th>Network</th>
-                <th>Mobile</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -2858,6 +2977,45 @@
             <button onclick="loadReferralNetwork()" style="background: #7d5ba6; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer;">View</button>
           </div>
           <div id="referralNetworkDisplay"></div>
+        </div>
+
+        <!-- NEW COMPANY SETTINGS SECTION -->
+        <div id="adminCompanySettingsSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-building"></i> Company Settings</h3>
+          <div class="admin-company-settings">
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📱 MTN</h4>
+              <div class="company-setting-row">
+                <label>Phone:</label>
+                <input type="text" id="mtnPhoneInput" placeholder="0766913235" value="0766913235">
+                <button onclick="saveCompanySetting('mtn', 'phone')">Save</button>
+              </div>
+              <div class="company-setting-row">
+                <label>Name:</label>
+                <input type="text" id="mtnNameInput" placeholder="NAMUHANGA VERONIC" value="NAMUHANGA VERONIC">
+                <button onclick="saveCompanySetting('mtn', 'name')">Save</button>
+              </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📞 AIRTEL</h4>
+              <div class="company-setting-row">
+                <label>Phone:</label>
+                <input type="text" id="airtelPhoneInput" placeholder="0756673144" value="0756673144">
+                <button onclick="saveCompanySetting('airtel', 'phone')">Save</button>
+              </div>
+              <div class="company-setting-row">
+                <label>Name:</label>
+                <input type="text" id="airtelNameInput" placeholder="NAMUHANGA VERONIC" value="NAMUHANGA VERONIC">
+                <button onclick="saveCompanySetting('airtel', 'name')">Save</button>
+              </div>
+            </div>
+            
+            <div style="background: #e8f0e8; padding: 15px; border-radius: 15px; margin-top: 20px;">
+              <p style="color: #28a745; font-weight: 600;"><i class="fas fa-info-circle"></i> Changes take effect immediately</p>
+              <p style="color: #666; font-size: 0.9rem;">Screen 4 will display updated numbers and names. Detection will verify against these numbers.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3833,39 +3991,60 @@
         <button class="deposit-back-btn" onclick="goToDepositScreen2()">← Back</button>
       </div>
       
-      <!-- Screen 4 (NEW): Confirm Deposit -->
+      <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection -->
       <div id="depositScreen4" class="deposit-screen">
-        <div class="deposit-method-label">CONFIRM DEPOSIT</div>
+        <div class="deposit-method-label">COMPLETE YOUR DEPOSIT</div>
         
         <div class="notification-banner" style="margin: 10px 0;">
-          📋 REVIEW YOUR DETAILS
+          📱 <span id="networkInstruction">AIRTEL</span> INSTRUCTIONS
         </div>
         
-        <div style="background: #1A1A1A; border-radius: 15px; padding: 15px; margin: 15px 0;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #FFD700;">
-            <span>Method:</span>
-            <span id="confirmMethodDisplay2">PEAR PAY</span>
+        <!-- Step 1: Dial Code -->
+        <div class="deposit-step">
+          <strong>STEP 1:</strong> Dial <span style="color: #FFD700; font-size: 1.2rem;" id="dialCode">*165*1#</span> on your phone
+        </div>
+        
+        <!-- Step 2: Send Amount -->
+        <div class="deposit-step">
+          <strong>STEP 2:</strong> Send <span style="color: #FFD700; font-size: 1.2rem;" id="stepAmount">50,000 UGX</span>
+        </div>
+        
+        <!-- Step 3: Send to Company Number -->
+        <div class="deposit-step">
+          <strong>STEP 3:</strong> Send to:
+          <div style="display: flex; align-items: center; justify-content: space-between; background: #1A1A1A; padding: 10px; border-radius: 10px; margin-top: 5px;">
+            <span style="color: #FFD700; font-size: 1.3rem; font-weight: bold;" id="companyNumberDisplay">0756 673 144</span>
+            <button class="copy-number-btn" onclick="copyCompanyNumber()"><i class="fas fa-copy"></i> COPY</button>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #FFD700;">
-            <span>Amount:</span>
-            <span id="confirmAmountDisplay2">0 UGX</span>
+          <div style="color: #FFD700; margin-top: 5px;" id="companyNameDisplay">NAMUHANGA VERONIC</div>
+        </div>
+        
+        <!-- Step 4: Paste Message -->
+        <div class="deposit-step">
+          <strong>STEP 4:</strong> After sending, paste the confirmation message below:
+          <textarea class="message-input" id="depositMessageInput" placeholder="Paste your Airtel/MTN message here..." oninput="validateDepositMessage()"></textarea>
+        </div>
+        
+        <!-- Detection Status (dynamic) -->
+        <div id="detectionStatus" class="detection-status" style="display: none;"></div>
+        
+        <!-- Detected Info (shows what system found) -->
+        <div id="detectedInfo" style="background: #1A1A1A; border-radius: 10px; padding: 10px; margin: 10px 0; display: none;">
+          <div class="detected-item">
+            <span class="detected-label">TID:</span>
+            <span class="detected-value" id="detectedTid">-</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #FFD700;">
-            <span>Network:</span>
-            <span id="confirmNetworkDisplay">-</span>
+          <div class="detected-item">
+            <span class="detected-label">Amount:</span>
+            <span class="detected-value" id="detectedAmount">-</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: #FFD700;">
-            <span>Mobile:</span>
-            <span id="confirmPhoneDisplay">-</span>
+          <div class="detected-item">
+            <span class="detected-label">Recipient:</span>
+            <span class="detected-value" id="detectedPhone">-</span>
           </div>
         </div>
         
-        <div class="deposit-recipient-card">
-          <div class="number">0756 673 144</div>
-          <div class="name">NAMUHANGA VERONIC</div>
-        </div>
-        
-        <button class="deposit-continue-btn" onclick="submitNewDeposit()">CONFIRM DEPOSIT</button>
+        <button class="deposit-continue-btn" id="depositConfirmBtn" onclick="submitAutoDetectedDeposit()" disabled>CONFIRM DEPOSIT</button>
         <button class="deposit-back-btn" onclick="goToDepositScreen3()">← Back</button>
       </div>
     </div>
@@ -4245,6 +4424,12 @@ let todaysBookOrder = [];
 let totalSuccessfulWithdrawals = 0;
 let currentFilter = 'all';
 
+// ========== COMPANY SETTINGS (LOADED FROM FIREBASE) ==========
+let companySettings = {
+  mtn: { phone: "0766913235", name: "NAMUHANGA VERONIC" },
+  airtel: { phone: "0756673144", name: "NAMUHANGA VERONIC" }
+};
+
 // ========== 107 COFFEE GROWING BOOKS (UPDATED) ==========
 let allBooks = [
   { id: 1, title: "Regenerative Agriculture in Coffee", desc: "Handbook for practitioners in Uganda - Bioversity International, 2023" },
@@ -4475,6 +4660,72 @@ function loadFromFirebase() {
   db.ref('totalWithdrawals').on('value', (snapshot) => {
     totalSuccessfulWithdrawals = snapshot.val() || 0;
   });
+  
+  // ===== LOAD COMPANY SETTINGS =====
+  db.ref('companySettings').on('value', (snapshot) => {
+    const settings = snapshot.val();
+    if (settings) {
+      companySettings = settings;
+    }
+    // Update admin input fields if they exist
+    updateCompanySettingsInputs();
+  });
+}
+
+// ===== UPDATE COMPANY SETTINGS INPUT FIELDS =====
+function updateCompanySettingsInputs() {
+  const mtnPhone = document.getElementById('mtnPhoneInput');
+  const mtnName = document.getElementById('mtnNameInput');
+  const airtelPhone = document.getElementById('airtelPhoneInput');
+  const airtelName = document.getElementById('airtelNameInput');
+  
+  if (mtnPhone) mtnPhone.value = companySettings.mtn?.phone || "0766913235";
+  if (mtnName) mtnName.value = companySettings.mtn?.name || "NAMUHANGA VERONIC";
+  if (airtelPhone) airtelPhone.value = companySettings.airtel?.phone || "0756673144";
+  if (airtelName) airtelName.value = companySettings.airtel?.name || "NAMUHANGA VERONIC";
+}
+
+// ===== SAVE COMPANY SETTING =====
+function saveCompanySetting(network, field) {
+  if (!isAdminLoggedIn) {
+    showConfirmModal('Error', 'Please login as admin first', 'warning');
+    return;
+  }
+  
+  let value;
+  if (network === 'mtn') {
+    if (field === 'phone') {
+      value = document.getElementById('mtnPhoneInput').value;
+    } else {
+      value = document.getElementById('mtnNameInput').value;
+    }
+  } else {
+    if (field === 'phone') {
+      value = document.getElementById('airtelPhoneInput').value;
+    } else {
+      value = document.getElementById('airtelNameInput').value;
+    }
+  }
+  
+  if (!value) {
+    showConfirmModal('Error', 'Please enter a value', 'warning');
+    return;
+  }
+  
+  // Update local object
+  if (!companySettings[network]) companySettings[network] = {};
+  companySettings[network][field] = value;
+  companySettings.lastUpdated = new Date().toISOString();
+  
+  // Save to Firebase
+  db.ref('companySettings').set(companySettings)
+    .then(() => {
+      showConfirmModal('Success', `${network.toUpperCase()} ${field} updated successfully!`, 'success');
+    })
+    .catch(error => {
+      console.error('Error saving company settings:', error);
+      showConfirmModal('Error', 'Failed to save settings', 'warning');
+    });
 }
 
 // ========== SAVE TO FIREBASE ==========
@@ -6082,6 +6333,12 @@ function resetDepositModal() {
   
   document.getElementById('depositCustomAmount').value = '';
   document.getElementById('depositPhoneNumber').value = '';
+  
+  // Reset screen 4 elements
+  document.getElementById('depositMessageInput').value = '';
+  document.getElementById('detectionStatus').style.display = 'none';
+  document.getElementById('detectedInfo').style.display = 'none';
+  document.getElementById('depositConfirmBtn').disabled = true;
 }
 
 function selectDepositMethod(method) {
@@ -6162,10 +6419,176 @@ function goToDepositScreen4() {
   document.getElementById('confirmNetworkDisplay').textContent = selectedDepositNetwork;
   document.getElementById('confirmPhoneDisplay').textContent = selectedDepositPhone;
   
+  // Update screen 4 based on selected network
+  updateDepositScreen4();
+  
   document.getElementById('depositScreen1').classList.remove('active');
   document.getElementById('depositScreen2').classList.remove('active');
   document.getElementById('depositScreen3').classList.remove('active');
   document.getElementById('depositScreen4').classList.add('active');
+}
+
+// ===== NEW FUNCTION: Update Screen 4 with network-specific details =====
+function updateDepositScreen4() {
+  const network = selectedDepositNetwork.toLowerCase();
+  const networkName = network === 'mtn' ? 'MTN' : 'AIRTEL';
+  const dialCode = network === 'mtn' ? '*165#' : '*165*1#';
+  
+  document.getElementById('networkInstruction').textContent = networkName;
+  document.getElementById('dialCode').textContent = dialCode;
+  document.getElementById('stepAmount').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
+  
+  // Get company details from settings
+  const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144', name: 'NAMUHANGA VERONIC' };
+  const displayPhone = company.phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+  
+  document.getElementById('companyNumberDisplay').textContent = displayPhone;
+  document.getElementById('companyNameDisplay').textContent = company.name;
+}
+
+// ===== NEW FUNCTION: Copy company number to clipboard =====
+function copyCompanyNumber() {
+  const network = selectedDepositNetwork.toLowerCase();
+  const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144' };
+  navigator.clipboard.writeText(company.phone).then(() => {
+    showConfirmModal('Copied!', 'Company number copied to clipboard', 'success');
+  });
+}
+
+// ===== NEW FUNCTION: Detect TID, amount, and phone from message =====
+function detectFromMessage(text) {
+  const result = {
+    tid: null,
+    amount: null,
+    phone: null
+  };
+  
+  // 1. Detect TID - try multiple patterns
+  const tidPatterns = [
+    /TID[:\s]*(\d+)/i,
+    /Transaction ID[:\s]*(\d+)/i,
+    /ID[:\s]*(\d+)/i,
+    /(\d{9,})/
+  ];
+  
+  for (let pattern of tidPatterns) {
+    const match = text.match(pattern);
+    if (match) {
+      result.tid = match[1];
+      break;
+    }
+  }
+  
+  // 2. Detect Amount
+  const amountMatch = text.match(/UGX[,\s]*([\d,]+)/i);
+  if (amountMatch) {
+    const amountStr = amountMatch[1].replace(/,/g, '');
+    result.amount = parseInt(amountStr);
+  }
+  
+  // 3. Detect Phone Number (any 10-digit number starting with 07)
+  const phoneMatch = text.match(/0[0-9]{9}/);
+  if (phoneMatch) {
+    result.phone = phoneMatch[0];
+  }
+  
+  return result;
+}
+
+// ===== NEW FUNCTION: Validate deposit message =====
+function validateDepositMessage() {
+  const message = document.getElementById('depositMessageInput').value;
+  const statusDiv = document.getElementById('detectionStatus');
+  const detectedInfo = document.getElementById('detectedInfo');
+  const confirmBtn = document.getElementById('depositConfirmBtn');
+  
+  if (!message.trim()) {
+    statusDiv.style.display = 'none';
+    detectedInfo.style.display = 'none';
+    confirmBtn.disabled = true;
+    return;
+  }
+  
+  const detected = detectFromMessage(message);
+  const network = selectedDepositNetwork.toLowerCase();
+  const expectedCompany = companySettings[network]?.phone || (network === 'mtn' ? '0766913235' : '0756673144');
+  
+  // Update detected info display
+  document.getElementById('detectedTid').textContent = detected.tid || 'Not found';
+  document.getElementById('detectedAmount').textContent = detected.amount ? detected.amount.toLocaleString() + ' UGX' : 'Not found';
+  document.getElementById('detectedPhone').textContent = detected.phone || 'Not found';
+  
+  detectedInfo.style.display = 'block';
+  
+  // Check all requirements
+  let isValid = true;
+  let errors = [];
+  
+  if (!detected.tid) {
+    errors.push('❌ Transaction ID not found');
+    isValid = false;
+  }
+  
+  if (!detected.amount) {
+    errors.push('❌ Amount not found');
+    isValid = false;
+  } else if (detected.amount !== selectedDepositAmount) {
+    errors.push(`❌ Amount mismatch: expected ${selectedDepositAmount.toLocaleString()} UGX, found ${detected.amount.toLocaleString()} UGX`);
+    isValid = false;
+  }
+  
+  if (!detected.phone) {
+    errors.push('❌ Phone number not found');
+    isValid = false;
+  } else if (detected.phone !== expectedCompany) {
+    errors.push(`❌ Recipient mismatch: expected ${expectedCompany}, found ${detected.phone}`);
+    isValid = false;
+  }
+  
+  if (isValid) {
+    statusDiv.className = 'detection-status status-success';
+    statusDiv.innerHTML = '✅ All details verified! You can now confirm.';
+    confirmBtn.disabled = false;
+  } else {
+    statusDiv.className = 'detection-status status-error';
+    statusDiv.innerHTML = errors.join('<br>');
+    confirmBtn.disabled = true;
+  }
+  
+  statusDiv.style.display = 'block';
+}
+
+// ===== NEW FUNCTION: Submit auto-detected deposit =====
+function submitAutoDetectedDeposit() {
+  const message = document.getElementById('depositMessageInput').value;
+  const detected = detectFromMessage(message);
+  const network = selectedDepositNetwork.toLowerCase();
+  
+  if (!detected.tid || !detected.amount || !detected.phone) {
+    showConfirmModal('Error', 'Missing required information', 'warning');
+    return;
+  }
+  
+  // Create deposit object with all required fields
+  const deposit = {
+    id: Date.now(),
+    userId: currentUser,
+    userPhone: selectedDepositPhone,
+    loginPhone: currentUser,
+    amount: detected.amount,
+    transactionId: detected.tid,
+    detectedNumber: detected.phone,
+    network: selectedDepositNetwork,
+    method: selectedDepositMethod,
+    timestamp: new Date().toISOString(),
+    verified: true
+  };
+  
+  pendingDeposits.push(deposit);
+  saveDeposits();
+  
+  showConfirmModal('Success', 'Deposit request sent! Admin will verify within 24 hours.', 'success');
+  closeDepositModal();
 }
 
 function loadDepositAmountGrid() {
@@ -6580,6 +7003,10 @@ function switchAdminTab(tab) {
   } else if (tab === 'referralNetwork') {
     document.querySelectorAll('.admin-tab')[5].classList.add('active');
     document.getElementById('adminReferralNetworkSection').classList.add('active');
+  } else if (tab === 'companySettings') {
+    document.querySelectorAll('.admin-tab')[6].classList.add('active');
+    document.getElementById('adminCompanySettingsSection').classList.add('active');
+    updateCompanySettingsInputs();
   }
 }
 
@@ -6606,7 +7033,7 @@ function loadAdminData() {
 function loadDepositsTable() {
   const tbody = document.getElementById('depositsTableBody');
   if (pendingDeposits.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No pending deposits</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No pending deposits</td></tr>';
     return;
   }
 
@@ -6616,7 +7043,22 @@ function loadDepositsTable() {
   let html = '';
   sorted.forEach(deposit => {
     const date = new Date(deposit.timestamp).toLocaleString();
-    html += `<tr><td>${date}</td><td>${deposit.userId || 'Unknown'}</td><td>${deposit.phone || 'N/A'}</td><td>${deposit.amount.toLocaleString()} UGX</td><td>${deposit.network || '-'}</td><td>${deposit.mobileNumber || '-'}</td><td><button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button><button class="reject-btn" onclick="rejectDeposit(${deposit.id})">Reject</button></td></tr>`;
+    const tid = deposit.transactionId || '-';
+    const detectedNum = deposit.detectedNumber || '-';
+    
+    html += `<tr>
+      <td>${date}</td>
+      <td>${deposit.userId || 'Unknown'}</td>
+      <td>${deposit.userPhone || deposit.phone || 'N/A'}</td>
+      <td>${deposit.amount.toLocaleString()} UGX</td>
+      <td>${tid}</td>
+      <td>${detectedNum}</td>
+      <td>${deposit.network || '-'}</td>
+      <td>
+        <button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button>
+        <button class="reject-btn" onclick="rejectDeposit(${deposit.id})">Reject</button>
+      </td>
+    </tr>`;
   });
   tbody.innerHTML = html;
 }
@@ -6632,14 +7074,29 @@ function searchDeposits() {
   
   const tbody = document.getElementById('depositsTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No matching deposits</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No matching deposits</td></tr>';
     return;
   }
   
   let html = '';
   filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(deposit => {
     const date = new Date(deposit.timestamp).toLocaleString();
-    html += `<tr><td>${date}</td><td>${deposit.userId || 'Unknown'}</td><td>${deposit.phone || 'N/A'}</td><td>${deposit.amount.toLocaleString()} UGX</td><td>${deposit.network || '-'}</td><td>${deposit.mobileNumber || '-'}</td><td><button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button><button class="reject-btn" onclick="rejectDeposit(${deposit.id})">Reject</button></td></tr>`;
+    const tid = deposit.transactionId || '-';
+    const detectedNum = deposit.detectedNumber || '-';
+    
+    html += `<tr>
+      <td>${date}</td>
+      <td>${deposit.userId || 'Unknown'}</td>
+      <td>${deposit.userPhone || deposit.phone || 'N/A'}</td>
+      <td>${deposit.amount.toLocaleString()} UGX</td>
+      <td>${tid}</td>
+      <td>${detectedNum}</td>
+      <td>${deposit.network || '-'}</td>
+      <td>
+        <button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button>
+        <button class="reject-btn" onclick="rejectDeposit(${deposit.id})">Reject</button>
+      </td>
+    </tr>`;
   });
   tbody.innerHTML = html;
 }
