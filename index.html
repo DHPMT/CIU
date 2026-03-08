@@ -3371,6 +3371,31 @@
                 <button onclick="saveCompanySetting('airtel', 'name')">Save</button>
               </div>
             </div>
+
+            <!-- NEW DPK PAY PAY SETTINGS -->
+            <div style="margin-bottom: 20px; margin-top: 30px; border-top: 2px solid #7d5ba6; padding-top: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">💳 DPK PAY PAY</h4>
+              <div class="company-setting-row">
+                <label>MTN Merchant:</label>
+                <input type="text" id="dpkMtnMerchantInput" placeholder="995053" value="995053">
+                <button onclick="saveCompanySetting('dpkMtn', 'merchant')">Save</button>
+              </div>
+              <div class="company-setting-row">
+                <label>MTN Name:</label>
+                <input type="text" id="dpkMtnNameInput" placeholder="NAMUHANGA VERONIC" value="NAMUHANGA VERONIC">
+                <button onclick="saveCompanySetting('dpkMtn', 'name')">Save</button>
+              </div>
+              <div class="company-setting-row">
+                <label>AIRTEL Merchant:</label>
+                <input type="text" id="dpkAirtelMerchantInput" placeholder="6874567" value="6874567">
+                <button onclick="saveCompanySetting('dpkAirtel', 'merchant')">Save</button>
+              </div>
+              <div class="company-setting-row">
+                <label>AIRTEL Name:</label>
+                <input type="text" id="dpkAirtelNameInput" placeholder="PAY TO PAY UGANDA LTD" value="PAY TO PAY UGANDA LTD">
+                <button onclick="saveCompanySetting('dpkAirtel', 'name')">Save</button>
+              </div>
+            </div>
             
             <div style="background: #e8f0e8; padding: 15px; border-radius: 15px; margin-top: 20px;">
               <p style="color: #28a745; font-weight: 600;"><i class="fas fa-info-circle"></i> Changes take effect immediately</p>
@@ -4278,7 +4303,7 @@
         <button class="close-btn" onclick="closeDepositModal()" style="font-size:1.8rem; background:none; border:none;">&times;</button>
       </div>
       
-      <!-- Screen 1: Select Payment Method - FIXED: PEAR PAY only active, others disabled -->
+      <!-- Screen 1: Select Payment Method - DPK PAY PAY NOW ACTIVE -->
       <div id="depositScreen1" class="deposit-screen active">
         <div class="notification-banner">
           🔔 PLEASE SELECT YOUR PAYMENT METHOD
@@ -4289,8 +4314,8 @@
           <i class="fas fa-mobile-alt"></i> PEAR PAY
         </div>
         
-        <!-- DPK PAY PAY - DISABLED (Coming Soon) -->
-        <div class="deposit-method-card disabled-method" id="method-dpk" onclick="return false;">
+        <!-- DPK PAY PAY - NOW ACTIVE (Coming Soon removed) -->
+        <div class="deposit-method-card" onclick="selectDepositMethod('dpk')" id="method-dpk">
           <i class="fas fa-credit-card"></i> DPK PAY PAY
         </div>
         
@@ -4361,7 +4386,7 @@
         </div>
       </div>
       
-      <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection - ADDED BACK BUTTON -->
+      <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection - NOW SUPPORTS DPK PAY PAY -->
       <div id="depositScreen4" class="deposit-screen">
         <div class="deposit-method-label">COMPLETE YOUR DEPOSIT</div>
         
@@ -4369,22 +4394,26 @@
           📱 <span id="networkInstruction">AIRTEL</span> INSTRUCTIONS
         </div>
         
-        <!-- Step 1: Dial Code -->
+        <!-- Step 1: Dial Code - Will be dynamically updated based on method and network -->
         <div class="deposit-step">
           <strong>STEP 1:</strong> Dial <span style="color: #FFD700; font-size: 1.2rem;" id="dialCode">*165*1#</span> on your phone
+          <div style="margin-top: 5px;">
+            <button class="copy-number-btn" onclick="copyDialCode()" id="copyDialBtn"><i class="fas fa-copy"></i> COPY</button>
+          </div>
         </div>
         
-        <!-- Step 2: Send Amount -->
+        <!-- Step 2: Send Amount - Will show merchant code for DPK -->
         <div class="deposit-step">
           <strong>STEP 2:</strong> Send <span style="color: #FFD700; font-size: 1.2rem;" id="stepAmount">50,000 UGX</span>
+          <div id="merchantInfo" style="margin-top: 5px; color: #FFD700;"></div>
         </div>
         
-        <!-- Step 3: Send to Company Number -->
+        <!-- Step 3: Send to Company/ Merchant -->
         <div class="deposit-step">
           <strong>STEP 3:</strong> Send to:
           <div style="display: flex; align-items: center; justify-content: space-between; background: #1A1A1A; padding: 10px; border-radius: 10px; margin-top: 5px;">
             <span style="color: #FFD700; font-size: 1.3rem; font-weight: bold;" id="companyNumberDisplay">0756 673 144</span>
-            <button class="copy-number-btn" onclick="copyCompanyNumber()"><i class="fas fa-copy"></i> COPY</button>
+            <button class="copy-number-btn" onclick="copyCompanyNumber()" id="copyCompanyBtn"><i class="fas fa-copy"></i> COPY</button>
           </div>
           <div style="color: #FFD700; margin-top: 5px;" id="companyNameDisplay">NAMUHANGA VERONIC</div>
         </div>
@@ -4392,7 +4421,7 @@
         <!-- Step 4: Paste Message -->
         <div class="deposit-step">
           <strong>STEP 4:</strong> After sending, paste the confirmation message below:
-          <textarea class="message-input" id="depositMessageInput" placeholder="Paste your Airtel/MTN message here..." oninput="validateDepositMessage()"></textarea>
+          <textarea class="message-input" id="depositMessageInput" placeholder="Paste your confirmation message here..." oninput="validateDepositMessage()"></textarea>
         </div>
         
         <!-- Detection Status (dynamic) -->
@@ -4409,12 +4438,16 @@
             <span class="detected-value" id="detectedAmount">-</span>
           </div>
           <div class="detected-item">
-            <span class="detected-label">Recipient:</span>
-            <span class="detected-value" id="detectedPhone">-</span>
+            <span class="detected-label">Names:</span>
+            <span class="detected-value" id="detectedNames">-</span>
+          </div>
+          <div class="detected-item" id="detectedMerchantRow" style="display: none;">
+            <span class="detected-label">Merchant:</span>
+            <span class="detected-value" id="detectedMerchant">-</span>
           </div>
         </div>
         
-        <button class="deposit-continue-btn" id="depositConfirmBtn" onclick="submitAutoDetectedDeposit()" disabled>CONFIRM DEPOSIT</button>
+        <button class="deposit-continue-btn" id="depositConfirmBtn" onclick="submitDeposit()" disabled>CONFIRM DEPOSIT</button>
         <!-- ADDED BACK BUTTON TO SCREEN 4 -->
         <button class="deposit-back-btn" onclick="goToDepositScreen3()">← Back</button>
       </div>
@@ -4799,7 +4832,9 @@ let currentFilter = 'all';
 // ========== COMPANY SETTINGS (LOADED FROM FIREBASE) ==========
 let companySettings = {
   mtn: { phone: "0766913235", name: "NAMUHANGA VERONIC" },
-  airtel: { phone: "0756673144", name: "NAMUHANGA VERONIC" }
+  airtel: { phone: "0756673144", name: "NAMUHANGA VERONIC" },
+  dpkMtn: { merchant: "995053", name: "NAMUHANGA VERONIC" },
+  dpkAirtel: { merchant: "6874567", name: "PAY TO PAY UGANDA LTD" }
 };
 
 // ========== 107 COFFEE GROWING BOOKS (UPDATED) ==========
@@ -5055,27 +5090,50 @@ function updateCompanySettingsInputs() {
   if (mtnName) mtnName.value = companySettings.mtn?.name || "NAMUHANGA VERONIC";
   if (airtelPhone) airtelPhone.value = companySettings.airtel?.phone || "0756673144";
   if (airtelName) airtelName.value = companySettings.airtel?.name || "NAMUHANGA VERONIC";
+  
+  // DPK fields
+  const dpkMtnMerchant = document.getElementById('dpkMtnMerchantInput');
+  const dpkMtnName = document.getElementById('dpkMtnNameInput');
+  const dpkAirtelMerchant = document.getElementById('dpkAirtelMerchantInput');
+  const dpkAirtelName = document.getElementById('dpkAirtelNameInput');
+  
+  if (dpkMtnMerchant) dpkMtnMerchant.value = companySettings.dpkMtn?.merchant || "995053";
+  if (dpkMtnName) dpkMtnName.value = companySettings.dpkMtn?.name || "NAMUHANGA VERONIC";
+  if (dpkAirtelMerchant) dpkAirtelMerchant.value = companySettings.dpkAirtel?.merchant || "6874567";
+  if (dpkAirtelName) dpkAirtelName.value = companySettings.dpkAirtel?.name || "PAY TO PAY UGANDA LTD";
 }
 
 // ===== SAVE COMPANY SETTING =====
-function saveCompanySetting(network, field) {
+function saveCompanySetting(section, field) {
   if (!isAdminLoggedIn) {
     showConfirmModal('Error', 'Please login as admin first', 'warning');
     return;
   }
   
   let value;
-  if (network === 'mtn') {
+  if (section === 'mtn') {
     if (field === 'phone') {
       value = document.getElementById('mtnPhoneInput').value;
     } else {
       value = document.getElementById('mtnNameInput').value;
     }
-  } else {
+  } else if (section === 'airtel') {
     if (field === 'phone') {
       value = document.getElementById('airtelPhoneInput').value;
     } else {
       value = document.getElementById('airtelNameInput').value;
+    }
+  } else if (section === 'dpkMtn') {
+    if (field === 'merchant') {
+      value = document.getElementById('dpkMtnMerchantInput').value;
+    } else {
+      value = document.getElementById('dpkMtnNameInput').value;
+    }
+  } else if (section === 'dpkAirtel') {
+    if (field === 'merchant') {
+      value = document.getElementById('dpkAirtelMerchantInput').value;
+    } else {
+      value = document.getElementById('dpkAirtelNameInput').value;
     }
   }
   
@@ -5085,14 +5143,14 @@ function saveCompanySetting(network, field) {
   }
   
   // Update local object
-  if (!companySettings[network]) companySettings[network] = {};
-  companySettings[network][field] = value;
+  if (!companySettings[section]) companySettings[section] = {};
+  companySettings[section][field] = value;
   companySettings.lastUpdated = new Date().toISOString();
   
   // Save to Firebase
   db.ref('companySettings').set(companySettings)
     .then(() => {
-      showConfirmModal('Success', `${network.toUpperCase()} ${field} updated successfully!`, 'success');
+      showConfirmModal('Success', `${section} ${field} updated successfully!`, 'success');
     })
     .catch(error => {
       console.error('Error saving company settings:', error);
@@ -6680,7 +6738,7 @@ function harvestReward(bookId) {
   loadUserData();
 }
 
-// ========== DEPOSIT FUNCTIONS (FIXED) ==========
+// ========== DEPOSIT FUNCTIONS (FIXED WITH DPK SUPPORT) ==========
 function openDepositModal() { 
   resetDepositModal();
   document.getElementById('depositModal').style.display = 'flex'; 
@@ -6866,46 +6924,82 @@ function goToDepositScreen4() {
   updateDepositScreen4();
   
   console.log("Successfully navigated to Screen 4 with:", {
+    method: selectedDepositMethod,
     network: selectedDepositNetwork,
     phone: selectedDepositPhone,
-    amount: selectedDepositAmount,
-    method: selectedDepositMethod
+    amount: selectedDepositAmount
   });
 }
 
-// ===== FUNCTION: Update Screen 4 with network-specific details =====
+// ===== FUNCTION: Update Screen 4 with method and network-specific details =====
 function updateDepositScreen4() {
+  const method = selectedDepositMethod;
   const network = selectedDepositNetwork.toLowerCase();
   const networkName = network === 'mtn' ? 'MTN' : 'AIRTEL';
-  const dialCode = network === 'mtn' ? '*165#' : '*165*1#';
+  
+  let dialCode, companyNumber, companyName, merchantInfo = '';
+  
+  if (method === 'pear') {
+    // PEAR PAY instructions (original)
+    dialCode = network === 'mtn' ? '*165#' : '*165*1#';
+    const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144', name: 'NAMUHANGA VERONIC' };
+    companyNumber = company.phone;
+    companyName = company.name;
+  } else {
+    // DPK PAY PAY instructions
+    if (network === 'mtn') {
+      dialCode = '*165*3*995053#';
+      const dpkMtn = companySettings.dpkMtn || { merchant: '995053', name: 'NAMUHANGA VERONIC' };
+      companyNumber = dpkMtn.merchant;
+      companyName = dpkMtn.name;
+      merchantInfo = `Merchant: ${dpkMtn.merchant}`;
+    } else {
+      dialCode = '*165*9#';
+      const dpkAirtel = companySettings.dpkAirtel || { merchant: '6874567', name: 'PAY TO PAY UGANDA LTD' };
+      companyNumber = dpkAirtel.merchant;
+      companyName = dpkAirtel.name;
+      merchantInfo = `Merchant: ${dpkAirtel.merchant}`;
+    }
+  }
   
   document.getElementById('networkInstruction').textContent = networkName;
   document.getElementById('dialCode').textContent = dialCode;
   document.getElementById('stepAmount').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
   
-  // Get company details from settings
-  const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144', name: 'NAMUHANGA VERONIC' };
-  const displayPhone = company.phone.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+  // Update merchant info if present
+  const merchantInfoEl = document.getElementById('merchantInfo');
+  if (merchantInfoEl) {
+    merchantInfoEl.innerHTML = merchantInfo;
+  }
   
-  document.getElementById('companyNumberDisplay').textContent = displayPhone;
-  document.getElementById('companyNameDisplay').textContent = company.name;
+  const displayNumber = companyNumber.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+  document.getElementById('companyNumberDisplay').textContent = displayNumber;
+  document.getElementById('companyNameDisplay').textContent = companyName;
 }
 
-// ===== FUNCTION: Copy company number to clipboard =====
-function copyCompanyNumber() {
-  const network = selectedDepositNetwork.toLowerCase();
-  const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144' };
-  navigator.clipboard.writeText(company.phone).then(() => {
-    showConfirmModal('Copied!', 'Company number copied to clipboard', 'success');
+// ===== FUNCTION: Copy dial code =====
+function copyDialCode() {
+  const dialCode = document.getElementById('dialCode').textContent;
+  navigator.clipboard.writeText(dialCode).then(() => {
+    showConfirmModal('Copied!', 'Dial code copied to clipboard', 'success');
   });
 }
 
-// ===== FUNCTION: Detect TID, amount, and phone from message =====
+// ===== FUNCTION: Copy company number/merchant =====
+function copyCompanyNumber() {
+  const companyNumber = document.getElementById('companyNumberDisplay').textContent.replace(/\s/g, '');
+  navigator.clipboard.writeText(companyNumber).then(() => {
+    showConfirmModal('Copied!', 'Number copied to clipboard', 'success');
+  });
+}
+
+// ===== FUNCTION: Detect TID, amount, and names from message (supports both MTN and AIRTEL) =====
 function detectFromMessage(text) {
   const result = {
     tid: null,
     amount: null,
-    phone: null
+    names: null,
+    merchant: null
   };
   
   // 1. Detect TID - try multiple patterns
@@ -6913,7 +7007,8 @@ function detectFromMessage(text) {
     /TID[:\s]*(\d+)/i,
     /Transaction ID[:\s]*(\d+)/i,
     /ID[:\s]*(\d+)/i,
-    /(\d{9,})/
+    /PAID\.TID\s*(\d+)/i,  // AIRTEL format
+    /ID:\s*(\d+)/i         // MTN format
   ];
   
   for (let pattern of tidPatterns) {
@@ -6931,10 +7026,24 @@ function detectFromMessage(text) {
     result.amount = parseInt(amountStr);
   }
   
-  // 3. Detect Phone Number (any 10-digit number starting with 07)
-  const phoneMatch = text.match(/0[0-9]{9}/);
-  if (phoneMatch) {
-    result.phone = phoneMatch[0];
+  // 3. Detect Names (for verification only, not sent to admin)
+  // MTN format: "paid VERONIC NAIBOLYA" or "to VERONIC NAIBOLYA"
+  const mtnNameMatch = text.match(/paid\s+([A-Z\s]+?)(?:\s+\d+|\.|$)/i) || 
+                       text.match(/to\s+([A-Z\s]+?)(?:\s+\d+|\.|$)/i);
+  if (mtnNameMatch) {
+    result.names = mtnNameMatch[1].trim();
+  }
+  
+  // AIRTEL format: "to PAY TO PAY UGANDA LTD"
+  const airtelNameMatch = text.match(/to\s+(.+?)(?:\s+Charge|\s+$)/i);
+  if (airtelNameMatch) {
+    result.names = airtelNameMatch[1].trim();
+  }
+  
+  // 4. Detect Merchant (optional, not sent to admin)
+  const merchantMatch = text.match(/(\d{6,})/);
+  if (merchantMatch && !result.tid) {
+    result.merchant = merchantMatch[1];
   }
   
   return result;
@@ -6946,6 +7055,7 @@ function validateDepositMessage() {
   const statusDiv = document.getElementById('detectionStatus');
   const detectedInfo = document.getElementById('detectedInfo');
   const confirmBtn = document.getElementById('depositConfirmBtn');
+  const detectedMerchantRow = document.getElementById('detectedMerchantRow');
   
   if (!message.trim()) {
     statusDiv.style.display = 'none';
@@ -6955,25 +7065,26 @@ function validateDepositMessage() {
   }
   
   const detected = detectFromMessage(message);
-  const network = selectedDepositNetwork.toLowerCase();
-  const expectedCompany = companySettings[network]?.phone || (network === 'mtn' ? '0766913235' : '0756673144');
   
   // Update detected info display
   document.getElementById('detectedTid').textContent = detected.tid || 'Not found';
   document.getElementById('detectedAmount').textContent = detected.amount ? detected.amount.toLocaleString() + ' UGX' : 'Not found';
-  document.getElementById('detectedPhone').textContent = detected.phone || 'Not found';
+  document.getElementById('detectedNames').textContent = detected.names || 'Not found';
+  
+  if (detected.merchant) {
+    document.getElementById('detectedMerchant').textContent = detected.merchant;
+    detectedMerchantRow.style.display = 'flex';
+  } else {
+    detectedMerchantRow.style.display = 'none';
+  }
   
   detectedInfo.style.display = 'block';
   
-  // Check all requirements
+  // Check required items
   let isValid = true;
   let errors = [];
   
-  if (!detected.tid) {
-    errors.push('❌ Transaction ID not found');
-    isValid = false;
-  }
-  
+  // Amount must match
   if (!detected.amount) {
     errors.push('❌ Amount not found');
     isValid = false;
@@ -6982,17 +7093,21 @@ function validateDepositMessage() {
     isValid = false;
   }
   
-  if (!detected.phone) {
-    errors.push('❌ Phone number not found');
+  // TID must exist
+  if (!detected.tid) {
+    errors.push('❌ Transaction ID not found');
     isValid = false;
-  } else if (detected.phone !== expectedCompany) {
-    errors.push(`❌ Recipient mismatch: expected ${expectedCompany}, found ${detected.phone}`);
+  }
+  
+  // Names must exist (for verification)
+  if (!detected.names) {
+    errors.push('❌ Recipient names not found');
     isValid = false;
   }
   
   if (isValid) {
     statusDiv.className = 'detection-status status-success';
-    statusDiv.innerHTML = '✅ All details verified! You can now confirm.';
+    statusDiv.innerHTML = '✅ All required details verified! You can now confirm.';
     confirmBtn.disabled = false;
   } else {
     statusDiv.className = 'detection-status status-error';
@@ -7003,36 +7118,37 @@ function validateDepositMessage() {
   statusDiv.style.display = 'block';
 }
 
-// ===== FUNCTION: Submit auto-detected deposit =====
-function submitAutoDetectedDeposit() {
+// ===== FUNCTION: Submit deposit (works for both PEAR and DPK) =====
+function submitDeposit() {
   const message = document.getElementById('depositMessageInput').value;
   const detected = detectFromMessage(message);
-  const network = selectedDepositNetwork.toLowerCase();
   
-  if (!detected.tid || !detected.amount || !detected.phone) {
+  if (!detected.tid || !detected.amount || !detected.names) {
     showConfirmModal('Error', 'Missing required information', 'warning');
     return;
   }
   
-  // Create deposit object with all required fields
+  // Create deposit object with required fields only
   const deposit = {
     id: Date.now(),
     userId: currentUser,
-    userPhone: selectedDepositPhone,
-    loginPhone: currentUser,
+    userPhone: users[currentUser]?.phone,
+    mobileNumber: selectedDepositPhone,
     amount: detected.amount,
     transactionId: detected.tid,
-    detectedNumber: detected.phone,
     network: selectedDepositNetwork,
-    method: selectedDepositMethod,
+    method: selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY',
     timestamp: new Date().toISOString(),
-    verified: true
+    status: 'pending'
+    // ❌ No merchant code
+    // ❌ No names
   };
   
   pendingDeposits.push(deposit);
   saveDeposits();
   
-  showConfirmModal('Success', 'Deposit request sent! Admin will verify within 24 hours.', 'success');
+  let methodName = selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY';
+  showConfirmModal('Success', `${methodName} deposit request sent! Admin will verify within 24 hours.`, 'success');
   closeDepositModal();
 }
 
@@ -7063,28 +7179,6 @@ function validateDepositAmount() {
   } else {
     document.getElementById('depositContinueBtn2').disabled = true;
   }
-}
-
-function submitNewDeposit() {
-  if (!selectedDepositAmount || selectedDepositAmount < 10000 || !selectedDepositNetwork || !selectedDepositPhone) {
-    showConfirmModal('Error', 'Please complete all steps', 'warning');
-    return;
-  }
-
-  pendingDeposits.push({
-    id: Date.now(),
-    userId: currentUser,
-    phone: users[currentUser]?.phone,
-    amount: selectedDepositAmount,
-    method: selectedDepositMethod,
-    network: selectedDepositNetwork,
-    mobileNumber: selectedDepositPhone,
-    timestamp: new Date().toISOString()
-  });
-  saveDeposits();
-  
-  showConfirmModal('Success', 'Deposit request sent! Admin will verify within 24 hours.', 'success');
-  closeDepositModal();
 }
 
 // ========== WITHDRAW ==========
@@ -7488,16 +7582,13 @@ function loadDepositsTable() {
   let html = '';
   sorted.forEach(deposit => {
     const date = new Date(deposit.timestamp).toLocaleString();
-    const tid = deposit.transactionId || '-';
-    const detectedNum = deposit.detectedNumber || '-';
-    
     html += `<tr>
       <td>${date}</td>
       <td>${deposit.userId || 'Unknown'}</td>
-      <td>${deposit.userPhone || deposit.phone || 'N/A'}</td>
+      <td>${deposit.mobileNumber || deposit.userPhone || 'N/A'}</td>
       <td>${deposit.amount.toLocaleString()} UGX</td>
-      <td>${tid}</td>
-      <td>${detectedNum}</td>
+      <td>${deposit.transactionId || '-'}</td>
+      <td>${deposit.mobileNumber || '-'}</td>
       <td>${deposit.network || '-'}</td>
       <td>
         <button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button>
@@ -7514,7 +7605,7 @@ function searchDeposits() {
   
   const filtered = pendingDeposits.filter(d => 
     (d.userId && d.userId.toLowerCase().includes(searchTerm)) || 
-    (d.phone && d.phone.includes(searchTerm))
+    (d.mobileNumber && d.mobileNumber.includes(searchTerm))
   );
   
   const tbody = document.getElementById('depositsTableBody');
@@ -7526,16 +7617,13 @@ function searchDeposits() {
   let html = '';
   filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(deposit => {
     const date = new Date(deposit.timestamp).toLocaleString();
-    const tid = deposit.transactionId || '-';
-    const detectedNum = deposit.detectedNumber || '-';
-    
     html += `<tr>
       <td>${date}</td>
       <td>${deposit.userId || 'Unknown'}</td>
-      <td>${deposit.userPhone || deposit.phone || 'N/A'}</td>
+      <td>${deposit.mobileNumber || deposit.userPhone || 'N/A'}</td>
       <td>${deposit.amount.toLocaleString()} UGX</td>
-      <td>${tid}</td>
-      <td>${detectedNum}</td>
+      <td>${deposit.transactionId || '-'}</td>
+      <td>${deposit.mobileNumber || '-'}</td>
       <td>${deposit.network || '-'}</td>
       <td>
         <button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button>
@@ -7552,7 +7640,7 @@ function approveDeposit(id) {
     users[deposit.userId].operatingWallet = (users[deposit.userId].operatingWallet || 0) + deposit.amount;
     
     if (!users[deposit.userId].transactions) users[deposit.userId].transactions = [];
-    users[deposit.userId].transactions.unshift({ type: 'deposit', amount: deposit.amount, date: new Date().toLocaleString(), desc: 'Deposit approved' });
+    users[deposit.userId].transactions.unshift({ type: 'deposit', amount: deposit.amount, date: new Date().toLocaleString(), desc: `Deposit approved via ${deposit.method}` });
     
     saveUsers();
     pendingDeposits = pendingDeposits.filter(d => d.id !== id);
