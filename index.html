@@ -3356,7 +3356,7 @@
       </div>
     </div>
 
-    <!-- INCOME PAGE - UPDATED WITH NEW TABLE FROM IMAGE -->
+    <!-- INCOME PAGE - UPDATED WITH CORRECT VALUES AND NO DOWNLOAD -->
     <div id="incomePage">
       <div class="scroll-content">
         <!-- Page Title -->
@@ -3365,116 +3365,132 @@
             <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
             <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
           </div>
-          <!-- Download hint - subtle -->
-          <div style="font-size: 0.7rem; color: #999; text-align: right;">
-            <i class="fas fa-download"></i> Long press to save
-          </div>
+          <!-- Download hint - REMOVED -->
         </div>
 
-        <!-- Income Table - UPDATED with new headers and values from image, full grid lines, small font -->
-        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; font-size: 10px;" ondblclick="downloadIncomeTableAsImage()" ontouchstart="handleTableTouchStart(event)" ontouchend="handleTableTouchEnd(event)" onmousedown="handleTableMouseDown(event)" onmouseup="handleTableMouseUp(event)" onmouseleave="handleTableMouseLeave()">
+        <!-- Income Table - UPDATED with correct values and NO download functionality -->
+        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 10px;">
           <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
             <thead>
               <tr style="background: #7d5ba6; color: white;">
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">EMPLOYEE LEVEL</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT FOR LEVEL</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">LEVEL</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT (UGX)</th>
                 <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DAILY INCOME</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">NUMBER OF DAILY TASKS</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">TASKS</th>
                 <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">REVENUE PER TASK</th>
                 <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">MONTHLY INCOME</th>
                 <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">ANNUAL INCOME</th>
               </tr>
             </thead>
             <tbody>
+              <!-- INTERN Row -->
               <tr>
                 <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">INTERN</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc; font-weight: 600; color: #28a745;">FREE</td>
                 <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">5</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">300</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,000</td>
                 <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
               </tr>
+              
+              <!-- D1 Row -->
               <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M1</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">70,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,310</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">330</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">69,300</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">843,150</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M2</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">219,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,310</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">17</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">430</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">219,300</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,668,150</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M3</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">615,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">20,580</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">28</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">735</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">617,400</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,511,700</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M4</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,930,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64,800</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">54</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,200</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,944,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">23,652,000</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M5</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">5,200,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">180,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">80</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D1</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">63,000</td>
                 <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,250</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">5,400,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">65,700,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,125</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">67,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">821,250</td>
               </tr>
+              
+              <!-- D2 Row -->
               <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M6</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">13,470,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">481,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">130</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,700</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">14,430,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">175,565,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D2</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">200,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,100</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,775</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">213,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,591,500</td>
               </tr>
+              
+              <!-- D3 Row -->
               <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M7</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">30,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,137,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">175</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">34,125,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">415,187,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D3</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">532,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">19,008</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">12</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,584</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">570,240</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,938,920</td>
               </tr>
+              
+              <!-- D4 Row -->
               <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M8</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">60,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,275,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">260</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">8,750</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">68,250,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">830,375,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D4</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,450,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">51,808</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">16</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,238</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,554,240</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">18,909,920</td>
               </tr>
+              
+              <!-- D5 Row -->
               <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">M9</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">99,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,500,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">300</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">15,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">135,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,642,500,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D5</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,920,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">145,200</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">24</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,050</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,356,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52,998,000</td>
+              </tr>
+              
+              <!-- D6 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D6</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">10,640,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">380,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">9,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">11,400,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">138,700,000</td>
+              </tr>
+              
+              <!-- D7 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D7</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,040,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,430,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">27,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">42,900,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">521,950,000</td>
+              </tr>
+              
+              <!-- D8 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D8</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">57,120,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,040,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">31,875</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">61,200,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">744,600,000</td>
+              </tr>
+              
+              <!-- D9 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D9</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">84,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">74</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">90,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,095,000,000</td>
               </tr>
             </tbody>
           </table>
@@ -3925,7 +3941,7 @@
     </div>
   </div>
 
-  <!-- DOWNLOAD TOAST NOTIFICATION -->
+  <!-- DOWNLOAD TOAST NOTIFICATION - KEPT FOR OTHER FEATURES -->
   <div class="toast-notification" id="downloadToast" style="background: #28a745;">
     <div class="toast-content">
       <div class="toast-header">
