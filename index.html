@@ -3176,10 +3176,71 @@
       position: relative;
       width: 100%;
     }
+
+    /* ===== NEW PULL-TO-REFRESH STYLES (ADDED - DOES NOT AFFECT EXISTING LAYOUT) ===== */
+    .refresh-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(5px);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .refresh-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #7d5ba6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .refresh-message {
+      font-size: 1.2rem;
+      color: #4a3b5e;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .refresh-progress {
+      width: 200px;
+      height: 8px;
+      background: #e0d0eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .refresh-progress-fill {
+      height: 100%;
+      background: #7d5ba6;
+      width: 0%;
+      transition: width 0.2s;
+    }
+    .pull-indicator {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(125, 91, 166, 0.2);
+      padding: 5px 15px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      color: #7d5ba6;
+      z-index: 9999;
+      display: none;
+    }
   </style>
 </head>
 <body>
-
   <!-- Admin Toggle Button -->
   <div class="admin-toggle">
     <button onclick="handleAdminCrownClick()"><i class="fas fa-crown"></i></button>
@@ -3525,775 +3586,775 @@
         </div>
       </div>
     </div>
-
+    
     <!-- MAIN DASHBOARD (Home Page) -->
-    <div id="mainDashboard">
-      <div class="scroll-content">
-        <!-- Green Background Section with UIC Watermark -->
-        <div style="background: linear-gradient(135deg, #2e7d32, #4caf50); padding: 30px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(46,125,50,0.3);">
-          
-          <!-- Animated UIC Watermarks in Background -->
-          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; pointer-events: none;">
-            <div style="position: absolute; top: 10px; left: 10px; font-size: 3rem; font-weight: 900; color: white; transform: rotate(-15deg); animation: float 6s infinite ease-in-out;">UIC</div>
-            <div style="position: absolute; bottom: 10px; right: 10px; font-size: 4rem; font-weight: 900; color: white; transform: rotate(10deg); animation: float2 8s infinite ease-in-out reverse;">UIC</div>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-weight: 900; color: white; opacity: 0.15; animation: pulse 4s infinite;">UIC</div>
-          </div>
-          
-          <!-- Welcome Text (unchanged) -->
-          <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 2;">WELCOME</div>
-          <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); position: relative; z-index: 2;">Learn about coffee growing and earn rewards</div>
-        </div>
-        
-        <!-- NEW: Photo Gallery -->
-        <div class="photo-gallery-container">
-          <div class="gallery-title">
-            <i class="fas fa-images"></i> Coffee Community
-          </div>
-          <div class="gallery-scroll" id="galleryScroll">
-            <!-- Images will be inserted by JavaScript -->
-          </div>
-          <div class="gallery-dots" id="galleryDots"></div>
-        </div>
-        
-        <div class="divider-line"></div>
-
-        <!-- Member Card -->
-        <div class="member-card" id="memberCard">
-          <div class="member-type" id="memberTypeDisplay">INTERN MEMBER</div>
-          <div class="member-days" id="memberDaysDisplay">4 days remaining</div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="memberProgress" style="width: 100%;"></div>
-          </div>
-        </div>
-
-        <!-- Daily Counter -->
-        <div style="background:#f5edff; padding:12px; border-radius:15px; margin-bottom:15px; display:flex; justify-content:space-between; color:#4a3b5e;">
-          <span>📚 Today: <span id="booksReadToday">0</span>/<span id="dailyBookLimit">1</span></span>
-          <span>💰 Earned: <span id="dailyEarnings">0</span> UGX</span>
-        </div>
-
-        <!-- Books - REMOVED from Home Dashboard -->
-        <!-- Daily Motivation Card (NEW) -->
-        <div class="motivation-card" id="motivationCard">
-          <div class="motivation-icon" id="motivationIcon">🌅</div>
-          <div class="motivation-message" id="motivationMessage">Start your day with a fresh cup and a fresh page. Read now!</div>
-          <div class="motivation-time" id="motivationTime">Morning Motivation</div>
-        </div>
-
-        <!-- Actions - NEW 2x2 Grid Layout -->
-        <div class="action-grid">
-          <div class="action-grid-item" onclick="openDepositModal()">
-            <i class="fas fa-wallet"></i>
-            <span>Recharge</span>
-          </div>
-          <div class="action-grid-item" id="withdrawBtn" onclick="openWithdrawModal()">
-            <i class="fas fa-hand-holding-usd"></i>
-            <span>Withdraw</span>
-          </div>
-          <div class="action-grid-item girare" onclick="showPage('stakes'); showGirareMessage()">
-            <i class="fas fa-dice"></i>
-            <span>Girare</span>
-          </div>
-          <div class="action-grid-item stakes" onclick="showPage('stakes')">
-            <i class="fas fa-trophy"></i>
-            <span>Stakes</span>
-          </div>
-        </div>
-
-        <!-- Company Profile (kept as line, now opens modal) -->
-        <div class="company-line" onclick="openCompanyProfileModal()">
-          <span>Company Profile</span>
-          <i class="fas fa-chevron-right"></i>
-        </div>
-      </div>
-
-      <!-- Bottom Nav -->
-      <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- PROFILE PAGE (ME) -->
-    <div id="profilePage">
-      <div class="scroll-content">
-        <div class="profile-header">
-          <span class="time" id="currentTime"></span>
-          <span onclick="openUserDetailsModal()" style="cursor: pointer;"><i class="fas fa-user"></i></span>
-        </div>
-
-        <div class="employee-name" id="profileFullName">User Name</div>
-        <div class="employee-role" id="profileMemberType">intern member</div>
-
-        <!-- Wallets -->
-        <div class="wallets-container">
-          <div class="wallet-box operating">
-            <div class="label">💰 OPERATING WALLET</div>
-            <div class="amount" id="profileOperatingWallet">0 UGX</div>
-          </div>
-          <div class="wallet-box incentive">
-            <div class="label">💰 INCENTIVE WALLET</div>
-            <div class="amount" id="profileIncentiveWallet">0 UGX</div>
-          </div>
-        </div>
-
-        <!-- Deposit/Withdraw Buttons -->
-        <div class="profile-action-buttons">
-          <button class="profile-action-btn" onclick="openDepositModal()">
-            <i class="fas fa-arrow-down"></i> DEPOSIT
-          </button>
-          <button class="profile-action-btn" onclick="openWithdrawModal()">
-            <i class="fas fa-arrow-up"></i> WITHDRAW
-          </button>
-        </div>
-
-        <!-- Member Stats -->
-        <div style="background:#f5edff; border-radius:15px; padding:15px; margin-bottom:20px;">
-          <div style="display:flex; justify-content:space-between;">
-            <span>Days Left: <span id="profileDaysLeft">4</span></span>
-            <span>Books Today: <span id="profileBooksToday">0/1</span></span>
-          </div>
-        </div>
-
-        <!-- INCOME GRID -->
-        <div class="income-grid">
-          <div class="income-item">
-            <div class="income-label">today's income</div>
-            <div class="income-value" id="todayIncomeValue">0 UGX</div>
-          </div>
-          <div class="income-item">
-            <div class="income-label">total income</div>
-            <div class="income-value" id="totalIncomeValue">0 UGX</div>
-          </div>
-          <div class="income-item">
-            <div class="income-label">month's income</div>
-            <div class="income-value" id="monthIncomeValue">0 UGX</div>
-          </div>
-        </div>
-
-        <!-- Incentive Row - UPDATED: Now shows Subsidiary Motivators total -->
-        <div class="incentive-row">
-          <span class="incentive-label">Subsidiary Motivators</span>
-          <span class="incentive-value" id="subsidiaryMotivatorsTotal">0 UGX</span>
-        </div>
-
-        <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" -->
-        <div class="menu-grid">
-          <div class="menu-item" onclick="showActivityLog()"><i class="fas fa-clipboard-list"></i> Activity Log</div>
-          <div class="menu-item" onclick="showTeamReport()"><i class="fas fa-users"></i> team report</div>
-          <div class="menu-item" onclick="openDailyReportModal()"><i class="fas fa-calendar-alt"></i> daily report</div>
-          <div class="menu-item" onclick="showGoldenHandshake()"><i class="fas fa-handshake"></i> Golden Handshake</div>
-          <div class="menu-item" onclick="showGrowthJourney()"><i class="fas fa-seedling"></i> my growth journey</div>
-          <div class="menu-item" onclick="showTransactionHistory()"><i class="fas fa-history"></i> transaction history</div>
-        </div>
-      </div>
-
-      <!-- Bottom Nav -->
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item active" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- GOLDEN HANDSHAKE PAGE -->
-    <div id="goldenHandshakePage">
-      <div class="scroll-content">
-        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-        <div class="golden-header">
-          <i class="fas fa-handshake" style="font-size: 2.5rem; color: #7d5ba6;"></i>
-          <h2>Golden Handshake</h2>
-        </div>
-        <div id="goldenHandshakeContent"></div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- ACTIVITY LOG PAGE - UPDATED: Renamed from taskRecordPage, title changed -->
-    <div id="taskRecordPage">
-      <div class="scroll-content">
-        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-        <h3 style="margin-bottom:20px;">📋 Activity Log</h3>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value" id="totalReadBooks">0</div>
-            <div class="stat-label">Read Books</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="completeBooks">0</div>
-            <div class="stat-label">Complete Books</div>
-          </div>
-          <!-- Pending Books stat removed -->
-        </div>
-        <div class="section-title">📚 Book History</div>
-        <table class="task-table" id="taskHistoryTable">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Book</th>
-              <th>Status</th>
-              <th>Reward</th>
-            </tr>
-          </thead>
-          <tbody id="taskHistoryBody"></tbody>
-        </table>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- TEAM REPORT PAGE - UPDATED for 3 columns -->
-    <div id="teamReportPage">
-      <div class="scroll-content">
-        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-        <h3 style="margin-bottom:20px;">👥 Team Report</h3>
-        <div class="team-report-container" id="teamReportContainer">
-          <!-- Columns will be filled by JavaScript -->
-        </div>
-        <div class="team-stats">
-          <div><span>Total Team Members:</span> <span id="totalTeamMembers">0</span></div>
-          <div><span>Active Today:</span> <span id="activeTeamMembers">0</span></div>
-        </div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- LEVEL PAGE -->
-    <div id="levelPage">
-      <div class="scroll-content">
-        <div class="level-page-title">LEVELS PRICE AND SALARIES</div>
-        <div class="operating-wallet-display" id="levelOperatingWallet">Operating Wallet: 0 UGX</div>
-        <div class="incentive-wallet-display" id="levelIncentiveWallet">Incentive Wallet: 0 UGX</div>
-        
-        <!-- D1 -->
-        <div class="level-card-ultra" style="background-color: #e6f7ff;">
-          <div class="level-name-ultra" style="color: #0066cc;">D1</div>
-          <div class="level-detail-ultra">UGX 63000. 2 tasks</div>
-          <div class="level-detail-ultra">UGX 1125 per task</div>
-          <div class="level-detail-ultra">UGX 2250 daily</div>
-          <div class="click-to-join-ultra" style="color: #0066cc;" onclick="purchaseLevel(1, 63000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D2 -->
-        <div class="level-card-ultra" style="background-color: #e6ffe6;">
-          <div class="level-name-ultra" style="color: #008000;">D2</div>
-          <div class="level-detail-ultra">UGX 200000. 4 tasks</div>
-          <div class="level-detail-ultra">UGX 1775 per task</div>
-          <div class="level-detail-ultra">UGX 7100 daily</div>
-          <div class="click-to-join-ultra" style="color: #008000;" onclick="purchaseLevel(2, 200000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D3 -->
-        <div class="level-card-ultra" style="background-color: #ffffe6;">
-          <div class="level-name-ultra" style="color: #999900;">D3</div>
-          <div class="level-detail-ultra">UGX 532000. 12 tasks</div>
-          <div class="level-detail-ultra">UGX 1584 per task</div>
-          <div class="level-detail-ultra">UGX 19008 daily</div>
-          <div class="click-to-join-ultra" style="color: #999900;" onclick="purchaseLevel(3, 532000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D4 -->
-        <div class="level-card-ultra" style="background-color: #fff0e6;">
-          <div class="level-name-ultra" style="color: #cc6600;">D4</div>
-          <div class="level-detail-ultra">UGX 1450000 16 tasks</div>
-          <div class="level-detail-ultra">UGX 3238 per task</div>
-          <div class="level-detail-ultra">UGX 51808 per day</div>
-          <div class="click-to-join-ultra" style="color: #cc6600;" onclick="purchaseLevel(4, 1450000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D5 -->
-        <div class="level-card-ultra" style="background-color: #ffe6f0;">
-          <div class="level-name-ultra" style="color: #cc3399;">D5</div>
-          <div class="level-detail-ultra">UGX 3920000 24 tasks</div>
-          <div class="level-detail-ultra">UGX 6050 per task</div>
-          <div class="level-detail-ultra">UGX 145200 per day</div>
-          <div class="click-to-join-ultra" style="color: #cc3399;" onclick="purchaseLevel(5, 3920000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D6 -->
-        <div class="level-card-ultra" style="background-color: #f0e6ff;">
-          <div class="level-name-ultra" style="color: #6633cc;">D6</div>
-          <div class="level-detail-ultra">UGX 10640000 40 tasks</div>
-          <div class="level-detail-ultra">UGX 9500 per task</div>
-          <div class="level-detail-ultra">UGX 380000 daily</div>
-          <div class="click-to-join-ultra" style="color: #6633cc;" onclick="purchaseLevel(6, 10640000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D7 -->
-        <div class="level-card-ultra" style="background-color: #e6ffff;">
-          <div class="level-name-ultra" style="color: #009999;">D7</div>
-          <div class="level-detail-ultra">UGX 40040000 52 tasks</div>
-          <div class="level-detail-ultra">UGX 27500 per task</div>
-          <div class="level-detail-ultra">UGX 1430000 per day</div>
-          <div class="click-to-join-ultra" style="color: #009999;" onclick="purchaseLevel(7, 40040000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D8 -->
-        <div class="level-card-ultra" style="background-color: #ffe6e6;">
-          <div class="level-name-ultra" style="color: #cc3333;">D8</div>
-          <div class="level-detail-ultra">UGX 57120000 64 tasks</div>
-          <div class="level-detail-ultra">UGX 31875 per task</div>
-          <div class="level-detail-ultra">UGX 2040000 per day</div>
-          <div class="click-to-join-ultra" style="color: #cc3333;" onclick="purchaseLevel(8, 57120000)">Click to join</div>
-        </div>
-        <div class="level-separator-ultra"></div>
-        
-        <!-- D9 -->
-        <div class="level-card-ultra" style="background-color: #f2e6ff;">
-          <div class="level-name-ultra" style="color: #7733cc;">D9</div>
-          <div class="level-detail-ultra">UGX 84000000 74 tasks</div>
-          <div class="level-detail-ultra">UGX 40000 per task</div>
-          <div class="level-detail-ultra">UGX 3000000 per day</div>
-          <div class="click-to-join-ultra" style="color: #7733cc;" onclick="purchaseLevel(9, 84000000)">Click to join</div>
-        </div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item active" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- TASK PAGE (BOOKS PAGE) - 2 PER ROW GRID -->
-    <div id="taskPage">
-      <div class="scroll-content">
-        <h3 style="margin-bottom:20px;">📚 Coffee Library</h3>
-        <div class="books-grid" id="taskBookGrid"></div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item active" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- INCOME PAGE - UPDATED WITH CORRECT VALUES AND NO DOWNLOAD -->
-    <div id="incomePage">
-      <div class="scroll-content">
-        <!-- Page Title -->
-        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
-            <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
-          </div>
-          <!-- Download hint - REMOVED -->
-        </div>
-
-        <!-- Income Table - UPDATED with correct values and NO download functionality -->
-        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 10px;">
-          <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
-            <thead>
-              <tr style="background: #7d5ba6; color: white;">
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">LEVEL</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT (UGX)</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DAILY INCOME</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">TASKS</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">REVENUE PER TASK</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">MONTHLY INCOME</th>
-                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">ANNUAL INCOME</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- INTERN Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">INTERN</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc; font-weight: 600; color: #28a745;">FREE</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
-              </tr>
-              
-              <!-- D1 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D1</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">63,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,250</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,125</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">67,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">821,250</td>
-              </tr>
-              
-              <!-- D2 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D2</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">200,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,100</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,775</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">213,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,591,500</td>
-              </tr>
-              
-              <!-- D3 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D3</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">532,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">19,008</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">12</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,584</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">570,240</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,938,920</td>
-              </tr>
-              
-              <!-- D4 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D4</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,450,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">51,808</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">16</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,238</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,554,240</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">18,909,920</td>
-              </tr>
-              
-              <!-- D5 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D5</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,920,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">145,200</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">24</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,050</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,356,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52,998,000</td>
-              </tr>
-              
-              <!-- D6 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D6</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">10,640,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">380,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">9,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">11,400,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">138,700,000</td>
-              </tr>
-              
-              <!-- D7 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D7</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,040,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,430,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">27,500</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">42,900,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">521,950,000</td>
-              </tr>
-              
-              <!-- D8 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D8</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">57,120,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,040,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">31,875</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">61,200,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">744,600,000</td>
-              </tr>
-              
-              <!-- D9 Row -->
-              <tr>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D9</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">84,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">74</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">90,000,000</td>
-                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,095,000,000</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- LEVEL EXPLANATIONS - Professional Edition (UPDATED INTERN) -->
-        <div style="margin-top: 30px;">
-          <h3 style="color: #4a3b5e; margin-bottom: 15px; font-size: 1.3rem;">📋 LEVEL EXPLANATIONS</h3>
-          
-          <!-- Intern - UPDATED -->
-          <div style="background: #f5edff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #7d5ba6;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📋 INTERN "The Foundation Builder"</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Every empire starts with a solid foundation. 1,500 daily | 6,000 monthly across 4 days. Withdrawals not available during this trial period – focus on learning. After 4 days, upgrade to D1 to continue earning.</div>
-          </div>
-          
-          <!-- D1 -->
-          <div style="background: #e6f0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #0066cc;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🎓 D1 · coffee apprentice</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">You've earned your first certification. 2,250 daily | 67,500 monthly | 821,250 annually. 63,000 UGX invested returns in 28 days. Withdrawals unlocked. Your journey begins.</div>
-          </div>
-          
-          <!-- D2 -->
-          <div style="background: #cce0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #008000;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🌿 D2 · coffee grower</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Mastery of four daily tasks. 7,100 daily | 213,000 monthly | 2.59M annually. Your expertise is growing, and so is your portfolio. Referral commissions now at three levels.</div>
-          </div>
-          
-          <!-- D3 -->
-          <div style="background: #ccf0f0; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #009999;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">☕ D3 · coffee farmer</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">168% growth from previous level. 19,008 daily | 570,240 monthly | 6.94M annually. You understand the economics of coffee. Your analytical skills are paying dividends.</div>
-          </div>
-          
-          <!-- D4 -->
-          <div style="background: #ccffcc; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #00aa00;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">💼 D4 · coffee specialist</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Managing significant assets. 51,808 daily | 1.55M monthly | 18.9M annually. You've crossed the millionaire threshold. Your coffee estate is thriving.</div>
-          </div>
-          
-          <!-- D5 -->
-          <div style="background: #fff0b3; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #cc9900;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📈 D5 · coffee expert</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Strategic earnings of 145,200 daily. 4.36M monthly | 53M annually. Your wealth management skills are exemplary. Multiple income streams now optimized.</div>
-          </div>
-          
-          <!-- D6 -->
-          <div style="background: #b3b3ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #6633cc;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🏛️ D6 · coffee master</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Respected voice in coffee. 380,000 daily | 11.4M monthly | 138.7M annually. Your influence extends beyond personal earnings. Others follow your example.</div>
-          </div>
-          
-          <!-- D7 -->
-          <div style="background: #9966ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #4d1aff; color: white;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">👔 D7 · coffee elite</div>
-            <div style="font-size: 0.85rem; color: white; line-height: 1.4;">C-level earnings. 1.43M daily | 42.9M monthly | 522M annually. You operate at the highest levels of coffee commerce. Boardroom decisions, farm-level results.</div>
-          </div>
-          
-          <!-- D8 -->
-          <div style="background: #993333; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #660000; color: white;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🌍 D8 · coffee ambassador</div>
-            <div style="font-size: 0.85rem; color: white; line-height: 1.4;">International expertise commands 2.04M daily. 61.2M monthly | 744.6M annually. Coffee farms worldwide seek your guidance. Your legacy grows.</div>
-          </div>
-          
-          <!-- D9 -->
-          <div style="background: #000000; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 2px solid gold; color: white;">
-            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🏆 D9 · coffee icon</div>
-            <div style="font-size: 0.85rem; color: white; line-height: 1.4;">Peak achievement: 3M daily | 90M monthly | 1.095B annually. You've reached the summit of coffee education. A billion-shilling career. Icons are remembered. Legends like you.</div>
-          </div>
-        </div>
-
-        <!-- QUICK TIPS -->
-        <div style="margin-top: 25px; padding: 15px; background: #f5edff; border-radius: 15px;">
-          <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.8rem;">
-            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">⚡ D1: 28-day ROI</span>
-            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">📈 Exponential growth</span>
-            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">💰 Referrals: 10%/4%/1%</span>
-            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">🏧 Withdrawals D1+</span>
-          </div>
-        </div>
-
-        <!-- ===== NEW: FARMER POSITIONS TABLE ===== -->
-        <div style="margin-top: 30px; background: #f0f7f0; border-radius: 20px; padding: 20px; border: 2px solid #28a745;">
-          <h3 style="color: #28a745; margin-bottom: 15px;"><i class="fas fa-trophy"></i> coffee farmer positions</h3>
-          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-            <div style="font-weight: 700; color: #28a745;">🏘️ village farmer</div>
-            <div>20 a-level · ugx 89,000 monthly</div>
-          </div>
-          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-            <div style="font-weight: 700; color: #28a745;">📍 parish farmer</div>
-            <div>50 a-level · ugx 268,000 monthly</div>
-          </div>
-          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-            <div style="font-weight: 700; color: #28a745;">🏡 sub-county farmer</div>
-            <div>95 a-level · ugx 530,000 monthly</div>
-          </div>
-          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-            <div style="font-weight: 700; color: #28a745;">🏢 county farmer</div>
-            <div>410 a+b (min 160 a) · ugx 2,100,000 monthly</div>
-            <div style="font-size: 0.8rem; color: #666;">+ pickup station · 30k weekly airtime · 300k transport</div>
-          </div>
-          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-            <div style="font-weight: 700; color: #28a745;">🌍 regional farmer</div>
-            <div>1300 a+b+c · ugx 9,000,000 monthly</div>
-            <div style="font-size: 0.8rem; color: #666;">+ office · company car · daily allowance · data & airtime</div>
-          </div>
-          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-            <div style="font-weight: 700; color: #28a745;">🇺🇬 national farmer (only 4!)</div>
-            <div>3700 a+b+c · ugx 29,000,000 monthly</div>
-            <div style="font-size: 0.8rem; color: #666;">+ main office · premium car · 200k daily · premium data</div>
-          </div>
-          <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">💰 all salaries paid on 30th to operating wallet</p>
-        </div>
+<div id="mainDashboard">
+  <div class="scroll-content">
+    <!-- Green Background Section with UIC Watermark -->
+    <div style="background: linear-gradient(135deg, #2e7d32, #4caf50); padding: 30px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(46,125,50,0.3);">
+      
+      <!-- Animated UIC Watermarks in Background -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; pointer-events: none;">
+        <div style="position: absolute; top: 10px; left: 10px; font-size: 3rem; font-weight: 900; color: white; transform: rotate(-15deg); animation: float 6s infinite ease-in-out;">UIC</div>
+        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 4rem; font-weight: 900; color: white; transform: rotate(10deg); animation: float2 8s infinite ease-in-out reverse;">UIC</div>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-weight: 900; color: white; opacity: 0.15; animation: pulse 4s infinite;">UIC</div>
       </div>
       
-      <!-- Bottom Nav -->
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item active" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      <!-- Welcome Text (unchanged) -->
+      <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 2;">WELCOME</div>
+      <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); position: relative; z-index: 2;">Learn about coffee growing and earn rewards</div>
+    </div>
+    
+    <!-- NEW: Photo Gallery -->
+    <div class="photo-gallery-container">
+      <div class="gallery-title">
+        <i class="fas fa-images"></i> Coffee Community
+      </div>
+      <div class="gallery-scroll" id="galleryScroll">
+        <!-- Images will be inserted by JavaScript -->
+      </div>
+      <div class="gallery-dots" id="galleryDots"></div>
+    </div>
+    
+    <div class="divider-line"></div>
+
+    <!-- Member Card -->
+    <div class="member-card" id="memberCard">
+      <div class="member-type" id="memberTypeDisplay">INTERN MEMBER</div>
+      <div class="member-days" id="memberDaysDisplay">4 days remaining</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="memberProgress" style="width: 100%;"></div>
       </div>
     </div>
 
-    <!-- GROWTH JOURNEY PAGE - BLUE SKY THEME -->
-    <div id="growthJourneyPage" class="growth-journey-page">
-      <div class="scroll-content">
-        <button class="back-btn" onclick="showPage('profile')" style="color: #003366;"><i class="fas fa-arrow-left"></i> back to profile</button>
-        
-        <div class="growth-title">☁️ my growth journey</div>
-        <div class="growth-subtitle">grow your coffee community</div>
+    <!-- Daily Counter -->
+    <div style="background:#f5edff; padding:12px; border-radius:15px; margin-bottom:15px; display:flex; justify-content:space-between; color:#4a3b5e;">
+      <span>📚 Today: <span id="booksReadToday">0</span>/<span id="dailyBookLimit">1</span></span>
+      <span>💰 Earned: <span id="dailyEarnings">0</span> UGX</span>
+    </div>
 
-        <!-- Current Position Card -->
-        <div class="growth-card">
-          <div class="position-badge" id="currentPositionBadge">🏘️ village farmer</div>
-          <div class="progress-label">
-            <span>a-level members: <span id="currentACount">15</span>/20</span>
-            <span><span id="currentProgressPercent">75</span>%</span>
-          </div>
-          <div class="progress-bg">
-            <div class="progress-fill-blue" id="currentProgressBar" style="width: 75%;"></div>
-          </div>
-          <div style="font-size: 0.9rem; color: #003366;">💰 ugx 89,000 monthly</div>
-        </div>
+    <!-- Books - REMOVED from Home Dashboard -->
+    <!-- Daily Motivation Card (NEW) -->
+    <div class="motivation-card" id="motivationCard">
+      <div class="motivation-icon" id="motivationIcon">🌅</div>
+      <div class="motivation-message" id="motivationMessage">Start your day with a fresh cup and a fresh page. Read now!</div>
+      <div class="motivation-time" id="motivationTime">Morning Motivation</div>
+    </div>
 
-        <!-- Next Position Card (if qualified) -->
-        <div class="growth-card" id="nextPositionCard" style="border: 2px solid #28a745;">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span class="position-badge" style="background: #28a745; color: white;">📍 parish farmer</span>
-            <span style="color: #28a745; font-weight: 700;">✅ qualified!</span>
-          </div>
-          <div class="progress-label">
-            <span>your a-level: 52/50</span>
-          </div>
-          <div style="margin: 15px 0;">
-            <div>💰 ugx 268,000 monthly</div>
-          </div>
-          <button class="confirm-upgrade-btn" onclick="confirmPositionUpgrade()">confirm upgrade</button>
-        </div>
-
-        <!-- All Positions Summary -->
-        <div class="growth-card">
-          <h3 style="color: #003366; margin-bottom: 15px;">☕ all farmer positions</h3>
-          <div class="benefit-item"><span class="benefit-icon">🏘️</span> village · 20a · 89k</div>
-          <div class="benefit-item"><span class="benefit-icon">📍</span> parish · 50a · 268k</div>
-          <div class="benefit-item"><span class="benefit-icon">🏡</span> sub-county · 95a · 530k</div>
-          <div class="benefit-item"><span class="benefit-icon">🏢</span> county · 410a+b · 2.1m + benefits</div>
-          <div class="benefit-item"><span class="benefit-icon">🌍</span> regional · 1300a+b+c · 9m + benefits</div>
-          <div class="benefit-item"><span class="benefit-icon">🇺🇬</span> national · 3700a+b+c · 29m + benefits</div>
-        </div>
-
-        <!-- Team Summary -->
-        <div class="growth-card">
-          <h3 style="color: #003366; margin-bottom: 15px;">📊 your team</h3>
-          <div class="team-summary">
-            <div class="team-stat"><span class="number" id="teamACount">15</span><span class="label">a-level</span></div>
-            <div class="team-stat"><span class="number" id="teamBCount">8</span><span class="label">b-level</span></div>
-            <div class="team-stat"><span class="number" id="teamCCount">3</span><span class="label">c-level</span></div>
-          </div>
-        </div>
+    <!-- Actions - NEW 2x2 Grid Layout -->
+    <div class="action-grid">
+      <div class="action-grid-item" onclick="openDepositModal()">
+        <i class="fas fa-wallet"></i>
+        <span>Recharge</span>
       </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      <div class="action-grid-item" id="withdrawBtn" onclick="openWithdrawModal()">
+        <i class="fas fa-hand-holding-usd"></i>
+        <span>Withdraw</span>
+      </div>
+      <div class="action-grid-item girare" onclick="showPage('stakes'); showGirareMessage()">
+        <i class="fas fa-dice"></i>
+        <span>Girare</span>
+      </div>
+      <div class="action-grid-item stakes" onclick="showPage('stakes')">
+        <i class="fas fa-trophy"></i>
+        <span>Stakes</span>
       </div>
     </div>
 
-    <!-- STAKES PAGE - NEW PAGE -->
-    <div id="stakesPage">
-      <div class="scroll-content">
-        <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
-        
-        <div class="stakes-header">
-          <i class="fas fa-trophy"></i>
-          <h2>STAKES</h2>
-        </div>
-        
-        <div class="stakes-card">
-          <i class="fas fa-coins"></i>
-          <h3>Coming Soon!</h3>
-          <p>Place your stakes and win big rewards. This feature is under development.</p>
-        </div>
-        
-        <div style="background: #f5edff; border-radius: 15px; padding: 20px; margin-top: 20px;">
-          <h4 style="color: #4a3b5e; margin-bottom: 15px;">How Stakes Will Work:</h4>
-          <ul style="padding-left: 20px; color: #666;">
-            <li>🔹 Stake your earnings for a chance to win more</li>
-            <li>🔹 Higher stakes = higher rewards</li>
-            <li>🔹 Daily and weekly stake options</li>
-            <li>🔹 Special events with bonus prizes</li>
-          </ul>
-        </div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
+    <!-- Company Profile (kept as line, now opens modal) -->
+    <div class="company-line" onclick="openCompanyProfileModal()">
+      <span>Company Profile</span>
+      <i class="fas fa-chevron-right"></i>
     </div>
-
-    <!-- TRANSACTION HISTORY PAGE - UPDATED WITH FILTERS -->
-    <div id="transactionHistoryPage">
-      <div class="scroll-content">
-        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-        <h3 style="margin-bottom:20px;">📜 Transaction History</h3>
-        
-        <!-- Filter Tabs -->
-        <div class="filter-tabs" id="filterTabs">
-          <div class="filter-tab active" onclick="filterTransactions('all')" id="filter-all">[ALL]</div>
-          <div class="filter-tab" onclick="filterTransactions('book')" id="filter-book">📚 <span id="book-count">0</span></div>
-          <div class="filter-tab" onclick="filterTransactions('referral')" id="filter-referral">👥 <span id="referral-count">0</span></div>
-          <div class="filter-tab" onclick="filterTransactions('deposit')" id="filter-deposit">💰 <span id="deposit-count">0</span></div>
-          <div class="filter-tab" onclick="filterTransactions('withdrawal')" id="filter-withdrawal">💸 <span id="withdrawal-count">0</span></div>
-          <div class="filter-tab" onclick="filterTransactions('refund')" id="filter-refund">🔄 <span id="refund-count">0</span></div>
-          <div class="filter-tab" onclick="filterTransactions('level_upgrade')" id="filter-upgrade">⬆️ <span id="upgrade-count">0</span></div>
-        </div>
-        
-        <div id="currentFilterLabel" style="margin-bottom: 10px; font-size: 0.9rem; color: #666;">Showing: ALL TRANSACTIONS</div>
-        
-        <div class="transaction-list" id="transactionList">
-          <!-- Transactions will be loaded here -->
-        </div>
-      </div>
-      <div class="bottom-nav">
-        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-      </div>
-    </div>
-
-    <!-- POSITION SALARY PAGE - COMPLETELY REMOVED -->
   </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+  </div>
+</div>
+
+<!-- PROFILE PAGE (ME) -->
+<div id="profilePage">
+  <div class="scroll-content">
+    <div class="profile-header">
+      <span class="time" id="currentTime"></span>
+      <span onclick="openUserDetailsModal()" style="cursor: pointer;"><i class="fas fa-user"></i></span>
+    </div>
+
+    <div class="employee-name" id="profileFullName">User Name</div>
+    <div class="employee-role" id="profileMemberType">intern member</div>
+
+    <!-- Wallets -->
+    <div class="wallets-container">
+      <div class="wallet-box operating">
+        <div class="label">💰 OPERATING WALLET</div>
+        <div class="amount" id="profileOperatingWallet">0 UGX</div>
+      </div>
+      <div class="wallet-box incentive">
+        <div class="label">💰 INCENTIVE WALLET</div>
+        <div class="amount" id="profileIncentiveWallet">0 UGX</div>
+      </div>
+    </div>
+
+    <!-- Deposit/Withdraw Buttons -->
+    <div class="profile-action-buttons">
+      <button class="profile-action-btn" onclick="openDepositModal()">
+        <i class="fas fa-arrow-down"></i> DEPOSIT
+      </button>
+      <button class="profile-action-btn" onclick="openWithdrawModal()">
+        <i class="fas fa-arrow-up"></i> WITHDRAW
+      </button>
+    </div>
+
+    <!-- Member Stats -->
+    <div style="background:#f5edff; border-radius:15px; padding:15px; margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between;">
+        <span>Days Left: <span id="profileDaysLeft">4</span></span>
+        <span>Books Today: <span id="profileBooksToday">0/1</span></span>
+      </div>
+    </div>
+
+    <!-- INCOME GRID -->
+    <div class="income-grid">
+      <div class="income-item">
+        <div class="income-label">today's income</div>
+        <div class="income-value" id="todayIncomeValue">0 UGX</div>
+      </div>
+      <div class="income-item">
+        <div class="income-label">total income</div>
+        <div class="income-value" id="totalIncomeValue">0 UGX</div>
+      </div>
+      <div class="income-item">
+        <div class="income-label">month's income</div>
+        <div class="income-value" id="monthIncomeValue">0 UGX</div>
+      </div>
+    </div>
+
+    <!-- Incentive Row - UPDATED: Now shows Subsidiary Motivators total -->
+    <div class="incentive-row">
+      <span class="incentive-label">Subsidiary Motivators</span>
+      <span class="incentive-value" id="subsidiaryMotivatorsTotal">0 UGX</span>
+    </div>
+
+    <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" -->
+    <div class="menu-grid">
+      <div class="menu-item" onclick="showActivityLog()"><i class="fas fa-clipboard-list"></i> Activity Log</div>
+      <div class="menu-item" onclick="showTeamReport()"><i class="fas fa-users"></i> team report</div>
+      <div class="menu-item" onclick="openDailyReportModal()"><i class="fas fa-calendar-alt"></i> daily report</div>
+      <div class="menu-item" onclick="showGoldenHandshake()"><i class="fas fa-handshake"></i> Golden Handshake</div>
+      <div class="menu-item" onclick="showGrowthJourney()"><i class="fas fa-seedling"></i> my growth journey</div>
+      <div class="menu-item" onclick="showTransactionHistory()"><i class="fas fa-history"></i> transaction history</div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+    <div class="nav-item active" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+  </div>
+</div>
+
+<!-- GOLDEN HANDSHAKE PAGE -->
+<div id="goldenHandshakePage">
+  <div class="scroll-content">
+    <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+    <div class="golden-header">
+      <i class="fas fa-handshake" style="font-size: 2.5rem; color: #7d5ba6;"></i>
+      <h2>Golden Handshake</h2>
+    </div>
+    <div id="goldenHandshakeContent"></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+  </div>
+</div>
+
+<!-- ACTIVITY LOG PAGE - UPDATED: Renamed from taskRecordPage, title changed -->
+<div id="taskRecordPage">
+  <div class="scroll-content">
+    <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+    <h3 style="margin-bottom:20px;">📋 Activity Log</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalReadBooks">0</div>
+        <div class="stat-label">Read Books</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="completeBooks">0</div>
+        <div class="stat-label">Complete Books</div>
+      </div>
+      <!-- Pending Books stat removed -->
+    </div>
+    <div class="section-title">📚 Book History</div>
+    <table class="task-table" id="taskHistoryTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Book</th>
+          <th>Status</th>
+          <th>Reward</th>
+        </tr>
+      </thead>
+      <tbody id="taskHistoryBody"></tbody>
+    </table>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+  </div>
+</div>
+
+<!-- TEAM REPORT PAGE - UPDATED for 3 columns -->
+<div id="teamReportPage">
+  <div class="scroll-content">
+    <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+    <h3 style="margin-bottom:20px;">👥 Team Report</h3>
+    <div class="team-report-container" id="teamReportContainer">
+      <!-- Columns will be filled by JavaScript -->
+    </div>
+    <div class="team-stats">
+      <div><span>Total Team Members:</span> <span id="totalTeamMembers">0</span></div>
+      <div><span>Active Today:</span> <span id="activeTeamMembers">0</span></div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+  </div>
+</div>
+
+  <!-- LEVEL PAGE -->
+  <div id="levelPage">
+    <div class="scroll-content">
+      <div class="level-page-title">LEVELS PRICE AND SALARIES</div>
+      <div class="operating-wallet-display" id="levelOperatingWallet">Operating Wallet: 0 UGX</div>
+      <div class="incentive-wallet-display" id="levelIncentiveWallet">Incentive Wallet: 0 UGX</div>
+      
+      <!-- D1 -->
+      <div class="level-card-ultra" style="background-color: #e6f7ff;">
+        <div class="level-name-ultra" style="color: #0066cc;">D1</div>
+        <div class="level-detail-ultra">UGX 63000. 2 tasks</div>
+        <div class="level-detail-ultra">UGX 1125 per task</div>
+        <div class="level-detail-ultra">UGX 2250 daily</div>
+        <div class="click-to-join-ultra" style="color: #0066cc;" onclick="purchaseLevel(1, 63000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D2 -->
+      <div class="level-card-ultra" style="background-color: #e6ffe6;">
+        <div class="level-name-ultra" style="color: #008000;">D2</div>
+        <div class="level-detail-ultra">UGX 200000. 4 tasks</div>
+        <div class="level-detail-ultra">UGX 1775 per task</div>
+        <div class="level-detail-ultra">UGX 7100 daily</div>
+        <div class="click-to-join-ultra" style="color: #008000;" onclick="purchaseLevel(2, 200000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D3 -->
+      <div class="level-card-ultra" style="background-color: #ffffe6;">
+        <div class="level-name-ultra" style="color: #999900;">D3</div>
+        <div class="level-detail-ultra">UGX 532000. 12 tasks</div>
+        <div class="level-detail-ultra">UGX 1584 per task</div>
+        <div class="level-detail-ultra">UGX 19008 daily</div>
+        <div class="click-to-join-ultra" style="color: #999900;" onclick="purchaseLevel(3, 532000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D4 -->
+      <div class="level-card-ultra" style="background-color: #fff0e6;">
+        <div class="level-name-ultra" style="color: #cc6600;">D4</div>
+        <div class="level-detail-ultra">UGX 1450000 16 tasks</div>
+        <div class="level-detail-ultra">UGX 3238 per task</div>
+        <div class="level-detail-ultra">UGX 51808 per day</div>
+        <div class="click-to-join-ultra" style="color: #cc6600;" onclick="purchaseLevel(4, 1450000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D5 -->
+      <div class="level-card-ultra" style="background-color: #ffe6f0;">
+        <div class="level-name-ultra" style="color: #cc3399;">D5</div>
+        <div class="level-detail-ultra">UGX 3920000 24 tasks</div>
+        <div class="level-detail-ultra">UGX 6050 per task</div>
+        <div class="level-detail-ultra">UGX 145200 per day</div>
+        <div class="click-to-join-ultra" style="color: #cc3399;" onclick="purchaseLevel(5, 3920000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D6 -->
+      <div class="level-card-ultra" style="background-color: #f0e6ff;">
+        <div class="level-name-ultra" style="color: #6633cc;">D6</div>
+        <div class="level-detail-ultra">UGX 10640000 40 tasks</div>
+        <div class="level-detail-ultra">UGX 9500 per task</div>
+        <div class="level-detail-ultra">UGX 380000 daily</div>
+        <div class="click-to-join-ultra" style="color: #6633cc;" onclick="purchaseLevel(6, 10640000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D7 -->
+      <div class="level-card-ultra" style="background-color: #e6ffff;">
+        <div class="level-name-ultra" style="color: #009999;">D7</div>
+        <div class="level-detail-ultra">UGX 40040000 52 tasks</div>
+        <div class="level-detail-ultra">UGX 27500 per task</div>
+        <div class="level-detail-ultra">UGX 1430000 per day</div>
+        <div class="click-to-join-ultra" style="color: #009999;" onclick="purchaseLevel(7, 40040000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D8 -->
+      <div class="level-card-ultra" style="background-color: #ffe6e6;">
+        <div class="level-name-ultra" style="color: #cc3333;">D8</div>
+        <div class="level-detail-ultra">UGX 57120000 64 tasks</div>
+        <div class="level-detail-ultra">UGX 31875 per task</div>
+        <div class="level-detail-ultra">UGX 2040000 per day</div>
+        <div class="click-to-join-ultra" style="color: #cc3333;" onclick="purchaseLevel(8, 57120000)">Click to join</div>
+      </div>
+      <div class="level-separator-ultra"></div>
+      
+      <!-- D9 -->
+      <div class="level-card-ultra" style="background-color: #f2e6ff;">
+        <div class="level-name-ultra" style="color: #7733cc;">D9</div>
+        <div class="level-detail-ultra">UGX 84000000 74 tasks</div>
+        <div class="level-detail-ultra">UGX 40000 per task</div>
+        <div class="level-detail-ultra">UGX 3000000 per day</div>
+        <div class="click-to-join-ultra" style="color: #7733cc;" onclick="purchaseLevel(9, 84000000)">Click to join</div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+      <div class="nav-item active" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+    </div>
+  </div>
+
+  <!-- TASK PAGE (BOOKS PAGE) - 2 PER ROW GRID -->
+  <div id="taskPage">
+    <div class="scroll-content">
+      <h3 style="margin-bottom:20px;">📚 Coffee Library</h3>
+      <div class="books-grid" id="taskBookGrid"></div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+      <div class="nav-item active" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+    </div>
+  </div>
+
+  <!-- INCOME PAGE - UPDATED WITH CORRECT VALUES AND NO DOWNLOAD -->
+  <div id="incomePage">
+    <div class="scroll-content">
+      <!-- Page Title -->
+      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
+          <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
+        </div>
+        <!-- Download hint - REMOVED -->
+      </div>
+
+      <!-- Income Table - UPDATED with correct values and NO download functionality -->
+      <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 10px;">
+        <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
+          <thead>
+            <tr style="background: #7d5ba6; color: white;">
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">LEVEL</th>
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT (UGX)</th>
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DAILY INCOME</th>
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">TASKS</th>
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">REVENUE PER TASK</th>
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">MONTHLY INCOME</th>
+              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">ANNUAL INCOME</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- INTERN Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">INTERN</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc; font-weight: 600; color: #28a745;">FREE</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
+            </tr>
+            
+            <!-- D1 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D1</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">63,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,250</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,125</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">67,500</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">821,250</td>
+            </tr>
+            
+            <!-- D2 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D2</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">200,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,100</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,775</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">213,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,591,500</td>
+            </tr>
+            
+            <!-- D3 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D3</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">532,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">19,008</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">12</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,584</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">570,240</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,938,920</td>
+            </tr>
+            
+            <!-- D4 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D4</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,450,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">51,808</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">16</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,238</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,554,240</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">18,909,920</td>
+            </tr>
+            
+            <!-- D5 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D5</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,920,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">145,200</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">24</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,050</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,356,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52,998,000</td>
+            </tr>
+            
+            <!-- D6 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D6</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">10,640,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">380,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">9,500</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">11,400,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">138,700,000</td>
+            </tr>
+            
+            <!-- D7 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D7</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,040,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,430,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">27,500</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">42,900,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">521,950,000</td>
+            </tr>
+            
+            <!-- D8 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D8</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">57,120,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,040,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">31,875</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">61,200,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">744,600,000</td>
+            </tr>
+            
+            <!-- D9 Row -->
+            <tr>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D9</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">84,000,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,000,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">74</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">90,000,000</td>
+              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,095,000,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- LEVEL EXPLANATIONS - Professional Edition (UPDATED INTERN) -->
+      <div style="margin-top: 30px;">
+        <h3 style="color: #4a3b5e; margin-bottom: 15px; font-size: 1.3rem;">📋 LEVEL EXPLANATIONS</h3>
+        
+        <!-- Intern - UPDATED -->
+        <div style="background: #f5edff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #7d5ba6;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📋 INTERN "The Foundation Builder"</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Every empire starts with a solid foundation. 1,500 daily | 6,000 monthly across 4 days. Withdrawals not available during this trial period – focus on learning. After 4 days, upgrade to D1 to continue earning.</div>
+        </div>
+        
+        <!-- D1 -->
+        <div style="background: #e6f0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #0066cc;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🎓 D1 · coffee apprentice</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">You've earned your first certification. 2,250 daily | 67,500 monthly | 821,250 annually. 63,000 UGX invested returns in 28 days. Withdrawals unlocked. Your journey begins.</div>
+        </div>
+        
+        <!-- D2 -->
+        <div style="background: #cce0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #008000;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🌿 D2 · coffee grower</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Mastery of four daily tasks. 7,100 daily | 213,000 monthly | 2.59M annually. Your expertise is growing, and so is your portfolio. Referral commissions now at three levels.</div>
+        </div>
+        
+        <!-- D3 -->
+        <div style="background: #ccf0f0; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #009999;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">☕ D3 · coffee farmer</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">168% growth from previous level. 19,008 daily | 570,240 monthly | 6.94M annually. You understand the economics of coffee. Your analytical skills are paying dividends.</div>
+        </div>
+        
+        <!-- D4 -->
+        <div style="background: #ccffcc; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #00aa00;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">💼 D4 · coffee specialist</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Managing significant assets. 51,808 daily | 1.55M monthly | 18.9M annually. You've crossed the millionaire threshold. Your coffee estate is thriving.</div>
+        </div>
+        
+        <!-- D5 -->
+        <div style="background: #fff0b3; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #cc9900;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📈 D5 · coffee expert</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Strategic earnings of 145,200 daily. 4.36M monthly | 53M annually. Your wealth management skills are exemplary. Multiple income streams now optimized.</div>
+        </div>
+        
+        <!-- D6 -->
+        <div style="background: #b3b3ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #6633cc;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🏛️ D6 · coffee master</div>
+          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Respected voice in coffee. 380,000 daily | 11.4M monthly | 138.7M annually. Your influence extends beyond personal earnings. Others follow your example.</div>
+        </div>
+        
+        <!-- D7 -->
+        <div style="background: #9966ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #4d1aff; color: white;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">👔 D7 · coffee elite</div>
+          <div style="font-size: 0.85rem; color: white; line-height: 1.4;">C-level earnings. 1.43M daily | 42.9M monthly | 522M annually. You operate at the highest levels of coffee commerce. Boardroom decisions, farm-level results.</div>
+        </div>
+        
+        <!-- D8 -->
+        <div style="background: #993333; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #660000; color: white;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🌍 D8 · coffee ambassador</div>
+          <div style="font-size: 0.85rem; color: white; line-height: 1.4;">International expertise commands 2.04M daily. 61.2M monthly | 744.6M annually. Coffee farms worldwide seek your guidance. Your legacy grows.</div>
+        </div>
+        
+        <!-- D9 -->
+        <div style="background: #000000; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 2px solid gold; color: white;">
+          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🏆 D9 · coffee icon</div>
+          <div style="font-size: 0.85rem; color: white; line-height: 1.4;">Peak achievement: 3M daily | 90M monthly | 1.095B annually. You've reached the summit of coffee education. A billion-shilling career. Icons are remembered. Legends like you.</div>
+        </div>
+      </div>
+
+      <!-- QUICK TIPS -->
+      <div style="margin-top: 25px; padding: 15px; background: #f5edff; border-radius: 15px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.8rem;">
+          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">⚡ D1: 28-day ROI</span>
+          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">📈 Exponential growth</span>
+          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">💰 Referrals: 10%/4%/1%</span>
+          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">🏧 Withdrawals D1+</span>
+        </div>
+      </div>
+
+      <!-- ===== NEW: FARMER POSITIONS TABLE ===== -->
+      <div style="margin-top: 30px; background: #f0f7f0; border-radius: 20px; padding: 20px; border: 2px solid #28a745;">
+        <h3 style="color: #28a745; margin-bottom: 15px;"><i class="fas fa-trophy"></i> coffee farmer positions</h3>
+        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+          <div style="font-weight: 700; color: #28a745;">🏘️ village farmer</div>
+          <div>20 a-level · ugx 89,000 monthly</div>
+        </div>
+        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+          <div style="font-weight: 700; color: #28a745;">📍 parish farmer</div>
+          <div>50 a-level · ugx 268,000 monthly</div>
+        </div>
+        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+          <div style="font-weight: 700; color: #28a745;">🏡 sub-county farmer</div>
+          <div>95 a-level · ugx 530,000 monthly</div>
+        </div>
+        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+          <div style="font-weight: 700; color: #28a745;">🏢 county farmer</div>
+          <div>410 a+b (min 160 a) · ugx 2,100,000 monthly</div>
+          <div style="font-size: 0.8rem; color: #666;">+ pickup station · 30k weekly airtime · 300k transport</div>
+        </div>
+        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+          <div style="font-weight: 700; color: #28a745;">🌍 regional farmer</div>
+          <div>1300 a+b+c · ugx 9,000,000 monthly</div>
+          <div style="font-size: 0.8rem; color: #666;">+ office · company car · daily allowance · data & airtime</div>
+        </div>
+        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+          <div style="font-weight: 700; color: #28a745;">🇺🇬 national farmer (only 4!)</div>
+          <div>3700 a+b+c · ugx 29,000,000 monthly</div>
+          <div style="font-size: 0.8rem; color: #666;">+ main office · premium car · 200k daily · premium data</div>
+        </div>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">💰 all salaries paid on 30th to operating wallet</p>
+      </div>
+    </div>
+    
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+      <div class="nav-item active" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+    </div>
+  </div>
+
+  <!-- GROWTH JOURNEY PAGE - BLUE SKY THEME -->
+  <div id="growthJourneyPage" class="growth-journey-page">
+    <div class="scroll-content">
+      <button class="back-btn" onclick="showPage('profile')" style="color: #003366;"><i class="fas fa-arrow-left"></i> back to profile</button>
+      
+      <div class="growth-title">☁️ my growth journey</div>
+      <div class="growth-subtitle">grow your coffee community</div>
+
+      <!-- Current Position Card -->
+      <div class="growth-card">
+        <div class="position-badge" id="currentPositionBadge">🏘️ village farmer</div>
+        <div class="progress-label">
+          <span>a-level members: <span id="currentACount">15</span>/20</span>
+          <span><span id="currentProgressPercent">75</span>%</span>
+        </div>
+        <div class="progress-bg">
+          <div class="progress-fill-blue" id="currentProgressBar" style="width: 75%;"></div>
+        </div>
+        <div style="font-size: 0.9rem; color: #003366;">💰 ugx 89,000 monthly</div>
+      </div>
+
+      <!-- Next Position Card (if qualified) -->
+      <div class="growth-card" id="nextPositionCard" style="border: 2px solid #28a745;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="position-badge" style="background: #28a745; color: white;">📍 parish farmer</span>
+          <span style="color: #28a745; font-weight: 700;">✅ qualified!</span>
+        </div>
+        <div class="progress-label">
+          <span>your a-level: 52/50</span>
+        </div>
+        <div style="margin: 15px 0;">
+          <div>💰 ugx 268,000 monthly</div>
+        </div>
+        <button class="confirm-upgrade-btn" onclick="confirmPositionUpgrade()">confirm upgrade</button>
+      </div>
+
+      <!-- All Positions Summary -->
+      <div class="growth-card">
+        <h3 style="color: #003366; margin-bottom: 15px;">☕ all farmer positions</h3>
+        <div class="benefit-item"><span class="benefit-icon">🏘️</span> village · 20a · 89k</div>
+        <div class="benefit-item"><span class="benefit-icon">📍</span> parish · 50a · 268k</div>
+        <div class="benefit-item"><span class="benefit-icon">🏡</span> sub-county · 95a · 530k</div>
+        <div class="benefit-item"><span class="benefit-icon">🏢</span> county · 410a+b · 2.1m + benefits</div>
+        <div class="benefit-item"><span class="benefit-icon">🌍</span> regional · 1300a+b+c · 9m + benefits</div>
+        <div class="benefit-item"><span class="benefit-icon">🇺🇬</span> national · 3700a+b+c · 29m + benefits</div>
+      </div>
+
+      <!-- Team Summary -->
+      <div class="growth-card">
+        <h3 style="color: #003366; margin-bottom: 15px;">📊 your team</h3>
+        <div class="team-summary">
+          <div class="team-stat"><span class="number" id="teamACount">15</span><span class="label">a-level</span></div>
+          <div class="team-stat"><span class="number" id="teamBCount">8</span><span class="label">b-level</span></div>
+          <div class="team-stat"><span class="number" id="teamCCount">3</span><span class="label">c-level</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+    </div>
+  </div>
+
+  <!-- STAKES PAGE - NEW PAGE -->
+  <div id="stakesPage">
+    <div class="scroll-content">
+      <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+      
+      <div class="stakes-header">
+        <i class="fas fa-trophy"></i>
+        <h2>STAKES</h2>
+      </div>
+      
+      <div class="stakes-card">
+        <i class="fas fa-coins"></i>
+        <h3>Coming Soon!</h3>
+        <p>Place your stakes and win big rewards. This feature is under development.</p>
+      </div>
+      
+      <div style="background: #f5edff; border-radius: 15px; padding: 20px; margin-top: 20px;">
+        <h4 style="color: #4a3b5e; margin-bottom: 15px;">How Stakes Will Work:</h4>
+        <ul style="padding-left: 20px; color: #666;">
+          <li>🔹 Stake your earnings for a chance to win more</li>
+          <li>🔹 Higher stakes = higher rewards</li>
+          <li>🔹 Daily and weekly stake options</li>
+          <li>🔹 Special events with bonus prizes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+    </div>
+  </div>
+
+  <!-- TRANSACTION HISTORY PAGE - UPDATED WITH FILTERS -->
+  <div id="transactionHistoryPage">
+    <div class="scroll-content">
+      <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+      <h3 style="margin-bottom:20px;">📜 Transaction History</h3>
+      
+      <!-- Filter Tabs -->
+      <div class="filter-tabs" id="filterTabs">
+        <div class="filter-tab active" onclick="filterTransactions('all')" id="filter-all">[ALL]</div>
+        <div class="filter-tab" onclick="filterTransactions('book')" id="filter-book">📚 <span id="book-count">0</span></div>
+        <div class="filter-tab" onclick="filterTransactions('referral')" id="filter-referral">👥 <span id="referral-count">0</span></div>
+        <div class="filter-tab" onclick="filterTransactions('deposit')" id="filter-deposit">💰 <span id="deposit-count">0</span></div>
+        <div class="filter-tab" onclick="filterTransactions('withdrawal')" id="filter-withdrawal">💸 <span id="withdrawal-count">0</span></div>
+        <div class="filter-tab" onclick="filterTransactions('refund')" id="filter-refund">🔄 <span id="refund-count">0</span></div>
+        <div class="filter-tab" onclick="filterTransactions('level_upgrade')" id="filter-upgrade">⬆️ <span id="upgrade-count">0</span></div>
+      </div>
+      
+      <div id="currentFilterLabel" style="margin-bottom: 10px; font-size: 0.9rem; color: #666;">Showing: ALL TRANSACTIONS</div>
+      
+      <div class="transaction-list" id="transactionList">
+        <!-- Transactions will be loaded here -->
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+    </div>
+  </div>
+
+  <!-- POSITION SALARY PAGE - COMPLETELY REMOVED -->
+</div>
 
   <!-- NEW DEPOSIT MODAL - GREEN THEME WITH 4 SCREENS (UPDATED) -->
   <div class="modal-overlay" id="depositModal">
@@ -4782,6 +4843,16 @@
       </div>
     </div>
   </div>
+
+  <!-- PULL-TO-REFRESH OVERLAY (NEW - ADDED SAFELY) -->
+  <div id="refreshOverlay" class="refresh-overlay">
+    <div class="refresh-spinner"></div>
+    <div class="refresh-message" id="refreshMessage">Refreshing...</div>
+    <div class="refresh-progress">
+      <div class="refresh-progress-fill" id="refreshProgressFill"></div>
+    </div>
+  </div>
+  <div id="pullIndicator" class="pull-indicator">↓ pull to refresh</div>
 
   <script>
 // ========== FIREBASE CONFIGURATION ==========
@@ -5385,91 +5456,132 @@ function payReferralCommissions(userPhone) {
   saveUsers();
 }
 
-// ===== SYSTEM 1: SUBSIDIARY MOTIVATORS - NEW VERSION =====
+// ===== SYSTEM 1: SUBSIDIARY MOTIVATORS - MODIFIED WITH DEBUG LOGS =====
 // Upline gets 1% of what Direct Referrer earns
 function paySubsidiaryMotivators(readerPhone) {
   const reader = users[readerPhone];
   if (!reader) return;
   
+  console.log('🔍 ===== SUBSIDIARY MOTIVATORS DEBUG =====');
+  console.log(`📱 Reader: ${reader.phone} (${reader.fullName})`);
+
   // Get reader's level and daily earnings
   const readerLevel = reader.memberLevel || 0;
   const readerDaily = (levels[readerLevel]?.dailyBooks || 0) * (levels[readerLevel]?.reward || 0);
   
-  if (readerDaily <= 0) return;
-  
+  console.log(`   Level: D${readerLevel}, Daily potential: ${readerDaily.toLocaleString()} UGX`);
+
+  if (readerDaily <= 0) {
+    console.log('❌ Reader daily potential is zero, aborting.');
+    return;
+  }
+
   // Find referrers chain
   const referrers = findReferrers(readerPhone);
-  if (!referrers.a) return; // No direct referrer, no bonuses
-  
+  if (!referrers.a) {
+    console.log('❌ No direct referrer (A-level) found.');
+    return;
+  }
+
+  console.log(`🔗 Referrer A: ${referrers.a}`);
+
   // ===== STEP 1: Calculate and pay DIRECT REFERRER (A-level) =====
   const directReferrer = users[referrers.a];
-  if (!directReferrer) return;
-  
+  if (!directReferrer) {
+    console.log('❌ Direct referrer user object not found.');
+    return;
+  }
+
   const directLevel = directReferrer.memberLevel || 0;
   const directDaily = (levels[directLevel]?.dailyBooks || 0) * (levels[directLevel]?.reward || 0);
-  
+
+  console.log(`👤 Direct Referrer (A): ${directReferrer.phone} (${directReferrer.fullName})`);
+  console.log(`   Level: D${directLevel}, Daily potential: ${directDaily.toLocaleString()} UGX`);
+
   let directBonus = 0;
-  
+
   // Compare direct referrer's level with reader's level
   if (directLevel >= readerLevel) {
     // Direct referrer is HIGHER or EQUAL than reader
     // Use MIN of both daily earnings
     const minDaily = Math.min(directDaily, readerDaily);
     directBonus = Math.floor(minDaily * 0.04); // 4%
+    console.log(`🔢 Calculation: Referrer level (D${directLevel}) >= Reader level (D${readerLevel}) → using MIN(${directDaily.toLocaleString()}, ${readerDaily.toLocaleString()}) = ${minDaily.toLocaleString()}`);
+    console.log(`   4% of ${minDaily.toLocaleString()} = ${directBonus} UGX`);
   } else {
     // Direct referrer is LOWER than reader
     // Use direct referrer's own daily earnings
     directBonus = Math.floor(directDaily * 0.04); // 4%
+    console.log(`🔢 Calculation: Referrer level (D${directLevel}) < Reader level (D${readerLevel}) → using referrer's own daily: ${directDaily.toLocaleString()}`);
+    console.log(`   4% of ${directDaily.toLocaleString()} = ${directBonus} UGX`);
   }
-  
+
   // Pay direct referrer
   if (directBonus > 0) {
+    const beforeWallet = directReferrer.incentiveWallet || 0;
     directReferrer.incentiveWallet = (directReferrer.incentiveWallet || 0) + directBonus;
-    
+
+    console.log(`💰 Payment: +${directBonus} UGX to ${directReferrer.phone}'s Incentive Wallet (was ${beforeWallet.toLocaleString()}, now ${directReferrer.incentiveWallet.toLocaleString()})`);
+
     // Track statistics
     directReferrer.subsidiaryMotivators = directReferrer.subsidiaryMotivators || { a:0, b:0, total:0 };
     directReferrer.subsidiaryMotivators.a += directBonus;
     directReferrer.subsidiaryMotivators.total += directBonus;
-    
+
     // Add transaction record
     directReferrer.transactions = directReferrer.transactions || [];
-    directReferrer.transactions.unshift({ 
-      type: 'subsidiary', 
-      level: 'A', 
-      amount: directBonus, 
-      date: new Date().toLocaleString(), 
-      desc: `🎁 4% bonus from D${readerLevel} team member ${reader.phone}'s reading` 
+    directReferrer.transactions.unshift({
+      type: 'subsidiary',
+      level: 'A',
+      amount: directBonus,
+      date: new Date().toLocaleString(),
+      desc: `🎁 4% bonus from D${readerLevel} team member ${reader.phone}'s reading`
     });
+  } else {
+    console.log(`ℹ️ Direct bonus was 0, nothing paid.`);
   }
-  
+
   // ===== STEP 2: Calculate and pay UPLINE (B-level) =====
   // Upline gets 1% of what direct referrer earned
   if (referrers.b && users[referrers.b]) {
     const upline = users[referrers.b];
     const uplineBonus = Math.floor(directBonus * 0.01); // 1% of direct's bonus
-    
+
+    console.log(`⬆️ Upline (B): ${upline.phone} (${upline.fullName})`);
+
     if (uplineBonus > 0) {
+      const beforeUplineWallet = upline.incentiveWallet || 0;
       upline.incentiveWallet = (upline.incentiveWallet || 0) + uplineBonus;
-      
-      // Track statistics
+
+      console.log(`   Calculation: 1% of A's bonus (${directBonus}) = ${uplineBonus} UGX`);
+      console.log(`   Paid: +${uplineBonus} UGX to Incentive Wallet (was ${beforeUplineWallet.toLocaleString()}, now ${upline.incentiveWallet.toLocaleString()})`);
+
       upline.subsidiaryMotivators = upline.subsidiaryMotivators || { a:0, b:0, total:0 };
       upline.subsidiaryMotivators.b += uplineBonus;
       upline.subsidiaryMotivators.total += uplineBonus;
-      
-      // Add transaction record
+
       upline.transactions = upline.transactions || [];
-      upline.transactions.unshift({ 
-        type: 'subsidiary', 
-        level: 'B', 
-        amount: uplineBonus, 
-        date: new Date().toLocaleString(), 
-        desc: `🎁 1% of direct referrer's bonus from ${reader.phone}'s reading` 
+      upline.transactions.unshift({
+        type: 'subsidiary',
+        level: 'B',
+        amount: uplineBonus,
+        date: new Date().toLocaleString(),
+        desc: `🎁 1% of direct referrer's bonus from ${reader.phone}'s reading`
       });
+    } else {
+      console.log(`   Upline bonus was 0 (1% of ${directBonus} rounds down).`);
     }
+  } else {
+    console.log(`ℹ️ No B-level upline found.`);
   }
-  
+
   // ===== STEP 3: C-level gets nothing for Subsidiary Motivators =====
-  
+  if (referrers.c) {
+    console.log(`❌ C-level (${referrers.c}) gets no subsidiary motivator bonus.`);
+  }
+
+  console.log('✅ ===== SUBSIDIARY MOTIVATORS COMPLETE =====\n');
+
   saveUsers();
 }
 
@@ -5653,6 +5765,9 @@ function handleLogin(e) {
 
 // ========== PAGE NAVIGATION ==========
 function showPage(page) {
+  // Save current state before changing page (for refresh restoration)
+  saveSessionState();
+
   // Clear any active reading timer when changing pages - FIXED: Remove pending task from database
   if (activeReadingTimer) {
     clearInterval(activeReadingTimer);
@@ -8261,9 +8376,191 @@ function handleReferralLink() {
   }
 }
 
+// ========== PULL-TO-REFRESH FUNCTIONS (NEW) ==========
+let touchStartY = 0;
+let touchCurrentY = 0;
+let isPulling = false;
+let refreshThreshold = 100; // pixels to pull before triggering refresh
+let refreshProgress = 0;
+
+function handleTouchStart(e) {
+  // Only enable pull-to-refresh when scrolled to the top
+  const scrollContent = document.querySelector('.scroll-content');
+  if (scrollContent && scrollContent.scrollTop === 0) {
+    touchStartY = e.touches[0].clientY;
+    isPulling = true;
+    document.getElementById('pullIndicator').style.display = 'block';
+    document.getElementById('pullIndicator').textContent = '↓ pull to refresh';
+  }
+}
+
+function handleTouchMove(e) {
+  if (!isPulling) return;
+  touchCurrentY = e.touches[0].clientY;
+  const pullDistance = touchCurrentY - touchStartY;
+
+  if (pullDistance > 0) {
+    e.preventDefault(); // Prevent default pull-to-refresh
+    const indicator = document.getElementById('pullIndicator');
+    indicator.style.display = 'block';
+    if (pullDistance < refreshThreshold) {
+      indicator.textContent = `↓ ${Math.round(pullDistance)}px`;
+    } else {
+      indicator.textContent = '↻ release to refresh';
+    }
+  }
+}
+
+function handleTouchEnd(e) {
+  if (!isPulling) return;
+  const pullDistance = touchCurrentY - touchStartY;
+  isPulling = false;
+  document.getElementById('pullIndicator').style.display = 'none';
+
+  if (pullDistance >= refreshThreshold) {
+    // Trigger refresh
+    performRefresh();
+  }
+}
+
+function performRefresh() {
+  // Show overlay
+  const overlay = document.getElementById('refreshOverlay');
+  const messageEl = document.getElementById('refreshMessage');
+  const progressFill = document.getElementById('refreshProgressFill');
+  overlay.style.display = 'flex';
+  messageEl.textContent = 'Starting refresh...';
+  progressFill.style.width = '0%';
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 5;
+    if (progress <= 30) {
+      messageEl.textContent = 'Checking local data...';
+    } else if (progress <= 60) {
+      messageEl.textContent = 'Verifying with server...';
+    } else if (progress <= 90) {
+      messageEl.textContent = 'Restoring session...';
+    }
+    progressFill.style.width = progress + '%';
+    if (progress >= 100) {
+      clearInterval(interval);
+    }
+  }, 50);
+
+  // Save current state
+  saveSessionState();
+
+  // Restore from localStorage and Firebase
+  setTimeout(() => {
+    restoreSessionState().then(() => {
+      clearInterval(interval);
+      progressFill.style.width = '100%';
+      messageEl.textContent = 'Refresh complete!';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 500);
+    }).catch(() => {
+      clearInterval(interval);
+      messageEl.textContent = 'Error, using cached data';
+      progressFill.style.width = '100%';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        // Still try to restore from cache
+        restoreSessionState(true); // force cache mode
+      }, 1000);
+    });
+  }, 300); // Small delay to show progress
+}
+
+function saveSessionState() {
+  if (!currentUser) return;
+  const scrollContent = document.querySelector('.scroll-content');
+  const scrollY = scrollContent ? scrollContent.scrollTop : 0;
+  const lastPage = getCurrentPage();
+  const sessionData = {
+    user: currentUser,
+    page: lastPage,
+    scrollY: scrollY,
+    timestamp: Date.now(),
+    activeBookId: activeReadingBookId,
+    activeTimer: activeReadingTimer ? true : false
+  };
+  localStorage.setItem('sessionState', JSON.stringify(sessionData));
+  console.log('💾 Session saved:', sessionData);
+}
+
+function getCurrentPage() {
+  if (document.getElementById('mainDashboard').style.display === 'flex') return 'home';
+  if (document.getElementById('profilePage').style.display === 'flex') return 'profile';
+  if (document.getElementById('levelPage').style.display === 'flex') return 'level';
+  if (document.getElementById('taskPage').style.display === 'flex') return 'task';
+  if (document.getElementById('incomePage').style.display === 'flex') return 'income';
+  if (document.getElementById('taskRecordPage').style.display === 'flex') return 'taskRecord';
+  if (document.getElementById('teamReportPage').style.display === 'flex') return 'teamReport';
+  if (document.getElementById('goldenHandshakePage').style.display === 'flex') return 'goldenHandshake';
+  if (document.getElementById('transactionHistoryPage').style.display === 'flex') return 'transactionHistory';
+  if (document.getElementById('growthJourneyPage').style.display === 'flex') return 'growthJourney';
+  if (document.getElementById('stakesPage').style.display === 'flex') return 'stakes';
+  return 'home';
+}
+
+async function restoreSessionState(useCacheOnly = false) {
+  const saved = localStorage.getItem('sessionState');
+  if (!saved) {
+    console.log('ℹ️ No saved session found.');
+    return;
+  }
+
+  try {
+    const session = JSON.parse(saved);
+    console.log('📂 Restoring session:', session);
+
+    // Restore user if not already logged in
+    if (!currentUser && session.user && users[session.user]) {
+      currentUser = session.user;
+      localStorage.setItem('currentUser', currentUser);
+      loadUserData();
+    } else if (currentUser && users[currentUser]) {
+      loadUserData();
+    }
+
+    // Restore page
+    if (session.page) {
+      showPage(session.page);
+    }
+
+    // Restore scroll position after a short delay (to let page render)
+    setTimeout(() => {
+      const scrollContent = document.querySelector('.scroll-content');
+      if (scrollContent && session.scrollY) {
+        scrollContent.scrollTop = session.scrollY;
+        console.log('📜 Scroll restored to:', session.scrollY);
+      }
+    }, 100);
+
+    console.log('✅ Session restored successfully.');
+  } catch (e) {
+    console.error('❌ Failed to restore session:', e);
+  }
+}
+
 // ========== INIT ==========
 window.onload = function() {
   loadFromFirebase();
+
+  // Add touch event listeners for pull-to-refresh
+  const scrollContent = document.querySelector('.scroll-content');
+  if (scrollContent) {
+    scrollContent.addEventListener('touchstart', handleTouchStart, { passive: false });
+    scrollContent.addEventListener('touchmove', handleTouchMove, { passive: false });
+    scrollContent.addEventListener('touchend', handleTouchEnd, { passive: false });
+  }
+
+  // Try to restore session on load
+  setTimeout(() => {
+    restoreSessionState();
+  }, 500);
 
   db.ref('users').once('value', (snapshot) => {
     if (!snapshot.exists()) {
