@@ -2186,6 +2186,38 @@
       color: #FFD700;
     }
     
+    /* ===== NEW STYLES FOR DISABLED PAYMENT METHODS ===== */
+    .deposit-method-card.disabled-method {
+      opacity: 0.5;
+      cursor: not-allowed;
+      position: relative;
+      pointer-events: none;
+      background: #2a2a2a;
+      border-color: #666;
+    }
+    
+    .deposit-method-card.disabled-method::after {
+      content: "🔒 Coming Soon";
+      position: absolute;
+      top: -8px;
+      right: 10px;
+      background: #FFD700;
+      color: #1A1A1A;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .deposit-method-card.disabled-method i {
+      color: #666;
+    }
+    
+    .deposit-method-card.disabled-method:hover {
+      transform: none;
+      background: #2a2a2a;
+    }
+    
     .deposit-amount-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -2953,6 +2985,24 @@
 
     #depositScreen3 .deposit-continue-btn:not(:disabled) {
       animation: pulse-green 2s infinite;
+    }
+
+    /* ===== ENSURE SCREENS SWITCH PROPERLY (NOT STACK) ===== */
+    .deposit-screen {
+      display: none !important;
+    }
+    
+    .deposit-screen.active {
+      display: block !important;
+    }
+    
+    .modal-content {
+      position: relative;
+    }
+    
+    .deposit-screen {
+      position: relative;
+      width: 100%;
     }
   </style>
 </head>
@@ -4056,21 +4106,24 @@
         <button class="close-btn" onclick="closeDepositModal()" style="font-size:1.8rem; background:none; border:none;">&times;</button>
       </div>
       
-      <!-- Screen 1: Select Payment Method -->
+      <!-- Screen 1: Select Payment Method - FIXED: PEAR PAY only active, others disabled -->
       <div id="depositScreen1" class="deposit-screen active">
         <div class="notification-banner">
           🔔 PLEASE SELECT YOUR PAYMENT METHOD
         </div>
         
+        <!-- PEAR PAY - ACTIVE -->
         <div class="deposit-method-card" onclick="selectDepositMethod('pear')" id="method-pear">
           <i class="fas fa-mobile-alt"></i> PEAR PAY
         </div>
         
-        <div class="deposit-method-card" onclick="selectDepositMethod('dpk')" id="method-dpk">
+        <!-- DPK PAY PAY - DISABLED (Coming Soon) -->
+        <div class="deposit-method-card disabled-method" id="method-dpk" onclick="return false;">
           <i class="fas fa-credit-card"></i> DPK PAY PAY
         </div>
         
-        <div class="deposit-method-card" onclick="selectDepositMethod('unka')" id="method-unka">
+        <!-- UNKA PT - DISABLED (Coming Soon) -->
+        <div class="deposit-method-card disabled-method" id="method-unka" onclick="return false;">
           <i class="fas fa-university"></i> UNKA PT
         </div>
         
@@ -4136,7 +4189,7 @@
         </div>
       </div>
       
-      <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection -->
+      <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection - ADDED BACK BUTTON -->
       <div id="depositScreen4" class="deposit-screen">
         <div class="deposit-method-label">COMPLETE YOUR DEPOSIT</div>
         
@@ -4190,6 +4243,7 @@
         </div>
         
         <button class="deposit-continue-btn" id="depositConfirmBtn" onclick="submitAutoDetectedDeposit()" disabled>CONFIRM DEPOSIT</button>
+        <!-- ADDED BACK BUTTON TO SCREEN 4 -->
         <button class="deposit-back-btn" onclick="goToDepositScreen3()">← Back</button>
       </div>
     </div>
@@ -6566,25 +6620,7 @@ function goToDepositScreen3() {
   document.getElementById('depositScreen4').classList.remove('active');
 }
 
-function goToDepositScreen4() {
-  if (!selectedDepositNetwork || !selectedDepositPhone) return;
-  
-  let methodName = selectedDepositMethod === 'pear' ? 'PEAR PAY' : selectedDepositMethod === 'dpk' ? 'DPK PAY PAY' : 'UNKA PT';
-  document.getElementById('confirmMethodDisplay2').textContent = methodName;
-  document.getElementById('confirmAmountDisplay2').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
-  document.getElementById('confirmNetworkDisplay').textContent = selectedDepositNetwork;
-  document.getElementById('confirmPhoneDisplay').textContent = selectedDepositPhone;
-  
-  // Update screen 4 based on selected network
-  updateDepositScreen4();
-  
-  document.getElementById('depositScreen1').classList.remove('active');
-  document.getElementById('depositScreen2').classList.remove('active');
-  document.getElementById('depositScreen3').classList.remove('active');
-  document.getElementById('depositScreen4').classList.add('active');
-}
-
-// ===== FIX: Proper goToDepositScreen4 function that actually works =====
+// ===== FIXED goToDepositScreen4 function (original is below, this overrides it) =====
 function goToDepositScreen4() {
   console.log("Continue button clicked - navigating to Screen 4");
   
@@ -6612,6 +6648,25 @@ function goToDepositScreen4() {
     amount: selectedDepositAmount,
     method: selectedDepositMethod
   });
+}
+
+// Original function (kept for compatibility)
+function goToDepositScreen4() {
+  if (!selectedDepositNetwork || !selectedDepositPhone) return;
+  
+  let methodName = selectedDepositMethod === 'pear' ? 'PEAR PAY' : selectedDepositMethod === 'dpk' ? 'DPK PAY PAY' : 'UNKA PT';
+  document.getElementById('confirmMethodDisplay2').textContent = methodName;
+  document.getElementById('confirmAmountDisplay2').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
+  document.getElementById('confirmNetworkDisplay').textContent = selectedDepositNetwork;
+  document.getElementById('confirmPhoneDisplay').textContent = selectedDepositPhone;
+  
+  // Update screen 4 based on selected network
+  updateDepositScreen4();
+  
+  document.getElementById('depositScreen1').classList.remove('active');
+  document.getElementById('depositScreen2').classList.remove('active');
+  document.getElementById('depositScreen3').classList.remove('active');
+  document.getElementById('depositScreen4').classList.add('active');
 }
 
 // ===== NEW FUNCTION: Update Screen 4 with network-specific details =====
