@@ -491,7 +491,7 @@
     }
 
     .read-btn.harvest-ready {
-      background: #9b8abf;
+      background: #00CC00 !important;
     }
 
     .read-btn:disabled, .read-btn.disabled {
@@ -2731,6 +2731,178 @@
     .theme-option.blue { background: linear-gradient(135deg, #003366, #87CEEB); }
     .theme-option.orange { background: linear-gradient(135deg, #ff9800, #ffc107); }
     .theme-option.dark { background: linear-gradient(135deg, #1a1a1a, #4d4d4d); }
+    .theme-option.light { background: linear-gradient(135deg, #ffffff, #f0f0f0); border: 2px solid #333; }
+    .theme-option.light:hover { border-color: #7d5ba6; }
+
+    /* ===== LIGHT & DARK THEME STYLES ===== */
+    body.light-theme {
+      background: #ffffff;
+      color: #333333;
+    }
+    
+    body.light-theme .phone {
+      background-color: #ffffff;
+    }
+    
+    body.light-theme .scroll-content {
+      background-color: #ffffff;
+    }
+    
+    body.light-theme .member-card {
+      background: #f5f5f5;
+      border-color: #dddddd;
+    }
+    
+    body.light-theme .member-type {
+      color: #333333;
+    }
+    
+    body.light-theme .member-days {
+      color: #666666;
+    }
+    
+    body.light-theme .book-card {
+      background: #f9f9f9;
+      border-color: #dddddd;
+    }
+    
+    body.light-theme .book-title {
+      color: #333333;
+    }
+    
+    body.light-theme .book-desc {
+      color: #666666;
+    }
+    
+    body.light-theme .operating-wallet-display {
+      background: #f5f5f5;
+      color: #333333;
+    }
+    
+    body.light-theme .incentive-wallet-display {
+      background: #f5f5f5;
+      color: #333333;
+    }
+    
+    body.light-theme .income-table th {
+      background: #7d5ba6;
+    }
+    
+    body.light-theme .income-table td {
+      background: #ffffff;
+      color: #333333;
+    }
+    
+    body.light-theme .menu-item {
+      color: #333333;
+    }
+    
+    body.light-theme .level-detail-ultra {
+      color: #333333;
+    }
+    
+    body.dark-theme {
+      background: #121212;
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .phone {
+      background-color: #1e1e1e;
+    }
+    
+    body.dark-theme .scroll-content {
+      background-color: #1e1e1e;
+    }
+    
+    body.dark-theme .member-card {
+      background: #2d2d2d;
+      border-color: #444444;
+    }
+    
+    body.dark-theme .member-type {
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .member-days {
+      color: #cccccc;
+    }
+    
+    body.dark-theme .book-card {
+      background: #2d2d2d;
+      border-color: #444444;
+    }
+    
+    body.dark-theme .book-title {
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .book-desc {
+      color: #cccccc;
+    }
+    
+    body.dark-theme .operating-wallet-display {
+      background: #2d2d2d;
+      color: #f0f0f0;
+      border-color: #7d5ba6;
+    }
+    
+    body.dark-theme .incentive-wallet-display {
+      background: #2d2d2d;
+      color: #f0f0f0;
+      border-color: #b8a3d9;
+    }
+    
+    body.dark-theme .income-table th {
+      background: #7d5ba6;
+    }
+    
+    body.dark-theme .income-table td {
+      background: #2d2d2d;
+      color: #f0f0f0;
+      border-color: #444444;
+    }
+    
+    body.dark-theme .menu-item {
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .level-detail-ultra {
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .bottom-nav {
+      background: #1e1e1e;
+      border-top-color: #7d5ba6;
+    }
+    
+    body.dark-theme .nav-item {
+      color: #cccccc;
+    }
+    
+    body.dark-theme .nav-item.active {
+      color: #7d5ba6;
+    }
+    
+    body.dark-theme .company-line {
+      border-bottom-color: #444444;
+    }
+    
+    body.dark-theme .company-line span {
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .motivation-card {
+      background: #2d2d2d;
+      border-color: #7d5ba6;
+    }
+    
+    body.dark-theme .motivation-message {
+      color: #f0f0f0;
+    }
+    
+    body.dark-theme .motivation-time {
+      color: #cccccc;
+    }
 
     /* ===== NEW STYLES FOR ENHANCED DEPOSIT SYSTEM ===== */
     .deposit-step {
@@ -4353,6 +4525,7 @@
         <div class="theme-option blue" onclick="setTheme('blue')" title="Ocean Blue"></div>
         <div class="theme-option orange" onclick="setTheme('orange')" title="Sunset Orange"></div>
         <div class="theme-option dark" onclick="setTheme('dark')" title="Midnight Dark"></div>
+        <div class="theme-option light" onclick="setTheme('light')" title="Light Mode"></div>
       </div>
       
       <div style="background:#f5edff; border-radius:20px; padding:20px; margin-bottom:20px;">
@@ -5938,11 +6111,17 @@ function setTheme(theme) {
 }
 
 function applyTheme(theme) {
-  const root = document.documentElement;
-  // You can expand this to change colors dynamically
-  // For now, we'll just show a message or store preference
+  // Remove existing theme classes
+  document.body.classList.remove('light-theme', 'dark-theme');
+  
+  // Apply new theme class
+  if (theme === 'light') {
+    document.body.classList.add('light-theme');
+  } else if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+  }
+  
   console.log('Theme applied:', theme);
-  // In a full implementation, you'd change CSS variables here
 }
 
 function updateUserDetailsModal() {
@@ -6501,7 +6680,7 @@ function harvestReward(bookId) {
   loadUserData();
 }
 
-// ========== DEPOSIT FUNCTIONS (UPDATED) ==========
+// ========== DEPOSIT FUNCTIONS (FIXED) ==========
 function openDepositModal() { 
   resetDepositModal();
   document.getElementById('depositModal').style.display = 'flex'; 
@@ -6554,6 +6733,7 @@ function selectDepositMethod(method) {
 }
 
 function selectNetwork(network) {
+  console.log("Network selected:", network);
   selectedDepositNetwork = network;
   document.getElementById('network-mtn').classList.remove('selected');
   document.getElementById('network-airtel').classList.remove('selected');
@@ -6562,17 +6742,54 @@ function selectNetwork(network) {
 }
 
 function validatePhoneNumber() {
-  const phone = document.getElementById('depositPhoneNumber').value;
-  const isValid = phone.length === 10 && phone.startsWith('07');
+  console.log("Validating phone number...");
+  const phoneInput = document.getElementById('depositPhoneNumber');
+  if (!phoneInput) {
+    console.error("Phone input field not found!");
+    return;
+  }
+  
+  const phone = phoneInput.value.trim();
+  const networkSelected = selectedDepositNetwork !== null && selectedDepositNetwork !== undefined;
+  
+  // More flexible validation: exactly 10 digits, first digit 0, second digit 7
+  const isValid = /^07[0-9]{8}$/.test(phone);
+  
+  console.log("Phone:", phone, "Valid:", isValid, "Network selected:", networkSelected);
+  
+  const continueBtn = document.getElementById('depositContinueBtn3');
   const phoneContainer = document.getElementById('phoneInputContainer');
   
-  if (isValid && selectedDepositNetwork) {
+  if (!continueBtn) {
+    console.error("Continue button not found!");
+    return;
+  }
+  
+  if (isValid && networkSelected) {
     selectedDepositPhone = phone;
-    document.getElementById('depositContinueBtn3').disabled = false;
+    continueBtn.disabled = false;
+    continueBtn.style.opacity = "1";
+    continueBtn.style.cursor = "pointer";
+    
     if (phoneContainer) phoneContainer.classList.add('valid');
+    
+    // Visual feedback
+    phoneInput.style.borderColor = "#00ff00";
+    phoneInput.style.boxShadow = "0 0 10px rgba(0, 255, 0, 0.3)";
   } else {
-    document.getElementById('depositContinueBtn3').disabled = true;
+    continueBtn.disabled = true;
+    continueBtn.style.opacity = "0.5";
+    continueBtn.style.cursor = "not-allowed";
+    
     if (phoneContainer) phoneContainer.classList.remove('valid');
+    
+    if (phone.length > 0 && !isValid) {
+      phoneInput.style.borderColor = "#ff0000";
+      phoneInput.style.boxShadow = "0 0 10px rgba(255, 0, 0, 0.3)";
+    } else {
+      phoneInput.style.borderColor = "";
+      phoneInput.style.boxShadow = "";
+    }
   }
 }
 
@@ -6610,9 +6827,15 @@ function goToDepositScreen3() {
   document.getElementById('network-airtel').classList.remove('selected');
   document.getElementById('depositContinueBtn3').disabled = true;
   
-  // Remove valid class
+  // Remove valid class and border styling
   const phoneContainer = document.getElementById('phoneInputContainer');
   if (phoneContainer) phoneContainer.classList.remove('valid');
+  
+  const phoneInput = document.getElementById('depositPhoneNumber');
+  if (phoneInput) {
+    phoneInput.style.borderColor = "";
+    phoneInput.style.boxShadow = "";
+  }
   
   document.getElementById('depositScreen1').classList.remove('active');
   document.getElementById('depositScreen2').classList.remove('active');
@@ -6620,11 +6843,11 @@ function goToDepositScreen3() {
   document.getElementById('depositScreen4').classList.remove('active');
 }
 
-// ===== FIXED goToDepositScreen4 function (original is below, this overrides it) =====
+// FIXED goToDepositScreen4 function - Single version, no duplicates
 function goToDepositScreen4() {
   console.log("Continue button clicked - navigating to Screen 4");
   
-  // Check if we have all required data
+  // Double-check validation
   if (!selectedDepositNetwork) {
     alert("Please select a network first");
     return;
@@ -6650,26 +6873,7 @@ function goToDepositScreen4() {
   });
 }
 
-// Original function (kept for compatibility)
-function goToDepositScreen4() {
-  if (!selectedDepositNetwork || !selectedDepositPhone) return;
-  
-  let methodName = selectedDepositMethod === 'pear' ? 'PEAR PAY' : selectedDepositMethod === 'dpk' ? 'DPK PAY PAY' : 'UNKA PT';
-  document.getElementById('confirmMethodDisplay2').textContent = methodName;
-  document.getElementById('confirmAmountDisplay2').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
-  document.getElementById('confirmNetworkDisplay').textContent = selectedDepositNetwork;
-  document.getElementById('confirmPhoneDisplay').textContent = selectedDepositPhone;
-  
-  // Update screen 4 based on selected network
-  updateDepositScreen4();
-  
-  document.getElementById('depositScreen1').classList.remove('active');
-  document.getElementById('depositScreen2').classList.remove('active');
-  document.getElementById('depositScreen3').classList.remove('active');
-  document.getElementById('depositScreen4').classList.add('active');
-}
-
-// ===== NEW FUNCTION: Update Screen 4 with network-specific details =====
+// ===== FUNCTION: Update Screen 4 with network-specific details =====
 function updateDepositScreen4() {
   const network = selectedDepositNetwork.toLowerCase();
   const networkName = network === 'mtn' ? 'MTN' : 'AIRTEL';
@@ -6687,7 +6891,7 @@ function updateDepositScreen4() {
   document.getElementById('companyNameDisplay').textContent = company.name;
 }
 
-// ===== NEW FUNCTION: Copy company number to clipboard =====
+// ===== FUNCTION: Copy company number to clipboard =====
 function copyCompanyNumber() {
   const network = selectedDepositNetwork.toLowerCase();
   const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144' };
@@ -6696,7 +6900,7 @@ function copyCompanyNumber() {
   });
 }
 
-// ===== NEW FUNCTION: Detect TID, amount, and phone from message =====
+// ===== FUNCTION: Detect TID, amount, and phone from message =====
 function detectFromMessage(text) {
   const result = {
     tid: null,
@@ -6736,7 +6940,7 @@ function detectFromMessage(text) {
   return result;
 }
 
-// ===== NEW FUNCTION: Validate deposit message =====
+// ===== FUNCTION: Validate deposit message =====
 function validateDepositMessage() {
   const message = document.getElementById('depositMessageInput').value;
   const statusDiv = document.getElementById('detectionStatus');
@@ -6799,7 +7003,7 @@ function validateDepositMessage() {
   statusDiv.style.display = 'block';
 }
 
-// ===== NEW FUNCTION: Submit auto-detected deposit =====
+// ===== FUNCTION: Submit auto-detected deposit =====
 function submitAutoDetectedDeposit() {
   const message = document.getElementById('depositMessageInput').value;
   const detected = detectFromMessage(message);
