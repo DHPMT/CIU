@@ -3423,12 +3423,112 @@
       margin: 15px 0;
       border: 2px solid #f44336;
     }
+    
+    /* ===== NEW STAKES SYSTEM STYLES ===== */
+    .investment-pool-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-left: 4px solid #28a745;
+    }
+    
+    .investment-pool-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #28a745;
+      margin-bottom: 5px;
+    }
+    
+    .investment-progress {
+      height: 8px;
+      background: #e0f0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    
+    .investment-progress-fill {
+      height: 100%;
+      background: #28a745;
+      width: 0%;
+    }
+    
+    .countdown-timer {
+      background: #fff3cd;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 10px 0;
+      text-align: center;
+      border-left: 4px solid #ff9800;
+      font-weight: 600;
+    }
+    
+    .stakes-coming-soon {
+      background: linear-gradient(135deg, #7d5ba6, #b8a3d9);
+      border-radius: 30px;
+      padding: 40px 20px;
+      text-align: center;
+      color: white;
+      margin: 30px 0;
+    }
+    
+    .stakes-coming-soon i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    
+    .invest-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .invest-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    /* ===== COLORED INCOME TABLE STYLES ===== */
+    .income-table tbody tr:nth-child(1) { background-color: #f5f5f5; } /* Intern - Light Gray */
+    .income-table tbody tr:nth-child(2) { background-color: #e6f0ff; } /* D1 - Light Blue */
+    .income-table tbody tr:nth-child(3) { background-color: #e6ffe6; } /* D2 - Light Green */
+    .income-table tbody tr:nth-child(4) { background-color: #ffffe6; } /* D3 - Light Yellow */
+    .income-table tbody tr:nth-child(5) { background-color: #fff0e6; } /* D4 - Light Orange */
+    .income-table tbody tr:nth-child(6) { background-color: #ffe6f0; } /* D5 - Light Pink */
+    .income-table tbody tr:nth-child(7) { background-color: #f0e6ff; } /* D6 - Light Purple */
+    .income-table tbody tr:nth-child(8) { background-color: #e6ffff; } /* D7 - Light Lavender */
+    .income-table tbody tr:nth-child(9) { background-color: #ffe6e6; } /* D8 - Light Coral */
+    .income-table tbody tr:nth-child(10) { background-color: #f2e6ff; } /* D9 - Light Gold */
   </style>
 </head>
 <body>
   <!-- Admin Toggle Button -->
   <div class="admin-toggle">
     <button onclick="handleAdminCrownClick()"><i class="fas fa-crown"></i></button>
+  </div>
+
+  <!-- Admin Login Modal (NEW) -->
+  <div class="modal-overlay" id="adminLoginModal">
+    <div class="modal-content" style="max-width: 350px;">
+      <div class="modal-header" style="justify-content: center;">
+        <h2 style="color: #4a3b5e;"><i class="fas fa-crown"></i> Admin Login</h2>
+      </div>
+      <div style="padding: 10px 0;">
+        <input type="password" id="adminPasswordModal" placeholder="Enter admin password" style="width: 100%; padding: 15px; border: 2px solid #e0d0eb; border-radius: 30px; margin-bottom: 15px; outline: none;" onkeypress="if(event.key==='Enter') adminLoginModal()">
+        <div style="display: flex; gap: 10px;">
+          <button onclick="adminLoginModal()" style="flex: 1; background: #7d5ba6; color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; cursor: pointer;">Login</button>
+          <button onclick="closeAdminLoginModal()" style="flex: 1; background: #f0f0f0; border: none; padding: 12px; border-radius: 30px; font-weight: 600; cursor: pointer;">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Admin Panel -->
@@ -3439,8 +3539,8 @@
         <button class="close-admin" onclick="toggleAdminPanel()"><i class="fas fa-times"></i></button>
       </div>
 
-      <!-- Admin Login Section -->
-      <div id="adminLoginSection" class="admin-login">
+      <!-- Admin Login Section (Original - Keep for backward compatibility) -->
+      <div id="adminLoginSection" class="admin-login" style="display: none;">
         <h3>Admin Login</h3>
         <input type="password" id="adminPassword" placeholder="Enter admin password" onkeypress="if(event.key==='Enter') adminLogin()">
         <button onclick="adminLogin()">Login</button>
@@ -3451,7 +3551,7 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs - ADDED GIRARE TAB -->
+        <!-- Tabs - ADDED GIRARE TAB AND STAKES TAB -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
@@ -3462,6 +3562,8 @@
           <div class="admin-tab" onclick="switchAdminTab('companySettings')"><i class="fas fa-building"></i> Company Settings</div>
           <!-- NEW GIRARE TAB -->
           <div class="admin-tab" onclick="switchAdminTab('girare')"><i class="fas fa-dice"></i> Girare Wheel</div>
+          <!-- NEW STAKES TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('stakes')"><i class="fas fa-trophy"></i> Stakes</div>
         </div>
 
         <!-- Deposits Section -->
@@ -3720,6 +3822,89 @@
               <input type="text" id="week4Locks" placeholder="e.g., 1,3,5,8" style="width: 100%; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
             </div>
             <button onclick="applyWeeklySchedule()" style="background: #ff9800; color: white; border: none; padding: 10px; border-radius: 20px; width: 100%; font-weight: 600;">APPLY WEEKLY SCHEDULE</button>
+          </div>
+          
+          <!-- NEW: Manual Spin Control -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">🎮 Manual Spin Adjustment</h4>
+            <div style="margin-bottom: 15px;">
+              <label>Search User by Phone:</label>
+              <div style="display: flex; gap: 5px; margin-top: 5px;">
+                <input type="text" id="spinUserSearch" placeholder="Enter phone number..." style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 30px;">
+                <button onclick="searchUserForSpinEdit()" style="background: #7d5ba6; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer;">Search</button>
+              </div>
+            </div>
+            <div id="spinUserResult" style="display: none; background: #f5edff; border-radius: 15px; padding: 15px; margin-bottom: 15px;">
+              <p><strong id="spinUserName">John Doe</strong> (<span id="spinUserPhone">0788123456</span>)</p>
+              <p>Current Spins: <strong id="spinUserCurrent">0</strong> | Expires: <span id="spinUserExpiry">Tonight</span></p>
+              <div style="display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap;">
+                <button onclick="adjustUserSpins(1)" style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer;">+1</button>
+                <button onclick="adjustUserSpins(2)" style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer;">+2</button>
+                <button onclick="adjustUserSpins(5)" style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer;">+5</button>
+                <button onclick="adjustUserSpins(-1)" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer;">-1</button>
+                <button onclick="adjustUserSpins(-2)" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer;">-2</button>
+                <button onclick="resetUserSpins()" style="background: #ff9800; color: white; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer;">Reset to 0</button>
+              </div>
+              <div style="margin-top: 10px;">
+                <label>Custom Amount:</label>
+                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                  <input type="number" id="customSpinAmount" placeholder="Enter number" style="flex: 1; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px;">
+                  <button onclick="setCustomUserSpins()" style="background: #7d5ba6; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer;">Set</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- NEW STAKES ADMIN SECTION -->
+        <div id="adminStakesSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-trophy"></i> Stakes Control</h3>
+          
+          <!-- Master Lock -->
+          <div class="master-lock-control">
+            <h4 style="color: #f44336; margin-bottom: 10px;">🔒 Master Stakes Lock</h4>
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" name="stakesLock" value="false" onclick="toggleMasterStakesLock(false)"> 🔓 Unlocked
+              </label>
+              <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" name="stakesLock" value="true" onclick="toggleMasterStakesLock(true)"> 🔒 Locked
+              </label>
+            </div>
+            <div style="margin-top: 10px;">
+              <label>Lock Message:</label>
+              <input type="text" id="stakesLockMessage" placeholder="Stakes launching June 1, 2026!" style="width: 100%; padding: 8px; margin-top: 5px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              <button onclick="saveStakesLockMessage()" style="margin-top: 10px; background: #7d5ba6; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer;">Save Message</button>
+            </div>
+            <div style="margin-top: 15px;">
+              <label>Expected Launch Date:</label>
+              <input type="date" id="stakesLaunchDate" style="width: 100%; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
+            </div>
+          </div>
+          
+          <!-- Create New Investment Pool -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">➕ Create New Investment Pool</h4>
+            <div style="display: grid; gap: 10px;">
+              <input type="text" id="newPoolName" placeholder="Pool Name (e.g., Coffee Growth Fund)" style="padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              <input type="text" id="newPoolDesc" placeholder="Description" style="padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              <div style="display: flex; gap: 10px;">
+                <input type="number" id="newPoolMin" placeholder="Min Amount" style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+                <input type="number" id="newPoolMax" placeholder="Max Amount" style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <input type="number" id="newPoolDuration" placeholder="Duration (days)" style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+                <input type="number" id="newPoolProfit" placeholder="Profit %" style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              </div>
+              <input type="number" id="newPoolCapacity" placeholder="Total Capacity (UGX)" style="padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              <button onclick="createInvestmentPool()" style="background: #28a745; color: white; border: none; padding: 12px; border-radius: 30px; font-weight: 600; cursor: pointer;">CREATE POOL</button>
+            </div>
+          </div>
+          
+          <!-- Existing Pools List -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">📊 Investment Pools</h4>
+            <div id="investmentPoolsList"></div>
           </div>
         </div>
       </div>
@@ -4233,7 +4418,7 @@
 
         <!-- Income Table - UPDATED with correct values and NO download functionality -->
         <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 10px;">
-          <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
+          <table class="income-table" style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
             <thead>
               <tr style="background: #7d5ba6; color: white;">
                 <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">LEVEL</th>
@@ -4554,21 +4739,7 @@
           <h2>STAKES</h2>
         </div>
         
-        <div class="stakes-card">
-          <i class="fas fa-coins"></i>
-          <h3>Coming Soon!</h3>
-          <p>Place your stakes and win big rewards. This feature is under development.</p>
-        </div>
-        
-        <div style="background: #f5edff; border-radius: 15px; padding: 20px; margin-top: 20px;">
-          <h4 style="color: #4a3b5e; margin-bottom: 15px;">How Stakes Will Work:</h4>
-          <ul style="padding-left: 20px; color: #666;">
-            <li>🔹 Stake your earnings for a chance to win more</li>
-            <li>🔹 Higher stakes = higher rewards</li>
-            <li>🔹 Daily and weekly stake options</li>
-            <li>🔹 Special events with bonus prizes</li>
-          </ul>
-        </div>
+        <div id="stakesContent"></div>
       </div>
       <div class="bottom-nav">
         <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
@@ -5217,6 +5388,14 @@ let girareConfig = {
   }
 };
 
+// ========== STAKES CONFIGURATION ==========
+let stakesConfig = {
+  locked: true,
+  lockMessage: "Stakes launching June 1, 2026!",
+  launchDate: "2026-06-01",
+  pools: []
+};
+
 // ========== 107 COFFEE GROWING BOOKS ==========
 let allBooks = [
   { id: 1, title: "Regenerative Agriculture in Coffee", desc: "Handbook for practitioners in Uganda - Bioversity International, 2023" },
@@ -5421,6 +5600,8 @@ function loadFromFirebase() {
         updateMotivationMessage();
       } else if (document.getElementById('girarePage').style.display === 'flex') {
         loadGirarePage();
+      } else if (document.getElementById('stakesPage').style.display === 'flex') {
+        loadStakesPage();
       }
     }
   });
@@ -5463,6 +5644,20 @@ function loadFromFirebase() {
     }
     if (document.getElementById('adminGirareSection')?.classList.contains('active')) {
       loadGirareAdminControls();
+    }
+  });
+  
+  // Load stakes configuration
+  db.ref('stakesConfig').on('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      stakesConfig = config;
+    }
+    if (document.getElementById('stakesPage').style.display === 'flex') {
+      loadStakesPage();
+    }
+    if (document.getElementById('adminStakesSection')?.classList.contains('active')) {
+      loadStakesAdminControls();
     }
   });
 }
@@ -5551,6 +5746,7 @@ function saveUsers() { db.ref('users').set(users); }
 function saveDeposits() { db.ref('pendingDeposits').set(pendingDeposits); }
 function saveWithdrawals() { db.ref('pendingWithdrawals').set(pendingWithdrawals); }
 function saveGirareConfig() { db.ref('girareConfig').set(girareConfig); }
+function saveStakesConfig() { db.ref('stakesConfig').set(stakesConfig); }
 
 // ========== MOTIVATION MESSAGE FUNCTION ==========
 function updateMotivationMessage() {
@@ -6070,7 +6266,10 @@ function handleRegister(e) {
     dailyReferrals: {},
     spinsToday: 0,
     spinExpiry: null,
-    spinHistory: []
+    spinHistory: [],
+    // ===== STAKES FIELDS =====
+    activeStakes: [],
+    stakeHistory: []
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
@@ -6186,7 +6385,332 @@ function showGrowthJourney() { showPage('growthJourney'); }
 
 // ========== STAKES PAGE ==========
 function loadStakesPage() {
-  console.log('Stakes page loaded');
+  const user = users[currentUser];
+  if (!user) return;
+  
+  const contentDiv = document.getElementById('stakesContent');
+  
+  // Check if stakes are locked
+  if (stakesConfig.locked) {
+    contentDiv.innerHTML = `
+      <div class="stakes-coming-soon">
+        <i class="fas fa-clock"></i>
+        <h3>🔒 COMING SOON</h3>
+        <p>${stakesConfig.lockMessage || 'Stakes launching soon!'}</p>
+        <p style="margin-top: 15px;">Expected Launch: ${new Date(stakesConfig.launchDate).toLocaleDateString()}</p>
+        <p style="margin-top: 20px; font-size: 0.9rem;">Grow your money by investing in coffee farming projects with guaranteed returns.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Show active stakes
+  let html = '<h3 style="margin-bottom: 15px;">📊 My Active Stakes</h3>';
+  
+  if (!user.activeStakes || user.activeStakes.length === 0) {
+    html += '<p style="color: #999; text-align: center; padding: 20px;">No active stakes</p>';
+  } else {
+    user.activeStakes.forEach(stake => {
+      const pool = stakesConfig.pools.find(p => p.id === stake.poolId);
+      const now = new Date();
+      const maturity = new Date(stake.maturityDate);
+      const totalDays = (maturity - new Date(stake.startDate)) / (1000 * 60 * 60 * 24);
+      const daysLeft = Math.max(0, Math.ceil((maturity - now) / (1000 * 60 * 60 * 24)));
+      const progress = ((totalDays - daysLeft) / totalDays) * 100;
+      
+      html += `
+        <div class="investment-pool-card">
+          <div class="investment-pool-title">${pool ? pool.name : 'Investment'}</div>
+          <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+            <span>Invested: ${stake.amount.toLocaleString()} UGX</span>
+            <span>Expected: ${stake.expectedReturn.toLocaleString()} UGX</span>
+          </div>
+          <div class="countdown-timer">
+            ⏰ ${daysLeft} days remaining
+          </div>
+          <div class="investment-progress">
+            <div class="investment-progress-fill" style="width: ${progress}%;"></div>
+          </div>
+        </div>
+      `;
+    });
+  }
+  
+  // Show available pools
+  html += '<h3 style="margin: 25px 0 15px;">💰 Available Investments</h3>';
+  
+  if (stakesConfig.pools.length === 0) {
+    html += '<p style="color: #999; text-align: center; padding: 20px;">No investment pools available</p>';
+  } else {
+    stakesConfig.pools.forEach(pool => {
+      const available = pool.totalCapacity - (pool.currentTotal || 0);
+      html += `
+        <div class="investment-pool-card">
+          <div class="investment-pool-title">${pool.name}</div>
+          <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">${pool.description || ''}</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;">
+            <div><small>Min:</small><br><strong>${pool.minAmount.toLocaleString()} UGX</strong></div>
+            <div><small>Max:</small><br><strong>${pool.maxAmount.toLocaleString()} UGX</strong></div>
+            <div><small>Duration:</small><br><strong>${pool.durationDays} days</strong></div>
+            <div><small>Profit:</small><br><strong>${pool.profitPercent}%</strong></div>
+          </div>
+          <div style="margin: 10px 0;">
+            <small>Available: ${available.toLocaleString()} / ${pool.totalCapacity.toLocaleString()} UGX</small>
+            <div class="investment-progress">
+              <div class="investment-progress-fill" style="width: ${((pool.currentTotal || 0) / pool.totalCapacity) * 100}%;"></div>
+            </div>
+          </div>
+          <button class="invest-btn" onclick="openInvestModal('${pool.id}')">INVEST NOW</button>
+        </div>
+      `;
+    });
+  }
+  
+  // Show stake history
+  html += '<h3 style="margin: 25px 0 15px;">📜 Stake History</h3>';
+  if (!user.stakeHistory || user.stakeHistory.length === 0) {
+    html += '<p style="color: #999; text-align: center; padding: 20px;">No stake history</p>';
+  } else {
+    user.stakeHistory.slice(-5).reverse().forEach(stake => {
+      const pool = stakesConfig.pools.find(p => p.id === stake.poolId);
+      html += `
+        <div class="transaction-item" style="margin-bottom: 10px;">
+          <div class="transaction-header">
+            <span>${pool ? pool.name : 'Investment'}</span>
+            <span>${new Date(stake.completedDate).toLocaleDateString()}</span>
+          </div>
+          <div class="transaction-amount">+${stake.expectedReturn.toLocaleString()} UGX</div>
+        </div>
+      `;
+    });
+  }
+  
+  contentDiv.innerHTML = html;
+}
+
+// ===== INVESTMENT FUNCTIONS =====
+let selectedPoolForInvest = null;
+
+function openInvestModal(poolId) {
+  const pool = stakesConfig.pools.find(p => p.id === poolId);
+  if (!pool) return;
+  
+  selectedPoolForInvest = pool;
+  
+  const user = users[currentUser];
+  const operating = user.operatingWallet || 0;
+  const incentive = user.incentiveWallet || 0;
+  
+  // Simple prompt for now - in production you'd create a modal
+  const amount = prompt(`Enter amount to invest in ${pool.name} (${pool.minAmount.toLocaleString()} - ${pool.maxAmount.toLocaleString()} UGX):`, pool.minAmount);
+  
+  if (!amount) return;
+  
+  const investAmount = parseInt(amount);
+  if (isNaN(investAmount) || investAmount < pool.minAmount || investAmount > pool.maxAmount) {
+    showConfirmModal('Error', `Amount must be between ${pool.minAmount.toLocaleString()} and ${pool.maxAmount.toLocaleString()} UGX`, 'warning');
+    return;
+  }
+  
+  // Choose wallet
+  const walletChoice = prompt('Choose wallet: 1 for Operating, 2 for Incentive', '1');
+  let walletType = 'operating';
+  if (walletChoice === '2') walletType = 'incentive';
+  
+  const balance = walletType === 'operating' ? operating : incentive;
+  
+  if (investAmount > balance) {
+    showConfirmModal('Error', `Insufficient balance in ${walletType} wallet`, 'warning');
+    return;
+  }
+  
+  // Deduct from wallet
+  if (walletType === 'operating') {
+    user.operatingWallet -= investAmount;
+  } else {
+    user.incentiveWallet -= investAmount;
+  }
+  
+  // Calculate return
+  const expectedReturn = investAmount + Math.floor(investAmount * (pool.profitPercent / 100));
+  
+  // Create stake
+  const startDate = new Date();
+  const maturityDate = new Date();
+  maturityDate.setDate(maturityDate.getDate() + pool.durationDays);
+  
+  const stake = {
+    id: Date.now(),
+    poolId: pool.id,
+    amount: investAmount,
+    expectedReturn: expectedReturn,
+    startDate: startDate.toISOString(),
+    maturityDate: maturityDate.toISOString(),
+    walletUsed: walletType,
+    status: 'active'
+  };
+  
+  if (!user.activeStakes) user.activeStakes = [];
+  user.activeStakes.push(stake);
+  
+  // Update pool total
+  pool.currentTotal = (pool.currentTotal || 0) + investAmount;
+  
+  // Add transaction
+  if (!user.transactions) user.transactions = [];
+  user.transactions.unshift({
+    type: 'stake',
+    amount: investAmount,
+    date: new Date().toLocaleString(),
+    desc: `Invested in ${pool.name} (${pool.durationDays} days, ${pool.profitPercent}%)`
+  });
+  
+  saveUsers();
+  saveStakesConfig();
+  loadStakesPage();
+  
+  showConfirmModal('Success', `Investment of ${investAmount.toLocaleString()} UGX placed! Matures on ${maturityDate.toLocaleDateString()}`, 'success');
+}
+
+// ===== STAKES ADMIN FUNCTIONS =====
+function loadStakesAdminControls() {
+  const listDiv = document.getElementById('investmentPoolsList');
+  
+  // Set master lock
+  const lockRadios = document.getElementsByName('stakesLock');
+  if (lockRadios.length) {
+    if (stakesConfig.locked) {
+      lockRadios[1].checked = true;
+    } else {
+      lockRadios[0].checked = true;
+    }
+  }
+  
+  // Set lock message
+  const lockMsg = document.getElementById('stakesLockMessage');
+  if (lockMsg) {
+    lockMsg.value = stakesConfig.lockMessage || '';
+  }
+  
+  // Set launch date
+  const launchDate = document.getElementById('stakesLaunchDate');
+  if (launchDate) {
+    launchDate.value = stakesConfig.launchDate || '2026-06-01';
+  }
+  
+  // Build pools list
+  let html = '';
+  if (stakesConfig.pools.length === 0) {
+    html = '<p style="color: #999; text-align: center;">No investment pools created yet</p>';
+  } else {
+    stakesConfig.pools.forEach((pool, index) => {
+      html += `
+        <div style="background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #e0d0eb;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <strong style="color: #28a745;">${pool.name}</strong>
+            <span class="${pool.active ? 'status-complete' : 'status-pending'}" style="padding: 2px 8px; border-radius: 20px;">${pool.active ? 'Active' : 'Inactive'}</span>
+          </div>
+          <p style="font-size: 0.9rem; color: #666;">${pool.description || ''}</p>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; font-size: 0.9rem; margin: 10px 0;">
+            <div>Min: ${pool.minAmount.toLocaleString()}</div>
+            <div>Max: ${pool.maxAmount.toLocaleString()}</div>
+            <div>Duration: ${pool.durationDays} days</div>
+            <div>Profit: ${pool.profitPercent}%</div>
+            <div>Capacity: ${pool.totalCapacity.toLocaleString()}</div>
+            <div>Invested: ${(pool.currentTotal || 0).toLocaleString()}</div>
+          </div>
+          <div style="display: flex; gap: 5px;">
+            <button onclick="togglePoolActive('${pool.id}')" style="flex: 1; background: ${pool.active ? '#ff9800' : '#28a745'}; color: white; border: none; padding: 8px; border-radius: 20px;">${pool.active ? 'Deactivate' : 'Activate'}</button>
+            <button onclick="deletePool('${pool.id}')" style="flex: 1; background: #dc3545; color: white; border: none; padding: 8px; border-radius: 20px;">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  listDiv.innerHTML = html;
+}
+
+function toggleMasterStakesLock(locked) {
+  stakesConfig.locked = locked;
+  saveStakesConfig();
+  showConfirmModal('Success', `Stakes ${locked ? 'locked' : 'unlocked'}!`, 'success');
+}
+
+function saveStakesLockMessage() {
+  const message = document.getElementById('stakesLockMessage').value;
+  stakesConfig.lockMessage = message;
+  saveStakesConfig();
+  showConfirmModal('Success', 'Lock message updated!', 'success');
+}
+
+function createInvestmentPool() {
+  const name = document.getElementById('newPoolName').value;
+  const desc = document.getElementById('newPoolDesc').value;
+  const min = parseInt(document.getElementById('newPoolMin').value);
+  const max = parseInt(document.getElementById('newPoolMax').value);
+  const duration = parseInt(document.getElementById('newPoolDuration').value);
+  const profit = parseInt(document.getElementById('newPoolProfit').value);
+  const capacity = parseInt(document.getElementById('newPoolCapacity').value);
+  
+  if (!name || !min || !max || !duration || !profit || !capacity) {
+    showConfirmModal('Error', 'Please fill all fields', 'warning');
+    return;
+  }
+  
+  if (min >= max) {
+    showConfirmModal('Error', 'Min amount must be less than max amount', 'warning');
+    return;
+  }
+  
+  const newPool = {
+    id: 'pool_' + Date.now(),
+    name: name,
+    description: desc,
+    minAmount: min,
+    maxAmount: max,
+    durationDays: duration,
+    profitPercent: profit,
+    totalCapacity: capacity,
+    currentTotal: 0,
+    active: true,
+    createdAt: new Date().toISOString()
+  };
+  
+  if (!stakesConfig.pools) stakesConfig.pools = [];
+  stakesConfig.pools.push(newPool);
+  
+  saveStakesConfig();
+  
+  // Clear inputs
+  document.getElementById('newPoolName').value = '';
+  document.getElementById('newPoolDesc').value = '';
+  document.getElementById('newPoolMin').value = '';
+  document.getElementById('newPoolMax').value = '';
+  document.getElementById('newPoolDuration').value = '';
+  document.getElementById('newPoolProfit').value = '';
+  document.getElementById('newPoolCapacity').value = '';
+  
+  loadStakesAdminControls();
+  showConfirmModal('Success', 'Investment pool created!', 'success');
+}
+
+function togglePoolActive(poolId) {
+  const pool = stakesConfig.pools.find(p => p.id === poolId);
+  if (pool) {
+    pool.active = !pool.active;
+    saveStakesConfig();
+    loadStakesAdminControls();
+    showConfirmModal('Success', `Pool ${pool.active ? 'activated' : 'deactivated'}!`, 'success');
+  }
+}
+
+function deletePool(poolId) {
+  showConfirmModal('Confirm Delete', 'Are you sure you want to delete this pool?', 'delete', () => {
+    stakesConfig.pools = stakesConfig.pools.filter(p => p.id !== poolId);
+    saveStakesConfig();
+    loadStakesAdminControls();
+    showConfirmModal('Success', 'Pool deleted!', 'success');
+  });
 }
 
 // ========== GROWTH JOURNEY ==========
@@ -6389,7 +6913,7 @@ function loadTransactionHistory() {
   
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  const counts = { book:0, referral:0, deposit:0, withdrawal:0, refund:0, level_upgrade:0, subsidiary:0, girare:0 };
+  const counts = { book:0, referral:0, deposit:0, withdrawal:0, refund:0, level_upgrade:0, subsidiary:0, girare:0, stake:0 };
   allTransactions.forEach(t => { if (counts[t.type] !== undefined) counts[t.type]++; });
   
   document.getElementById('book-count').textContent = counts.book;
@@ -6427,7 +6951,7 @@ function filterTransactions(type, transactions = null) {
   
   if (type !== 'all') {
     filteredTransactions = allTransactions.filter(t => t.type === type);
-    const typeNames = { book: 'BOOKS', referral: 'REFERRALS', deposit: 'DEPOSITS', withdrawal: 'WITHDRAWALS', refund: 'REFUNDS', level_upgrade: 'UPGRADES', subsidiary: 'SUBSIDIARY', girare: 'GIRARE' };
+    const typeNames = { book: 'BOOKS', referral: 'REFERRALS', deposit: 'DEPOSITS', withdrawal: 'WITHDRAWALS', refund: 'REFUNDS', level_upgrade: 'UPGRADES', subsidiary: 'SUBSIDIARY', girare: 'GIRARE', stake: 'STAKES' };
     filterLabel = typeNames[type] || 'ALL TRANSACTIONS';
   }
   
@@ -6452,6 +6976,7 @@ function filterTransactions(type, transactions = null) {
     else if (t.type === 'refund') { icon = 'fa-undo'; color = '#17a2b8'; }
     else if (t.type === 'subsidiary') { icon = 'fa-leaf'; color = '#2e7d32'; }
     else if (t.type === 'girare') { icon = 'fa-dice'; color = '#ff9800'; }
+    else if (t.type === 'stake') { icon = 'fa-trophy'; color = '#28a745'; }
     
     const sign = t.type === 'withdrawal' || t.type === 'withdraw' || t.type === 'level_upgrade' ? '-' : '+';
     
@@ -6757,7 +7282,7 @@ function loadUserData() {
   
   if (user.transactions) {
     user.transactions.forEach(t => {
-      if (t.type === 'referral' || t.type === 'subsidiary' || t.type === 'girare') {
+      if (t.type === 'referral' || t.type === 'subsidiary' || t.type === 'girare' || t.type === 'stake') {
         const tDate = new Date(t.date);
         if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
           monthEarnings += t.amount || 0;
@@ -8103,38 +8628,49 @@ function handleAdminCrownClick() {
   crownClickCount++;
   
   if (crownClickCount === 1) {
-    crownClickTimer = setTimeout(() => { crownClickCount = 0; crownClickTimer = null; }, 4000);
+    crownClickTimer = setTimeout(() => { 
+      crownClickCount = 0; 
+      crownClickTimer = null; 
+    }, 7000); // 7 seconds
   }
   
-  if (crownClickCount === 5) {
+  if (crownClickCount === 10) { // 10 clicks
     clearTimeout(crownClickTimer);
     crownClickCount = 0;
     crownClickTimer = null;
     
-    const panel = document.getElementById('adminPanel');
-    panel.style.display = 'block';
-    
-    if (!isAdminLoggedIn) {
-      document.getElementById('adminLoginSection').style.display = 'block';
-      document.getElementById('adminContent').style.display = 'none';
-    } else {
-      document.getElementById('adminLoginSection').style.display = 'none';
-      document.getElementById('adminContent').style.display = 'block';
-      loadAdminData();
-    }
+    // Show login modal instead of panel directly
+    document.getElementById('adminLoginModal').style.display = 'flex';
+  }
+}
+
+function closeAdminLoginModal() {
+  document.getElementById('adminLoginModal').style.display = 'none';
+}
+
+function adminLoginModal() {
+  const password = document.getElementById('adminPasswordModal').value;
+  if (password === 'admin123') {
+    closeAdminLoginModal();
+    isAdminLoggedIn = true;
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('adminLoginSection').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    loadAdminData();
+    loadGirareAdminControls();
+    loadStakesAdminControls();
+  } else {
+    showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
 }
 
 function toggleAdminPanel() {
   const panel = document.getElementById('adminPanel');
   if (panel.style.display === 'none' || panel.style.display === '') {
-    panel.style.display = 'block';
     if (!isAdminLoggedIn) {
-      document.getElementById('adminLoginSection').style.display = 'block';
-      document.getElementById('adminContent').style.display = 'none';
+      document.getElementById('adminLoginModal').style.display = 'flex';
     } else {
-      document.getElementById('adminLoginSection').style.display = 'none';
-      document.getElementById('adminContent').style.display = 'block';
+      panel.style.display = 'block';
       loadAdminData();
     }
   } else {
@@ -8150,6 +8686,7 @@ function adminLogin() {
     document.getElementById('adminContent').style.display = 'block';
     loadAdminData();
     loadGirareAdminControls();
+    loadStakesAdminControls();
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -8190,6 +8727,10 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[7].classList.add('active');
     document.getElementById('adminGirareSection').classList.add('active');
     loadGirareAdminControls();
+  } else if (tab === 'stakes') {
+    document.querySelectorAll('.admin-tab')[8].classList.add('active');
+    document.getElementById('adminStakesSection').classList.add('active');
+    loadStakesAdminControls();
   }
 }
 
@@ -8912,12 +9453,21 @@ function loadGirarePage() {
   // Get available segments (not locked)
   const availableSegments = girareConfig.segments.filter(s => !s.locked);
   
-  // Build wheel HTML (simplified for now - in production you'd use canvas/SVG)
-  let segmentsHtml = '';
-  girareConfig.segments.forEach((seg, index) => {
-    const color = `hsl(${index * 45}, 70%, 60%)`;
-    segmentsHtml += `<div style="position:absolute; width:100%; height:100%; transform: rotate(${index * 45}deg); overflow:hidden; border-radius:50%;"><div style="position:absolute; top:0; left:50%; width:50%; height:50%; background:${color}; transform-origin:0 100%; transform: rotate(45deg);"></div></div>`;
+  // Build prize list
+  let prizeListHtml = '<div class="spin-history"><h4>🎁 Prize List</h4>';
+  girareConfig.segments.forEach(seg => {
+    const icon = seg.prize.includes('UGX') ? '💰' : 
+                seg.prize.includes('Free') ? '🎟️' : 
+                seg.prize.includes('Multiplier') ? '⚡' : 
+                seg.prize.includes('Better') ? '🍀' : '📱';
+    prizeListHtml += `
+      <div class="spin-history-item">
+        <span>${icon} ${seg.prize}</span>
+        <span class="${seg.locked ? 'spin-lose' : 'spin-win'}">${seg.locked ? '🔒 Locked' : '✅ Available'}</span>
+      </div>
+    `;
   });
+  prizeListHtml += '</div>';
   
   contentDiv.innerHTML = `
     <div class="wheel-container">
@@ -8946,6 +9496,8 @@ function loadGirarePage() {
       </div>
       <p style="margin-top:10px; color:#666;">Refer D-level members in one day to earn spins! (2 members = 1 spin, max 5)</p>
     </div>
+    
+    ${prizeListHtml}
     
     <div class="spin-history">
       <h4>📜 Recent Spins</h4>
@@ -9224,6 +9776,115 @@ function applyWeeklySchedule() {
   showConfirmModal('Success', `Week ${weekOfMonth} schedule applied!`, 'success');
 }
 
+// ===== MANUAL SPIN CONTROL =====
+let currentSpinEditUser = null;
+
+function searchUserForSpinEdit() {
+  const phone = document.getElementById('spinUserSearch').value;
+  if (!phone) {
+    showConfirmModal('Error', 'Please enter a phone number', 'warning');
+    return;
+  }
+  
+  const user = users[phone];
+  if (!user) {
+    showConfirmModal('Error', 'User not found', 'warning');
+    document.getElementById('spinUserResult').style.display = 'none';
+    return;
+  }
+  
+  currentSpinEditUser = phone;
+  document.getElementById('spinUserName').textContent = user.fullName;
+  document.getElementById('spinUserPhone').textContent = phone;
+  document.getElementById('spinUserCurrent').textContent = user.spinsToday || 0;
+  
+  const expiry = user.spinExpiry ? new Date(user.spinExpiry) : null;
+  const expiryText = expiry ? expiry.toLocaleDateString() + ' ' + expiry.toLocaleTimeString() : 'Not set';
+  document.getElementById('spinUserExpiry').textContent = expiryText;
+  
+  document.getElementById('spinUserResult').style.display = 'block';
+}
+
+function adjustUserSpins(amount) {
+  if (!currentSpinEditUser || !users[currentSpinEditUser]) return;
+  
+  const user = users[currentSpinEditUser];
+  const current = user.spinsToday || 0;
+  const newAmount = Math.max(0, current + amount);
+  
+  user.spinsToday = newAmount;
+  
+  // Set expiry to midnight if not set
+  if (!user.spinExpiry) {
+    const expiry = new Date();
+    expiry.setHours(24, 0, 0, 0);
+    user.spinExpiry = expiry.toISOString();
+  }
+  
+  saveUsers();
+  
+  // Add transaction record
+  if (!user.transactions) user.transactions = [];
+  user.transactions.unshift({
+    type: 'girare',
+    amount: 0,
+    date: new Date().toLocaleString(),
+    desc: `Admin adjusted spins: ${amount > 0 ? '+' : ''}${amount}`
+  });
+  
+  searchUserForSpinEdit(); // Refresh display
+  showConfirmModal('Success', `Spins updated to ${user.spinsToday}`, 'success');
+}
+
+function resetUserSpins() {
+  if (!currentSpinEditUser || !users[currentSpinEditUser]) return;
+  
+  const user = users[currentSpinEditUser];
+  user.spinsToday = 0;
+  user.spinExpiry = null;
+  saveUsers();
+  
+  searchUserForSpinEdit();
+  showConfirmModal('Success', 'Spins reset to 0', 'success');
+}
+
+function setCustomUserSpins() {
+  const amount = parseInt(document.getElementById('customSpinAmount').value);
+  if (isNaN(amount) || amount < 0) {
+    showConfirmModal('Error', 'Please enter a valid number', 'warning');
+    return;
+  }
+  
+  if (!currentSpinEditUser || !users[currentSpinEditUser]) return;
+  
+  const user = users[currentSpinEditUser];
+  user.spinsToday = amount;
+  
+  // Set expiry to midnight if not set and amount > 0
+  if (amount > 0 && !user.spinExpiry) {
+    const expiry = new Date();
+    expiry.setHours(24, 0, 0, 0);
+    user.spinExpiry = expiry.toISOString();
+  } else if (amount === 0) {
+    user.spinExpiry = null;
+  }
+  
+  saveUsers();
+  
+  // Add transaction record
+  if (!user.transactions) user.transactions = [];
+  user.transactions.unshift({
+    type: 'girare',
+    amount: 0,
+    date: new Date().toLocaleString(),
+    desc: `Admin set spins to ${amount}`
+  });
+  
+  searchUserForSpinEdit();
+  document.getElementById('customSpinAmount').value = '';
+  showConfirmModal('Success', `Spins set to ${amount}`, 'success');
+}
+
 // ===== TRACK DAILY REFERRALS =====
 function trackDailyReferral(referrerPhone, newUserPhone) {
   const referrer = users[referrerPhone];
@@ -9383,7 +10044,21 @@ window.onload = function() {
           spinHistory: [
             { date: new Date().toLocaleString(), result: '25,000 UGX', win: true },
             { date: new Date(Date.now() - 24*60*60*1000).toLocaleString(), result: 'Better Luck', win: false }
-          ]
+          ],
+          // Stakes fields
+          activeStakes: [
+            {
+              id: 1,
+              poolId: 'pool1',
+              amount: 80000,
+              expectedReturn: 104000,
+              startDate: new Date().toISOString(),
+              maturityDate: new Date(Date.now() + 70*24*60*60*1000).toISOString(),
+              walletUsed: 'operating',
+              status: 'active'
+            }
+          ],
+          stakeHistory: []
         },
         '0777123456': {
           fullName: 'Intern User',
@@ -9417,7 +10092,10 @@ window.onload = function() {
           dailyReferrals: {},
           spinsToday: 0,
           spinExpiry: null,
-          spinHistory: []
+          spinHistory: [],
+          // Stakes fields
+          activeStakes: [],
+          stakeHistory: []
         },
         '0788123456': {
           fullName: 'John D1',
@@ -9451,12 +10129,46 @@ window.onload = function() {
           dailyReferrals: {},
           spinsToday: 1,
           spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
-          spinHistory: []
+          spinHistory: [],
+          // Stakes fields
+          activeStakes: [],
+          stakeHistory: []
         }
       };
 
+      // Create demo investment pools
+      stakesConfig.pools = [
+        {
+          id: 'pool1',
+          name: 'Coffee Growth Fund',
+          description: 'Invest in coffee farming projects',
+          minAmount: 50000,
+          maxAmount: 1000000,
+          durationDays: 70,
+          profitPercent: 30,
+          totalCapacity: 10000000,
+          currentTotal: 80000,
+          active: true,
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: 'pool2',
+          name: 'Coffee Equipment Fund',
+          description: 'Support coffee equipment purchases',
+          minAmount: 100000,
+          maxAmount: 2000000,
+          durationDays: 90,
+          profitPercent: 40,
+          totalCapacity: 20000000,
+          currentTotal: 0,
+          active: true,
+          createdAt: new Date().toISOString()
+        }
+      ];
+
       db.ref('users').set(demoUsers).then(() => {
           console.log("Demo users created successfully.");
+          saveStakesConfig();
           if (currentUser && demoUsers[currentUser]) {
               setTimeout(() => {
                   loadUserData();
