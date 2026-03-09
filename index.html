@@ -351,7 +351,7 @@
     }
 
     /* Main Dashboard Pages */
-    #mainDashboard, #profilePage, #levelPage, #taskPage, #incomePage, #taskRecordPage, #teamReportPage, #goldenHandshakePage, #transactionHistoryPage, #growthJourneyPage, #stakesPage {
+    #mainDashboard, #profilePage, #levelPage, #taskPage, #incomePage, #taskRecordPage, #teamReportPage, #goldenHandshakePage, #transactionHistoryPage, #growthJourneyPage, #stakesPage, #girarePage {
       display: none;
       flex-direction: column;
       height: 100%;
@@ -3238,6 +3238,191 @@
       z-index: 9999;
       display: none;
     }
+
+    /* ===== NEW GIRARE WHEEL STYLES ===== */
+    #girarePage {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .girare-container {
+      background: linear-gradient(135deg, #ff9800, #ffc107);
+      border-radius: 30px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: white;
+    }
+
+    .girare-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .girare-header i {
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    .girare-header h2 {
+      font-size: 2rem;
+      color: white;
+    }
+
+    .wheel-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 20px auto;
+    }
+
+    .wheel-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+      transition: transform 3s cubic-bezier(0.25, 0.1, 0.15, 1);
+    }
+
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ff9800;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 10;
+      cursor: pointer;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-top: 40px solid #ff0000;
+      z-index: 20;
+    }
+
+    .spin-stats {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .spin-countdown {
+      background: #fff3cd;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+      border-left: 4px solid #ff9800;
+    }
+
+    .spin-history {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .spin-history-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .spin-history-item:last-child {
+      border-bottom: none;
+    }
+
+    .spin-win {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .spin-lose {
+      color: #dc3545;
+      font-weight: 600;
+    }
+
+    .girare-access-denied {
+      background: #fff3cd;
+      border-radius: 30px;
+      padding: 40px 20px;
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .girare-access-denied i {
+      font-size: 3rem;
+      color: #ff9800;
+      margin-bottom: 15px;
+    }
+
+    .girare-access-denied h3 {
+      color: #b45f06;
+      margin-bottom: 10px;
+    }
+
+    /* Admin Girare Controls */
+    .girare-admin-section {
+      background: #f5edff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .segment-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    .segment-control input {
+      flex: 1;
+      padding: 8px;
+      border: 2px solid #e0d0eb;
+      border-radius: 20px;
+    }
+
+    .segment-control button {
+      background: #7d5ba6;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .master-lock-control {
+      background: #ffebee;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 15px 0;
+      border: 2px solid #f44336;
+    }
   </style>
 </head>
 <body>
@@ -3266,7 +3451,7 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs - ADDED COMPANY SETTINGS TAB -->
+        <!-- Tabs - ADDED GIRARE TAB -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
@@ -3274,11 +3459,12 @@
           <div class="admin-tab" onclick="switchAdminTab('system')"><i class="fas fa-chart-bar"></i> System</div>
           <div class="admin-tab" onclick="switchAdminTab('positionMembers')"><i class="fas fa-trophy"></i> Position Members</div>
           <div class="admin-tab" onclick="switchAdminTab('referralNetwork')"><i class="fas fa-network-wired"></i> Referral Network</div>
-          <!-- NEW COMPANY SETTINGS TAB -->
           <div class="admin-tab" onclick="switchAdminTab('companySettings')"><i class="fas fa-building"></i> Company Settings</div>
+          <!-- NEW GIRARE TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('girare')"><i class="fas fa-dice"></i> Girare Wheel</div>
         </div>
 
-        <!-- Deposits Section - UPDATED WITH NEW COLUMNS -->
+        <!-- Deposits Section -->
         <div id="adminDepositsSection" class="admin-section active">
           <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
             <input type="text" id="searchDepositInput" placeholder="Search by user phone or name..." style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 30px;">
@@ -3401,7 +3587,7 @@
           <div id="referralNetworkDisplay"></div>
         </div>
 
-        <!-- NEW COMPANY SETTINGS SECTION -->
+        <!-- Company Settings Section -->
         <div id="adminCompanySettingsSection" class="admin-section">
           <h3 style="margin-bottom: 20px;"><i class="fas fa-building"></i> Company Settings</h3>
           <div class="admin-company-settings">
@@ -3433,7 +3619,7 @@
               </div>
             </div>
 
-            <!-- NEW DPK PAY PAY SETTINGS -->
+            <!-- DPK PAY PAY SETTINGS -->
             <div style="margin-bottom: 20px; margin-top: 30px; border-top: 2px solid #7d5ba6; padding-top: 20px;">
               <h4 style="color: #7d5ba6; margin-bottom: 15px;">💳 DPK PAY PAY</h4>
               <div class="company-setting-row">
@@ -3462,6 +3648,78 @@
               <p style="color: #28a745; font-weight: 600;"><i class="fas fa-info-circle"></i> Changes take effect immediately</p>
               <p style="color: #666; font-size: 0.9rem;">Screen 4 will display updated numbers and names. Detection will verify against these numbers.</p>
             </div>
+          </div>
+        </div>
+
+        <!-- NEW GIRARE ADMIN SECTION -->
+        <div id="adminGirareSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-dice"></i> Girare Wheel Control</h3>
+          
+          <!-- Access Settings -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">⚙️ Access Settings</h4>
+            <div class="segment-control">
+              <label style="width: 120px;">Minimum Level:</label>
+              <select id="girareMinLevel" style="flex: 1; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px;">
+                <option value="1">D1</option>
+                <option value="2" selected>D2</option>
+                <option value="3">D3</option>
+                <option value="4">D4</option>
+                <option value="5">D5</option>
+                <option value="6">D6</option>
+                <option value="7">D7</option>
+                <option value="8">D8</option>
+                <option value="9">D9</option>
+              </select>
+              <button onclick="saveGirareMinLevel()">Save</button>
+            </div>
+          </div>
+
+          <!-- Master Lock -->
+          <div class="master-lock-control">
+            <h4 style="color: #f44336; margin-bottom: 10px;">🔒 Master Wheel Lock</h4>
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" name="wheelLock" value="false" onclick="toggleMasterWheelLock(false)"> 🔓 Unlocked
+              </label>
+              <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" name="wheelLock" value="true" onclick="toggleMasterWheelLock(true)"> 🔒 Locked
+              </label>
+            </div>
+            <div style="margin-top: 10px;">
+              <label>Lock Message:</label>
+              <input type="text" id="wheelLockMessage" placeholder="Wheel under maintenance..." style="width: 100%; padding: 8px; margin-top: 5px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              <button onclick="saveWheelLockMessage()" style="margin-top: 10px; background: #7d5ba6; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer;">Save Message</button>
+            </div>
+          </div>
+
+          <!-- Segment Controls -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">🎡 Wheel Segments (8)</h4>
+            <div id="girareSegmentsAdmin"></div>
+            <button onclick="saveAllGirareSegments()" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 30px; margin-top: 15px; width: 100%; font-weight: 600;">SAVE ALL SEGMENTS</button>
+          </div>
+
+          <!-- Weekly Schedule -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">📅 Weekly Lock Schedule</h4>
+            <div style="margin-bottom: 10px;">
+              <label>Week 1 Locked Segments:</label>
+              <input type="text" id="week1Locks" placeholder="e.g., 1,3,5" style="width: 100%; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+              <label>Week 2 Locked Segments:</label>
+              <input type="text" id="week2Locks" placeholder="e.g., 2,4,6" style="width: 100%; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+              <label>Week 3 Locked Segments:</label>
+              <input type="text" id="week3Locks" placeholder="e.g., 7,8" style="width: 100%; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+              <label>Week 4 Locked Segments:</label>
+              <input type="text" id="week4Locks" placeholder="e.g., 1,3,5,8" style="width: 100%; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
+            </div>
+            <button onclick="applyWeeklySchedule()" style="background: #ff9800; color: white; border: none; padding: 10px; border-radius: 20px; width: 100%; font-weight: 600;">APPLY WEEKLY SCHEDULE</button>
           </div>
         </div>
       </div>
@@ -3588,775 +3846,796 @@
     </div>
     
     <!-- MAIN DASHBOARD (Home Page) -->
-<div id="mainDashboard">
-  <div class="scroll-content">
-    <!-- Green Background Section with UIC Watermark -->
-    <div style="background: linear-gradient(135deg, #2e7d32, #4caf50); padding: 30px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(46,125,50,0.3);">
-      
-      <!-- Animated UIC Watermarks in Background -->
-      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; pointer-events: none;">
-        <div style="position: absolute; top: 10px; left: 10px; font-size: 3rem; font-weight: 900; color: white; transform: rotate(-15deg); animation: float 6s infinite ease-in-out;">UIC</div>
-        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 4rem; font-weight: 900; color: white; transform: rotate(10deg); animation: float2 8s infinite ease-in-out reverse;">UIC</div>
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-weight: 900; color: white; opacity: 0.15; animation: pulse 4s infinite;">UIC</div>
-      </div>
-      
-      <!-- Welcome Text (unchanged) -->
-      <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 2;">WELCOME</div>
-      <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); position: relative; z-index: 2;">Learn about coffee growing and earn rewards</div>
-    </div>
-    
-    <!-- NEW: Photo Gallery -->
-    <div class="photo-gallery-container">
-      <div class="gallery-title">
-        <i class="fas fa-images"></i> Coffee Community
-      </div>
-      <div class="gallery-scroll" id="galleryScroll">
-        <!-- Images will be inserted by JavaScript -->
-      </div>
-      <div class="gallery-dots" id="galleryDots"></div>
-    </div>
-    
-    <div class="divider-line"></div>
-
-    <!-- Member Card -->
-    <div class="member-card" id="memberCard">
-      <div class="member-type" id="memberTypeDisplay">INTERN MEMBER</div>
-      <div class="member-days" id="memberDaysDisplay">4 days remaining</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="memberProgress" style="width: 100%;"></div>
-      </div>
-    </div>
-
-    <!-- Daily Counter -->
-    <div style="background:#f5edff; padding:12px; border-radius:15px; margin-bottom:15px; display:flex; justify-content:space-between; color:#4a3b5e;">
-      <span>📚 Today: <span id="booksReadToday">0</span>/<span id="dailyBookLimit">1</span></span>
-      <span>💰 Earned: <span id="dailyEarnings">0</span> UGX</span>
-    </div>
-
-    <!-- Books - REMOVED from Home Dashboard -->
-    <!-- Daily Motivation Card (NEW) -->
-    <div class="motivation-card" id="motivationCard">
-      <div class="motivation-icon" id="motivationIcon">🌅</div>
-      <div class="motivation-message" id="motivationMessage">Start your day with a fresh cup and a fresh page. Read now!</div>
-      <div class="motivation-time" id="motivationTime">Morning Motivation</div>
-    </div>
-
-    <!-- Actions - NEW 2x2 Grid Layout -->
-    <div class="action-grid">
-      <div class="action-grid-item" onclick="openDepositModal()">
-        <i class="fas fa-wallet"></i>
-        <span>Recharge</span>
-      </div>
-      <div class="action-grid-item" id="withdrawBtn" onclick="openWithdrawModal()">
-        <i class="fas fa-hand-holding-usd"></i>
-        <span>Withdraw</span>
-      </div>
-      <div class="action-grid-item girare" onclick="showPage('stakes'); showGirareMessage()">
-        <i class="fas fa-dice"></i>
-        <span>Girare</span>
-      </div>
-      <div class="action-grid-item stakes" onclick="showPage('stakes')">
-        <i class="fas fa-trophy"></i>
-        <span>Stakes</span>
-      </div>
-    </div>
-
-    <!-- Company Profile (kept as line, now opens modal) -->
-    <div class="company-line" onclick="openCompanyProfileModal()">
-      <span>Company Profile</span>
-      <i class="fas fa-chevron-right"></i>
-    </div>
-  </div>
-
-  <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <div class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-  </div>
-</div>
-
-<!-- PROFILE PAGE (ME) -->
-<div id="profilePage">
-  <div class="scroll-content">
-    <div class="profile-header">
-      <span class="time" id="currentTime"></span>
-      <span onclick="openUserDetailsModal()" style="cursor: pointer;"><i class="fas fa-user"></i></span>
-    </div>
-
-    <div class="employee-name" id="profileFullName">User Name</div>
-    <div class="employee-role" id="profileMemberType">intern member</div>
-
-    <!-- Wallets -->
-    <div class="wallets-container">
-      <div class="wallet-box operating">
-        <div class="label">💰 OPERATING WALLET</div>
-        <div class="amount" id="profileOperatingWallet">0 UGX</div>
-      </div>
-      <div class="wallet-box incentive">
-        <div class="label">💰 INCENTIVE WALLET</div>
-        <div class="amount" id="profileIncentiveWallet">0 UGX</div>
-      </div>
-    </div>
-
-    <!-- Deposit/Withdraw Buttons -->
-    <div class="profile-action-buttons">
-      <button class="profile-action-btn" onclick="openDepositModal()">
-        <i class="fas fa-arrow-down"></i> DEPOSIT
-      </button>
-      <button class="profile-action-btn" onclick="openWithdrawModal()">
-        <i class="fas fa-arrow-up"></i> WITHDRAW
-      </button>
-    </div>
-
-    <!-- Member Stats -->
-    <div style="background:#f5edff; border-radius:15px; padding:15px; margin-bottom:20px;">
-      <div style="display:flex; justify-content:space-between;">
-        <span>Days Left: <span id="profileDaysLeft">4</span></span>
-        <span>Books Today: <span id="profileBooksToday">0/1</span></span>
-      </div>
-    </div>
-
-    <!-- INCOME GRID -->
-    <div class="income-grid">
-      <div class="income-item">
-        <div class="income-label">today's income</div>
-        <div class="income-value" id="todayIncomeValue">0 UGX</div>
-      </div>
-      <div class="income-item">
-        <div class="income-label">total income</div>
-        <div class="income-value" id="totalIncomeValue">0 UGX</div>
-      </div>
-      <div class="income-item">
-        <div class="income-label">month's income</div>
-        <div class="income-value" id="monthIncomeValue">0 UGX</div>
-      </div>
-    </div>
-
-    <!-- Incentive Row - UPDATED: Now shows Subsidiary Motivators total -->
-    <div class="incentive-row">
-      <span class="incentive-label">Subsidiary Motivators</span>
-      <span class="incentive-value" id="subsidiaryMotivatorsTotal">0 UGX</span>
-    </div>
-
-    <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" -->
-    <div class="menu-grid">
-      <div class="menu-item" onclick="showActivityLog()"><i class="fas fa-clipboard-list"></i> Activity Log</div>
-      <div class="menu-item" onclick="showTeamReport()"><i class="fas fa-users"></i> team report</div>
-      <div class="menu-item" onclick="openDailyReportModal()"><i class="fas fa-calendar-alt"></i> daily report</div>
-      <div class="menu-item" onclick="showGoldenHandshake()"><i class="fas fa-handshake"></i> Golden Handshake</div>
-      <div class="menu-item" onclick="showGrowthJourney()"><i class="fas fa-seedling"></i> my growth journey</div>
-      <div class="menu-item" onclick="showTransactionHistory()"><i class="fas fa-history"></i> transaction history</div>
-    </div>
-  </div>
-
-  <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-    <div class="nav-item active" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-  </div>
-</div>
-
-<!-- GOLDEN HANDSHAKE PAGE -->
-<div id="goldenHandshakePage">
-  <div class="scroll-content">
-    <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-    <div class="golden-header">
-      <i class="fas fa-handshake" style="font-size: 2.5rem; color: #7d5ba6;"></i>
-      <h2>Golden Handshake</h2>
-    </div>
-    <div id="goldenHandshakeContent"></div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-  </div>
-</div>
-
-<!-- ACTIVITY LOG PAGE - UPDATED: Renamed from taskRecordPage, title changed -->
-<div id="taskRecordPage">
-  <div class="scroll-content">
-    <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-    <h3 style="margin-bottom:20px;">📋 Activity Log</h3>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value" id="totalReadBooks">0</div>
-        <div class="stat-label">Read Books</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value" id="completeBooks">0</div>
-        <div class="stat-label">Complete Books</div>
-      </div>
-      <!-- Pending Books stat removed -->
-    </div>
-    <div class="section-title">📚 Book History</div>
-    <table class="task-table" id="taskHistoryTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Book</th>
-          <th>Status</th>
-          <th>Reward</th>
-        </tr>
-      </thead>
-      <tbody id="taskHistoryBody"></tbody>
-    </table>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-  </div>
-</div>
-
-<!-- TEAM REPORT PAGE - UPDATED for 3 columns -->
-<div id="teamReportPage">
-  <div class="scroll-content">
-    <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-    <h3 style="margin-bottom:20px;">👥 Team Report</h3>
-    <div class="team-report-container" id="teamReportContainer">
-      <!-- Columns will be filled by JavaScript -->
-    </div>
-    <div class="team-stats">
-      <div><span>Total Team Members:</span> <span id="totalTeamMembers">0</span></div>
-      <div><span>Active Today:</span> <span id="activeTeamMembers">0</span></div>
-    </div>
-  </div>
-  <div class="bottom-nav">
-    <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-    <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-    <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-    <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-    <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-  </div>
-</div>
-
-  <!-- LEVEL PAGE -->
-  <div id="levelPage">
-    <div class="scroll-content">
-      <div class="level-page-title">LEVELS PRICE AND SALARIES</div>
-      <div class="operating-wallet-display" id="levelOperatingWallet">Operating Wallet: 0 UGX</div>
-      <div class="incentive-wallet-display" id="levelIncentiveWallet">Incentive Wallet: 0 UGX</div>
-      
-      <!-- D1 -->
-      <div class="level-card-ultra" style="background-color: #e6f7ff;">
-        <div class="level-name-ultra" style="color: #0066cc;">D1</div>
-        <div class="level-detail-ultra">UGX 63000. 2 tasks</div>
-        <div class="level-detail-ultra">UGX 1125 per task</div>
-        <div class="level-detail-ultra">UGX 2250 daily</div>
-        <div class="click-to-join-ultra" style="color: #0066cc;" onclick="purchaseLevel(1, 63000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D2 -->
-      <div class="level-card-ultra" style="background-color: #e6ffe6;">
-        <div class="level-name-ultra" style="color: #008000;">D2</div>
-        <div class="level-detail-ultra">UGX 200000. 4 tasks</div>
-        <div class="level-detail-ultra">UGX 1775 per task</div>
-        <div class="level-detail-ultra">UGX 7100 daily</div>
-        <div class="click-to-join-ultra" style="color: #008000;" onclick="purchaseLevel(2, 200000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D3 -->
-      <div class="level-card-ultra" style="background-color: #ffffe6;">
-        <div class="level-name-ultra" style="color: #999900;">D3</div>
-        <div class="level-detail-ultra">UGX 532000. 12 tasks</div>
-        <div class="level-detail-ultra">UGX 1584 per task</div>
-        <div class="level-detail-ultra">UGX 19008 daily</div>
-        <div class="click-to-join-ultra" style="color: #999900;" onclick="purchaseLevel(3, 532000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D4 -->
-      <div class="level-card-ultra" style="background-color: #fff0e6;">
-        <div class="level-name-ultra" style="color: #cc6600;">D4</div>
-        <div class="level-detail-ultra">UGX 1450000 16 tasks</div>
-        <div class="level-detail-ultra">UGX 3238 per task</div>
-        <div class="level-detail-ultra">UGX 51808 per day</div>
-        <div class="click-to-join-ultra" style="color: #cc6600;" onclick="purchaseLevel(4, 1450000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D5 -->
-      <div class="level-card-ultra" style="background-color: #ffe6f0;">
-        <div class="level-name-ultra" style="color: #cc3399;">D5</div>
-        <div class="level-detail-ultra">UGX 3920000 24 tasks</div>
-        <div class="level-detail-ultra">UGX 6050 per task</div>
-        <div class="level-detail-ultra">UGX 145200 per day</div>
-        <div class="click-to-join-ultra" style="color: #cc3399;" onclick="purchaseLevel(5, 3920000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D6 -->
-      <div class="level-card-ultra" style="background-color: #f0e6ff;">
-        <div class="level-name-ultra" style="color: #6633cc;">D6</div>
-        <div class="level-detail-ultra">UGX 10640000 40 tasks</div>
-        <div class="level-detail-ultra">UGX 9500 per task</div>
-        <div class="level-detail-ultra">UGX 380000 daily</div>
-        <div class="click-to-join-ultra" style="color: #6633cc;" onclick="purchaseLevel(6, 10640000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D7 -->
-      <div class="level-card-ultra" style="background-color: #e6ffff;">
-        <div class="level-name-ultra" style="color: #009999;">D7</div>
-        <div class="level-detail-ultra">UGX 40040000 52 tasks</div>
-        <div class="level-detail-ultra">UGX 27500 per task</div>
-        <div class="level-detail-ultra">UGX 1430000 per day</div>
-        <div class="click-to-join-ultra" style="color: #009999;" onclick="purchaseLevel(7, 40040000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D8 -->
-      <div class="level-card-ultra" style="background-color: #ffe6e6;">
-        <div class="level-name-ultra" style="color: #cc3333;">D8</div>
-        <div class="level-detail-ultra">UGX 57120000 64 tasks</div>
-        <div class="level-detail-ultra">UGX 31875 per task</div>
-        <div class="level-detail-ultra">UGX 2040000 per day</div>
-        <div class="click-to-join-ultra" style="color: #cc3333;" onclick="purchaseLevel(8, 57120000)">Click to join</div>
-      </div>
-      <div class="level-separator-ultra"></div>
-      
-      <!-- D9 -->
-      <div class="level-card-ultra" style="background-color: #f2e6ff;">
-        <div class="level-name-ultra" style="color: #7733cc;">D9</div>
-        <div class="level-detail-ultra">UGX 84000000 74 tasks</div>
-        <div class="level-detail-ultra">UGX 40000 per task</div>
-        <div class="level-detail-ultra">UGX 3000000 per day</div>
-        <div class="click-to-join-ultra" style="color: #7733cc;" onclick="purchaseLevel(9, 84000000)">Click to join</div>
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-      <div class="nav-item active" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-    </div>
-  </div>
-
-  <!-- TASK PAGE (BOOKS PAGE) - 2 PER ROW GRID -->
-  <div id="taskPage">
-    <div class="scroll-content">
-      <h3 style="margin-bottom:20px;">📚 Coffee Library</h3>
-      <div class="books-grid" id="taskBookGrid"></div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-      <div class="nav-item active" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-    </div>
-  </div>
-
-  <!-- INCOME PAGE - UPDATED WITH CORRECT VALUES AND NO DOWNLOAD -->
-  <div id="incomePage">
-    <div class="scroll-content">
-      <!-- Page Title -->
-      <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
-          <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
+    <div id="mainDashboard">
+      <div class="scroll-content">
+        <!-- Green Background Section with UIC Watermark -->
+        <div style="background: linear-gradient(135deg, #2e7d32, #4caf50); padding: 30px 20px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(46,125,50,0.3);">
+          
+          <!-- Animated UIC Watermarks in Background -->
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; pointer-events: none;">
+            <div style="position: absolute; top: 10px; left: 10px; font-size: 3rem; font-weight: 900; color: white; transform: rotate(-15deg); animation: float 6s infinite ease-in-out;">UIC</div>
+            <div style="position: absolute; bottom: 10px; right: 10px; font-size: 4rem; font-weight: 900; color: white; transform: rotate(10deg); animation: float2 8s infinite ease-in-out reverse;">UIC</div>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-weight: 900; color: white; opacity: 0.15; animation: pulse 4s infinite;">UIC</div>
+          </div>
+          
+          <!-- Welcome Text (unchanged) -->
+          <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 2;">WELCOME</div>
+          <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); position: relative; z-index: 2;">Learn about coffee growing and earn rewards</div>
         </div>
-        <!-- Download hint - REMOVED -->
+        
+        <!-- NEW: Photo Gallery -->
+        <div class="photo-gallery-container">
+          <div class="gallery-title">
+            <i class="fas fa-images"></i> Coffee Community
+          </div>
+          <div class="gallery-scroll" id="galleryScroll">
+            <!-- Images will be inserted by JavaScript -->
+          </div>
+          <div class="gallery-dots" id="galleryDots"></div>
+        </div>
+        
+        <div class="divider-line"></div>
+
+        <!-- Member Card -->
+        <div class="member-card" id="memberCard">
+          <div class="member-type" id="memberTypeDisplay">INTERN MEMBER</div>
+          <div class="member-days" id="memberDaysDisplay">4 days remaining</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="memberProgress" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- Daily Counter -->
+        <div style="background:#f5edff; padding:12px; border-radius:15px; margin-bottom:15px; display:flex; justify-content:space-between; color:#4a3b5e;">
+          <span>📚 Today: <span id="booksReadToday">0</span>/<span id="dailyBookLimit">1</span></span>
+          <span>💰 Earned: <span id="dailyEarnings">0</span> UGX</span>
+        </div>
+
+        <!-- Books - REMOVED from Home Dashboard -->
+        <!-- Daily Motivation Card (NEW) -->
+        <div class="motivation-card" id="motivationCard">
+          <div class="motivation-icon" id="motivationIcon">🌅</div>
+          <div class="motivation-message" id="motivationMessage">Start your day with a fresh cup and a fresh page. Read now!</div>
+          <div class="motivation-time" id="motivationTime">Morning Motivation</div>
+        </div>
+
+        <!-- Actions - NEW 2x2 Grid Layout -->
+        <div class="action-grid">
+          <div class="action-grid-item" onclick="openDepositModal()">
+            <i class="fas fa-wallet"></i>
+            <span>Recharge</span>
+          </div>
+          <div class="action-grid-item" id="withdrawBtn" onclick="openWithdrawModal()">
+            <i class="fas fa-hand-holding-usd"></i>
+            <span>Withdraw</span>
+          </div>
+          <div class="action-grid-item girare" onclick="showPage('girare')">
+            <i class="fas fa-dice"></i>
+            <span>Girare</span>
+          </div>
+          <div class="action-grid-item stakes" onclick="showPage('stakes')">
+            <i class="fas fa-trophy"></i>
+            <span>Stakes</span>
+          </div>
+        </div>
+
+        <!-- Company Profile (kept as line, now opens modal) -->
+        <div class="company-line" onclick="openCompanyProfileModal()">
+          <span>Company Profile</span>
+          <i class="fas fa-chevron-right"></i>
+        </div>
       </div>
 
-      <!-- Income Table - UPDATED with correct values and NO download functionality -->
-      <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 10px;">
-        <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE (ME) -->
+    <div id="profilePage">
+      <div class="scroll-content">
+        <div class="profile-header">
+          <span class="time" id="currentTime"></span>
+          <span onclick="openUserDetailsModal()" style="cursor: pointer;"><i class="fas fa-user"></i></span>
+        </div>
+
+        <div class="employee-name" id="profileFullName">User Name</div>
+        <div class="employee-role" id="profileMemberType">intern member</div>
+
+        <!-- Wallets -->
+        <div class="wallets-container">
+          <div class="wallet-box operating">
+            <div class="label">💰 OPERATING WALLET</div>
+            <div class="amount" id="profileOperatingWallet">0 UGX</div>
+          </div>
+          <div class="wallet-box incentive">
+            <div class="label">💰 INCENTIVE WALLET</div>
+            <div class="amount" id="profileIncentiveWallet">0 UGX</div>
+          </div>
+        </div>
+
+        <!-- Deposit/Withdraw Buttons -->
+        <div class="profile-action-buttons">
+          <button class="profile-action-btn" onclick="openDepositModal()">
+            <i class="fas fa-arrow-down"></i> DEPOSIT
+          </button>
+          <button class="profile-action-btn" onclick="openWithdrawModal()">
+            <i class="fas fa-arrow-up"></i> WITHDRAW
+          </button>
+        </div>
+
+        <!-- Member Stats -->
+        <div style="background:#f5edff; border-radius:15px; padding:15px; margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between;">
+            <span>Days Left: <span id="profileDaysLeft">4</span></span>
+            <span>Books Today: <span id="profileBooksToday">0/1</span></span>
+          </div>
+        </div>
+
+        <!-- INCOME GRID -->
+        <div class="income-grid">
+          <div class="income-item">
+            <div class="income-label">today's income</div>
+            <div class="income-value" id="todayIncomeValue">0 UGX</div>
+          </div>
+          <div class="income-item">
+            <div class="income-label">total income</div>
+            <div class="income-value" id="totalIncomeValue">0 UGX</div>
+          </div>
+          <div class="income-item">
+            <div class="income-label">month's income</div>
+            <div class="income-value" id="monthIncomeValue">0 UGX</div>
+          </div>
+        </div>
+
+        <!-- Incentive Row - UPDATED: Now shows Subsidiary Motivators total -->
+        <div class="incentive-row">
+          <span class="incentive-label">Subsidiary Motivators</span>
+          <span class="incentive-value" id="subsidiaryMotivatorsTotal">0 UGX</span>
+        </div>
+
+        <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" -->
+        <div class="menu-grid">
+          <div class="menu-item" onclick="showActivityLog()"><i class="fas fa-clipboard-list"></i> Activity Log</div>
+          <div class="menu-item" onclick="showTeamReport()"><i class="fas fa-users"></i> team report</div>
+          <div class="menu-item" onclick="openDailyReportModal()"><i class="fas fa-calendar-alt"></i> daily report</div>
+          <div class="menu-item" onclick="showGoldenHandshake()"><i class="fas fa-handshake"></i> Golden Handshake</div>
+          <div class="menu-item" onclick="showGrowthJourney()"><i class="fas fa-seedling"></i> my growth journey</div>
+          <div class="menu-item" onclick="showTransactionHistory()"><i class="fas fa-history"></i> transaction history</div>
+        </div>
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item active" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- GOLDEN HANDSHAKE PAGE -->
+    <div id="goldenHandshakePage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+        <div class="golden-header">
+          <i class="fas fa-handshake" style="font-size: 2.5rem; color: #7d5ba6;"></i>
+          <h2>Golden Handshake</h2>
+        </div>
+        <div id="goldenHandshakeContent"></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG PAGE - UPDATED: Renamed from taskRecordPage, title changed -->
+    <div id="taskRecordPage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+        <h3 style="margin-bottom:20px;">📋 Activity Log</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="totalReadBooks">0</div>
+            <div class="stat-label">Read Books</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="completeBooks">0</div>
+            <div class="stat-label">Complete Books</div>
+          </div>
+          <!-- Pending Books stat removed -->
+        </div>
+        <div class="section-title">📚 Book History</div>
+        <table class="task-table" id="taskHistoryTable">
           <thead>
-            <tr style="background: #7d5ba6; color: white;">
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">LEVEL</th>
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT (UGX)</th>
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DAILY INCOME</th>
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">TASKS</th>
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">REVENUE PER TASK</th>
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">MONTHLY INCOME</th>
-              <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">ANNUAL INCOME</th>
+            <tr>
+              <th>Date</th>
+              <th>Book</th>
+              <th>Status</th>
+              <th>Reward</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- INTERN Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">INTERN</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc; font-weight: 600; color: #28a745;">FREE</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
-            </tr>
-            
-            <!-- D1 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D1</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">63,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,250</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,125</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">67,500</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">821,250</td>
-            </tr>
-            
-            <!-- D2 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D2</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">200,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,100</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,775</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">213,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,591,500</td>
-            </tr>
-            
-            <!-- D3 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D3</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">532,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">19,008</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">12</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,584</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">570,240</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,938,920</td>
-            </tr>
-            
-            <!-- D4 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D4</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,450,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">51,808</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">16</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,238</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,554,240</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">18,909,920</td>
-            </tr>
-            
-            <!-- D5 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D5</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,920,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">145,200</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">24</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,050</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,356,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52,998,000</td>
-            </tr>
-            
-            <!-- D6 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D6</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">10,640,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">380,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">9,500</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">11,400,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">138,700,000</td>
-            </tr>
-            
-            <!-- D7 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D7</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,040,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,430,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">27,500</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">42,900,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">521,950,000</td>
-            </tr>
-            
-            <!-- D8 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D8</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">57,120,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,040,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">31,875</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">61,200,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">744,600,000</td>
-            </tr>
-            
-            <!-- D9 Row -->
-            <tr>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D9</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">84,000,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,000,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">74</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">90,000,000</td>
-              <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,095,000,000</td>
-            </tr>
-          </tbody>
+          <tbody id="taskHistoryBody"></tbody>
         </table>
       </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
 
-      <!-- LEVEL EXPLANATIONS - Professional Edition (UPDATED INTERN) -->
-      <div style="margin-top: 30px;">
-        <h3 style="color: #4a3b5e; margin-bottom: 15px; font-size: 1.3rem;">📋 LEVEL EXPLANATIONS</h3>
-        
-        <!-- Intern - UPDATED -->
-        <div style="background: #f5edff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #7d5ba6;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📋 INTERN "The Foundation Builder"</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Every empire starts with a solid foundation. 1,500 daily | 6,000 monthly across 4 days. Withdrawals not available during this trial period – focus on learning. After 4 days, upgrade to D1 to continue earning.</div>
+    <!-- TEAM REPORT PAGE - UPDATED for 3 columns -->
+    <div id="teamReportPage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+        <h3 style="margin-bottom:20px;">👥 Team Report</h3>
+        <div class="team-report-container" id="teamReportContainer">
+          <!-- Columns will be filled by JavaScript -->
         </div>
+        <div class="team-stats">
+          <div><span>Total Team Members:</span> <span id="totalTeamMembers">0</span></div>
+          <div><span>Active Today:</span> <span id="activeTeamMembers">0</span></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- LEVEL PAGE -->
+    <div id="levelPage">
+      <div class="scroll-content">
+        <div class="level-page-title">LEVELS PRICE AND SALARIES</div>
+        <div class="operating-wallet-display" id="levelOperatingWallet">Operating Wallet: 0 UGX</div>
+        <div class="incentive-wallet-display" id="levelIncentiveWallet">Incentive Wallet: 0 UGX</div>
         
         <!-- D1 -->
-        <div style="background: #e6f0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #0066cc;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🎓 D1 · coffee apprentice</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">You've earned your first certification. 2,250 daily | 67,500 monthly | 821,250 annually. 63,000 UGX invested returns in 28 days. Withdrawals unlocked. Your journey begins.</div>
+        <div class="level-card-ultra" style="background-color: #e6f7ff;">
+          <div class="level-name-ultra" style="color: #0066cc;">D1</div>
+          <div class="level-detail-ultra">UGX 63000. 2 tasks</div>
+          <div class="level-detail-ultra">UGX 1125 per task</div>
+          <div class="level-detail-ultra">UGX 2250 daily</div>
+          <div class="click-to-join-ultra" style="color: #0066cc;" onclick="purchaseLevel(1, 63000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D2 -->
-        <div style="background: #cce0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #008000;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🌿 D2 · coffee grower</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Mastery of four daily tasks. 7,100 daily | 213,000 monthly | 2.59M annually. Your expertise is growing, and so is your portfolio. Referral commissions now at three levels.</div>
+        <div class="level-card-ultra" style="background-color: #e6ffe6;">
+          <div class="level-name-ultra" style="color: #008000;">D2</div>
+          <div class="level-detail-ultra">UGX 200000. 4 tasks</div>
+          <div class="level-detail-ultra">UGX 1775 per task</div>
+          <div class="level-detail-ultra">UGX 7100 daily</div>
+          <div class="click-to-join-ultra" style="color: #008000;" onclick="purchaseLevel(2, 200000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D3 -->
-        <div style="background: #ccf0f0; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #009999;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">☕ D3 · coffee farmer</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">168% growth from previous level. 19,008 daily | 570,240 monthly | 6.94M annually. You understand the economics of coffee. Your analytical skills are paying dividends.</div>
+        <div class="level-card-ultra" style="background-color: #ffffe6;">
+          <div class="level-name-ultra" style="color: #999900;">D3</div>
+          <div class="level-detail-ultra">UGX 532000. 12 tasks</div>
+          <div class="level-detail-ultra">UGX 1584 per task</div>
+          <div class="level-detail-ultra">UGX 19008 daily</div>
+          <div class="click-to-join-ultra" style="color: #999900;" onclick="purchaseLevel(3, 532000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D4 -->
-        <div style="background: #ccffcc; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #00aa00;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">💼 D4 · coffee specialist</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Managing significant assets. 51,808 daily | 1.55M monthly | 18.9M annually. You've crossed the millionaire threshold. Your coffee estate is thriving.</div>
+        <div class="level-card-ultra" style="background-color: #fff0e6;">
+          <div class="level-name-ultra" style="color: #cc6600;">D4</div>
+          <div class="level-detail-ultra">UGX 1450000 16 tasks</div>
+          <div class="level-detail-ultra">UGX 3238 per task</div>
+          <div class="level-detail-ultra">UGX 51808 per day</div>
+          <div class="click-to-join-ultra" style="color: #cc6600;" onclick="purchaseLevel(4, 1450000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D5 -->
-        <div style="background: #fff0b3; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #cc9900;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📈 D5 · coffee expert</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Strategic earnings of 145,200 daily. 4.36M monthly | 53M annually. Your wealth management skills are exemplary. Multiple income streams now optimized.</div>
+        <div class="level-card-ultra" style="background-color: #ffe6f0;">
+          <div class="level-name-ultra" style="color: #cc3399;">D5</div>
+          <div class="level-detail-ultra">UGX 3920000 24 tasks</div>
+          <div class="level-detail-ultra">UGX 6050 per task</div>
+          <div class="level-detail-ultra">UGX 145200 per day</div>
+          <div class="click-to-join-ultra" style="color: #cc3399;" onclick="purchaseLevel(5, 3920000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D6 -->
-        <div style="background: #b3b3ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #6633cc;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🏛️ D6 · coffee master</div>
-          <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Respected voice in coffee. 380,000 daily | 11.4M monthly | 138.7M annually. Your influence extends beyond personal earnings. Others follow your example.</div>
+        <div class="level-card-ultra" style="background-color: #f0e6ff;">
+          <div class="level-name-ultra" style="color: #6633cc;">D6</div>
+          <div class="level-detail-ultra">UGX 10640000 40 tasks</div>
+          <div class="level-detail-ultra">UGX 9500 per task</div>
+          <div class="level-detail-ultra">UGX 380000 daily</div>
+          <div class="click-to-join-ultra" style="color: #6633cc;" onclick="purchaseLevel(6, 10640000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D7 -->
-        <div style="background: #9966ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #4d1aff; color: white;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">👔 D7 · coffee elite</div>
-          <div style="font-size: 0.85rem; color: white; line-height: 1.4;">C-level earnings. 1.43M daily | 42.9M monthly | 522M annually. You operate at the highest levels of coffee commerce. Boardroom decisions, farm-level results.</div>
+        <div class="level-card-ultra" style="background-color: #e6ffff;">
+          <div class="level-name-ultra" style="color: #009999;">D7</div>
+          <div class="level-detail-ultra">UGX 40040000 52 tasks</div>
+          <div class="level-detail-ultra">UGX 27500 per task</div>
+          <div class="level-detail-ultra">UGX 1430000 per day</div>
+          <div class="click-to-join-ultra" style="color: #009999;" onclick="purchaseLevel(7, 40040000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D8 -->
-        <div style="background: #993333; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #660000; color: white;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🌍 D8 · coffee ambassador</div>
-          <div style="font-size: 0.85rem; color: white; line-height: 1.4;">International expertise commands 2.04M daily. 61.2M monthly | 744.6M annually. Coffee farms worldwide seek your guidance. Your legacy grows.</div>
+        <div class="level-card-ultra" style="background-color: #ffe6e6;">
+          <div class="level-name-ultra" style="color: #cc3333;">D8</div>
+          <div class="level-detail-ultra">UGX 57120000 64 tasks</div>
+          <div class="level-detail-ultra">UGX 31875 per task</div>
+          <div class="level-detail-ultra">UGX 2040000 per day</div>
+          <div class="click-to-join-ultra" style="color: #cc3333;" onclick="purchaseLevel(8, 57120000)">Click to join</div>
         </div>
+        <div class="level-separator-ultra"></div>
         
         <!-- D9 -->
-        <div style="background: #000000; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 2px solid gold; color: white;">
-          <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🏆 D9 · coffee icon</div>
-          <div style="font-size: 0.85rem; color: white; line-height: 1.4;">Peak achievement: 3M daily | 90M monthly | 1.095B annually. You've reached the summit of coffee education. A billion-shilling career. Icons are remembered. Legends like you.</div>
+        <div class="level-card-ultra" style="background-color: #f2e6ff;">
+          <div class="level-name-ultra" style="color: #7733cc;">D9</div>
+          <div class="level-detail-ultra">UGX 84000000 74 tasks</div>
+          <div class="level-detail-ultra">UGX 40000 per task</div>
+          <div class="level-detail-ultra">UGX 3000000 per day</div>
+          <div class="click-to-join-ultra" style="color: #7733cc;" onclick="purchaseLevel(9, 84000000)">Click to join</div>
         </div>
       </div>
-
-      <!-- QUICK TIPS -->
-      <div style="margin-top: 25px; padding: 15px; background: #f5edff; border-radius: 15px;">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.8rem;">
-          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">⚡ D1: 28-day ROI</span>
-          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">📈 Exponential growth</span>
-          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">💰 Referrals: 10%/4%/1%</span>
-          <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">🏧 Withdrawals D1+</span>
-        </div>
-      </div>
-
-      <!-- ===== NEW: FARMER POSITIONS TABLE ===== -->
-      <div style="margin-top: 30px; background: #f0f7f0; border-radius: 20px; padding: 20px; border: 2px solid #28a745;">
-        <h3 style="color: #28a745; margin-bottom: 15px;"><i class="fas fa-trophy"></i> coffee farmer positions</h3>
-        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-          <div style="font-weight: 700; color: #28a745;">🏘️ village farmer</div>
-          <div>20 a-level · ugx 89,000 monthly</div>
-        </div>
-        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-          <div style="font-weight: 700; color: #28a745;">📍 parish farmer</div>
-          <div>50 a-level · ugx 268,000 monthly</div>
-        </div>
-        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-          <div style="font-weight: 700; color: #28a745;">🏡 sub-county farmer</div>
-          <div>95 a-level · ugx 530,000 monthly</div>
-        </div>
-        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-          <div style="font-weight: 700; color: #28a745;">🏢 county farmer</div>
-          <div>410 a+b (min 160 a) · ugx 2,100,000 monthly</div>
-          <div style="font-size: 0.8rem; color: #666;">+ pickup station · 30k weekly airtime · 300k transport</div>
-        </div>
-        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-          <div style="font-weight: 700; color: #28a745;">🌍 regional farmer</div>
-          <div>1300 a+b+c · ugx 9,000,000 monthly</div>
-          <div style="font-size: 0.8rem; color: #666;">+ office · company car · daily allowance · data & airtime</div>
-        </div>
-        <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
-          <div style="font-weight: 700; color: #28a745;">🇺🇬 national farmer (only 4!)</div>
-          <div>3700 a+b+c · ugx 29,000,000 monthly</div>
-          <div style="font-size: 0.8rem; color: #666;">+ main office · premium car · 200k daily · premium data</div>
-        </div>
-        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">💰 all salaries paid on 30th to operating wallet</p>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item active" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
       </div>
     </div>
-    
-    <!-- Bottom Nav -->
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-      <div class="nav-item active" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+
+    <!-- TASK PAGE (BOOKS PAGE) - 2 PER ROW GRID -->
+    <div id="taskPage">
+      <div class="scroll-content">
+        <h3 style="margin-bottom:20px;">📚 Coffee Library</h3>
+        <div class="books-grid" id="taskBookGrid"></div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item active" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- INCOME PAGE - UPDATED WITH CORRECT VALUES AND NO DOWNLOAD -->
+    <div id="incomePage">
+      <div class="scroll-content">
+        <!-- Page Title -->
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2 style="color: #4a3b5e; font-size: 1.8rem;"><i class="fas fa-chart-line"></i> INCOME DETAILS (UGX)</h2>
+            <p style="color: #8a7a9c; font-size: 0.9rem;">See your earning potential at every level</p>
+          </div>
+          <!-- Download hint - REMOVED -->
+        </div>
+
+        <!-- Income Table - UPDATED with correct values and NO download functionality -->
+        <div id="incomeTableContainer" style="overflow-x: auto; margin-bottom: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 10px;">
+          <table style="width: 100%; border-collapse: collapse; min-width: 600px; border: 1px solid #ccc;">
+            <thead>
+              <tr style="background: #7d5ba6; color: white;">
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">LEVEL</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DEPOSIT (UGX)</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">DAILY INCOME</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">TASKS</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">REVENUE PER TASK</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">MONTHLY INCOME</th>
+                <th style="padding: 8px 4px; font-size: 10px; font-weight: 600; text-align: center; border: 1px solid #aaa;">ANNUAL INCOME</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- INTERN Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">INTERN</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc; font-weight: 600; color: #28a745;">FREE</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;"></td>
+              </tr>
+              
+              <!-- D1 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D1</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">63,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,250</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,125</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">67,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">821,250</td>
+              </tr>
+              
+              <!-- D2 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D2</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">200,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">7,100</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,775</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">213,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,591,500</td>
+              </tr>
+              
+              <!-- D3 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D3</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">532,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">19,008</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">12</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,584</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">570,240</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,938,920</td>
+              </tr>
+              
+              <!-- D4 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D4</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,450,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">51,808</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">16</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,238</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,554,240</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">18,909,920</td>
+              </tr>
+              
+              <!-- D5 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D5</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,920,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">145,200</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">24</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">6,050</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">4,356,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52,998,000</td>
+              </tr>
+              
+              <!-- D6 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D6</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">10,640,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">380,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">9,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">11,400,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">138,700,000</td>
+              </tr>
+              
+              <!-- D7 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D7</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,040,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,430,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">52</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">27,500</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">42,900,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">521,950,000</td>
+              </tr>
+              
+              <!-- D8 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D8</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">57,120,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">2,040,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">64</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">31,875</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">61,200,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">744,600,000</td>
+              </tr>
+              
+              <!-- D9 Row -->
+              <tr>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">D9</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">84,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">3,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">74</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">40,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">90,000,000</td>
+                <td style="padding: 6px 4px; font-size: 10px; text-align: center; border: 1px solid #ccc;">1,095,000,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- LEVEL EXPLANATIONS - Professional Edition (UPDATED INTERN) -->
+        <div style="margin-top: 30px;">
+          <h3 style="color: #4a3b5e; margin-bottom: 15px; font-size: 1.3rem;">📋 LEVEL EXPLANATIONS</h3>
+          
+          <!-- Intern - UPDATED -->
+          <div style="background: #f5edff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #7d5ba6;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📋 INTERN "The Foundation Builder"</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Every empire starts with a solid foundation. 1,500 daily | 6,000 monthly across 4 days. Withdrawals not available during this trial period – focus on learning. After 4 days, upgrade to D1 to continue earning.</div>
+          </div>
+          
+          <!-- D1 -->
+          <div style="background: #e6f0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #0066cc;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🎓 D1 · coffee apprentice</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">You've earned your first certification. 2,250 daily | 67,500 monthly | 821,250 annually. 63,000 UGX invested returns in 28 days. Withdrawals unlocked. Your journey begins.</div>
+          </div>
+          
+          <!-- D2 -->
+          <div style="background: #cce0ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #008000;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🌿 D2 · coffee grower</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Mastery of four daily tasks. 7,100 daily | 213,000 monthly | 2.59M annually. Your expertise is growing, and so is your portfolio. Referral commissions now at three levels.</div>
+          </div>
+          
+          <!-- D3 -->
+          <div style="background: #ccf0f0; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #009999;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">☕ D3 · coffee farmer</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">168% growth from previous level. 19,008 daily | 570,240 monthly | 6.94M annually. You understand the economics of coffee. Your analytical skills are paying dividends.</div>
+          </div>
+          
+          <!-- D4 -->
+          <div style="background: #ccffcc; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #00aa00;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">💼 D4 · coffee specialist</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Managing significant assets. 51,808 daily | 1.55M monthly | 18.9M annually. You've crossed the millionaire threshold. Your coffee estate is thriving.</div>
+          </div>
+          
+          <!-- D5 -->
+          <div style="background: #fff0b3; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #cc9900;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📈 D5 · coffee expert</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Strategic earnings of 145,200 daily. 4.36M monthly | 53M annually. Your wealth management skills are exemplary. Multiple income streams now optimized.</div>
+          </div>
+          
+          <!-- D6 -->
+          <div style="background: #b3b3ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #6633cc;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">🏛️ D6 · coffee master</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Respected voice in coffee. 380,000 daily | 11.4M monthly | 138.7M annually. Your influence extends beyond personal earnings. Others follow your example.</div>
+          </div>
+          
+          <!-- D7 -->
+          <div style="background: #9966ff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #4d1aff; color: white;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">👔 D7 · coffee elite</div>
+            <div style="font-size: 0.85rem; color: white; line-height: 1.4;">C-level earnings. 1.43M daily | 42.9M monthly | 522M annually. You operate at the highest levels of coffee commerce. Boardroom decisions, farm-level results.</div>
+          </div>
+          
+          <!-- D8 -->
+          <div style="background: #993333; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #660000; color: white;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🌍 D8 · coffee ambassador</div>
+            <div style="font-size: 0.85rem; color: white; line-height: 1.4;">International expertise commands 2.04M daily. 61.2M monthly | 744.6M annually. Coffee farms worldwide seek your guidance. Your legacy grows.</div>
+          </div>
+          
+          <!-- D9 -->
+          <div style="background: #000000; border-radius: 12px; padding: 12px; margin-bottom: 12px; border: 2px solid gold; color: white;">
+            <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: white;">🏆 D9 · coffee icon</div>
+            <div style="font-size: 0.85rem; color: white; line-height: 1.4;">Peak achievement: 3M daily | 90M monthly | 1.095B annually. You've reached the summit of coffee education. A billion-shilling career. Icons are remembered. Legends like you.</div>
+          </div>
+        </div>
+
+        <!-- QUICK TIPS -->
+        <div style="margin-top: 25px; padding: 15px; background: #f5edff; border-radius: 15px;">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.8rem;">
+            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">⚡ D1: 28-day ROI</span>
+            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">📈 Exponential growth</span>
+            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">💰 Referrals: 10%/4%/1%</span>
+            <span style="background: #7d5ba6; color: white; padding: 5px 10px; border-radius: 20px;">🏧 Withdrawals D1+</span>
+          </div>
+        </div>
+
+        <!-- ===== NEW: FARMER POSITIONS TABLE ===== -->
+        <div style="margin-top: 30px; background: #f0f7f0; border-radius: 20px; padding: 20px; border: 2px solid #28a745;">
+          <h3 style="color: #28a745; margin-bottom: 15px;"><i class="fas fa-trophy"></i> coffee farmer positions</h3>
+          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+            <div style="font-weight: 700; color: #28a745;">🏘️ village farmer</div>
+            <div>20 a-level · ugx 89,000 monthly</div>
+          </div>
+          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+            <div style="font-weight: 700; color: #28a745;">📍 parish farmer</div>
+            <div>50 a-level · ugx 268,000 monthly</div>
+          </div>
+          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+            <div style="font-weight: 700; color: #28a745;">🏡 sub-county farmer</div>
+            <div>95 a-level · ugx 530,000 monthly</div>
+          </div>
+          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+            <div style="font-weight: 700; color: #28a745;">🏢 county farmer</div>
+            <div>410 a+b (min 160 a) · ugx 2,100,000 monthly</div>
+            <div style="font-size: 0.8rem; color: #666;">+ pickup station · 30k weekly airtime · 300k transport</div>
+          </div>
+          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+            <div style="font-weight: 700; color: #28a745;">🌍 regional farmer</div>
+            <div>1300 a+b+c · ugx 9,000,000 monthly</div>
+            <div style="font-size: 0.8rem; color: #666;">+ office · company car · daily allowance · data & airtime</div>
+          </div>
+          <div style="margin-bottom: 10px; padding: 10px; background: white; border-radius: 10px;">
+            <div style="font-weight: 700; color: #28a745;">🇺🇬 national farmer (only 4!)</div>
+            <div>3700 a+b+c · ugx 29,000,000 monthly</div>
+            <div style="font-size: 0.8rem; color: #666;">+ main office · premium car · 200k daily · premium data</div>
+          </div>
+          <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">💰 all salaries paid on 30th to operating wallet</p>
+        </div>
+      </div>
+      
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item active" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- GROWTH JOURNEY PAGE - BLUE SKY THEME -->
+    <div id="growthJourneyPage" class="growth-journey-page">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('profile')" style="color: #003366;"><i class="fas fa-arrow-left"></i> back to profile</button>
+        
+        <div class="growth-title">☁️ my growth journey</div>
+        <div class="growth-subtitle">grow your coffee community</div>
+
+        <!-- Current Position Card -->
+        <div class="growth-card">
+          <div class="position-badge" id="currentPositionBadge">🏘️ village farmer</div>
+          <div class="progress-label">
+            <span>a-level members: <span id="currentACount">15</span>/20</span>
+            <span><span id="currentProgressPercent">75</span>%</span>
+          </div>
+          <div class="progress-bg">
+            <div class="progress-fill-blue" id="currentProgressBar" style="width: 75%;"></div>
+          </div>
+          <div style="font-size: 0.9rem; color: #003366;">💰 ugx 89,000 monthly</div>
+        </div>
+
+        <!-- Next Position Card (if qualified) -->
+        <div class="growth-card" id="nextPositionCard" style="border: 2px solid #28a745;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="position-badge" style="background: #28a745; color: white;">📍 parish farmer</span>
+            <span style="color: #28a745; font-weight: 700;">✅ qualified!</span>
+          </div>
+          <div class="progress-label">
+            <span>your a-level: 52/50</span>
+          </div>
+          <div style="margin: 15px 0;">
+            <div>💰 ugx 268,000 monthly</div>
+          </div>
+          <button class="confirm-upgrade-btn" onclick="confirmPositionUpgrade()">confirm upgrade</button>
+        </div>
+
+        <!-- All Positions Summary -->
+        <div class="growth-card">
+          <h3 style="color: #003366; margin-bottom: 15px;">☕ all farmer positions</h3>
+          <div class="benefit-item"><span class="benefit-icon">🏘️</span> village · 20a · 89k</div>
+          <div class="benefit-item"><span class="benefit-icon">📍</span> parish · 50a · 268k</div>
+          <div class="benefit-item"><span class="benefit-icon">🏡</span> sub-county · 95a · 530k</div>
+          <div class="benefit-item"><span class="benefit-icon">🏢</span> county · 410a+b · 2.1m + benefits</div>
+          <div class="benefit-item"><span class="benefit-icon">🌍</span> regional · 1300a+b+c · 9m + benefits</div>
+          <div class="benefit-item"><span class="benefit-icon">🇺🇬</span> national · 3700a+b+c · 29m + benefits</div>
+        </div>
+
+        <!-- Team Summary -->
+        <div class="growth-card">
+          <h3 style="color: #003366; margin-bottom: 15px;">📊 your team</h3>
+          <div class="team-summary">
+            <div class="team-stat"><span class="number" id="teamACount">15</span><span class="label">a-level</span></div>
+            <div class="team-stat"><span class="number" id="teamBCount">8</span><span class="label">b-level</span></div>
+            <div class="team-stat"><span class="number" id="teamCCount">3</span><span class="label">c-level</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- STAKES PAGE - NEW PAGE -->
+    <div id="stakesPage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+        
+        <div class="stakes-header">
+          <i class="fas fa-trophy"></i>
+          <h2>STAKES</h2>
+        </div>
+        
+        <div class="stakes-card">
+          <i class="fas fa-coins"></i>
+          <h3>Coming Soon!</h3>
+          <p>Place your stakes and win big rewards. This feature is under development.</p>
+        </div>
+        
+        <div style="background: #f5edff; border-radius: 15px; padding: 20px; margin-top: 20px;">
+          <h4 style="color: #4a3b5e; margin-bottom: 15px;">How Stakes Will Work:</h4>
+          <ul style="padding-left: 20px; color: #666;">
+            <li>🔹 Stake your earnings for a chance to win more</li>
+            <li>🔹 Higher stakes = higher rewards</li>
+            <li>🔹 Daily and weekly stake options</li>
+            <li>🔹 Special events with bonus prizes</li>
+          </ul>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- NEW GIRARE PAGE -->
+    <div id="girarePage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
+        
+        <div class="girare-container">
+          <div class="girare-header">
+            <i class="fas fa-dice"></i>
+            <h2>GIRARE WHEEL</h2>
+          </div>
+          
+          <div id="girareContent"></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- TRANSACTION HISTORY PAGE - UPDATED WITH FILTERS -->
+    <div id="transactionHistoryPage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+        <h3 style="margin-bottom:20px;">📜 Transaction History</h3>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs" id="filterTabs">
+          <div class="filter-tab active" onclick="filterTransactions('all')" id="filter-all">[ALL]</div>
+          <div class="filter-tab" onclick="filterTransactions('book')" id="filter-book">📚 <span id="book-count">0</span></div>
+          <div class="filter-tab" onclick="filterTransactions('referral')" id="filter-referral">👥 <span id="referral-count">0</span></div>
+          <div class="filter-tab" onclick="filterTransactions('deposit')" id="filter-deposit">💰 <span id="deposit-count">0</span></div>
+          <div class="filter-tab" onclick="filterTransactions('withdrawal')" id="filter-withdrawal">💸 <span id="withdrawal-count">0</span></div>
+          <div class="filter-tab" onclick="filterTransactions('refund')" id="filter-refund">🔄 <span id="refund-count">0</span></div>
+          <div class="filter-tab" onclick="filterTransactions('level_upgrade')" id="filter-upgrade">⬆️ <span id="upgrade-count">0</span></div>
+        </div>
+        
+        <div id="currentFilterLabel" style="margin-bottom: 10px; font-size: 0.9rem; color: #666;">Showing: ALL TRANSACTIONS</div>
+        
+        <div class="transaction-list" id="transactionList">
+          <!-- Transactions will be loaded here -->
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
     </div>
   </div>
 
-  <!-- GROWTH JOURNEY PAGE - BLUE SKY THEME -->
-  <div id="growthJourneyPage" class="growth-journey-page">
-    <div class="scroll-content">
-      <button class="back-btn" onclick="showPage('profile')" style="color: #003366;"><i class="fas fa-arrow-left"></i> back to profile</button>
-      
-      <div class="growth-title">☁️ my growth journey</div>
-      <div class="growth-subtitle">grow your coffee community</div>
-
-      <!-- Current Position Card -->
-      <div class="growth-card">
-        <div class="position-badge" id="currentPositionBadge">🏘️ village farmer</div>
-        <div class="progress-label">
-          <span>a-level members: <span id="currentACount">15</span>/20</span>
-          <span><span id="currentProgressPercent">75</span>%</span>
-        </div>
-        <div class="progress-bg">
-          <div class="progress-fill-blue" id="currentProgressBar" style="width: 75%;"></div>
-        </div>
-        <div style="font-size: 0.9rem; color: #003366;">💰 ugx 89,000 monthly</div>
-      </div>
-
-      <!-- Next Position Card (if qualified) -->
-      <div class="growth-card" id="nextPositionCard" style="border: 2px solid #28a745;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span class="position-badge" style="background: #28a745; color: white;">📍 parish farmer</span>
-          <span style="color: #28a745; font-weight: 700;">✅ qualified!</span>
-        </div>
-        <div class="progress-label">
-          <span>your a-level: 52/50</span>
-        </div>
-        <div style="margin: 15px 0;">
-          <div>💰 ugx 268,000 monthly</div>
-        </div>
-        <button class="confirm-upgrade-btn" onclick="confirmPositionUpgrade()">confirm upgrade</button>
-      </div>
-
-      <!-- All Positions Summary -->
-      <div class="growth-card">
-        <h3 style="color: #003366; margin-bottom: 15px;">☕ all farmer positions</h3>
-        <div class="benefit-item"><span class="benefit-icon">🏘️</span> village · 20a · 89k</div>
-        <div class="benefit-item"><span class="benefit-icon">📍</span> parish · 50a · 268k</div>
-        <div class="benefit-item"><span class="benefit-icon">🏡</span> sub-county · 95a · 530k</div>
-        <div class="benefit-item"><span class="benefit-icon">🏢</span> county · 410a+b · 2.1m + benefits</div>
-        <div class="benefit-item"><span class="benefit-icon">🌍</span> regional · 1300a+b+c · 9m + benefits</div>
-        <div class="benefit-item"><span class="benefit-icon">🇺🇬</span> national · 3700a+b+c · 29m + benefits</div>
-      </div>
-
-      <!-- Team Summary -->
-      <div class="growth-card">
-        <h3 style="color: #003366; margin-bottom: 15px;">📊 your team</h3>
-        <div class="team-summary">
-          <div class="team-stat"><span class="number" id="teamACount">15</span><span class="label">a-level</span></div>
-          <div class="team-stat"><span class="number" id="teamBCount">8</span><span class="label">b-level</span></div>
-          <div class="team-stat"><span class="number" id="teamCCount">3</span><span class="label">c-level</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-    </div>
-  </div>
-
-  <!-- STAKES PAGE - NEW PAGE -->
-  <div id="stakesPage">
-    <div class="scroll-content">
-      <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
-      
-      <div class="stakes-header">
-        <i class="fas fa-trophy"></i>
-        <h2>STAKES</h2>
-      </div>
-      
-      <div class="stakes-card">
-        <i class="fas fa-coins"></i>
-        <h3>Coming Soon!</h3>
-        <p>Place your stakes and win big rewards. This feature is under development.</p>
-      </div>
-      
-      <div style="background: #f5edff; border-radius: 15px; padding: 20px; margin-top: 20px;">
-        <h4 style="color: #4a3b5e; margin-bottom: 15px;">How Stakes Will Work:</h4>
-        <ul style="padding-left: 20px; color: #666;">
-          <li>🔹 Stake your earnings for a chance to win more</li>
-          <li>🔹 Higher stakes = higher rewards</li>
-          <li>🔹 Daily and weekly stake options</li>
-          <li>🔹 Special events with bonus prizes</li>
-        </ul>
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-    </div>
-  </div>
-
-  <!-- TRANSACTION HISTORY PAGE - UPDATED WITH FILTERS -->
-  <div id="transactionHistoryPage">
-    <div class="scroll-content">
-      <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-      <h3 style="margin-bottom:20px;">📜 Transaction History</h3>
-      
-      <!-- Filter Tabs -->
-      <div class="filter-tabs" id="filterTabs">
-        <div class="filter-tab active" onclick="filterTransactions('all')" id="filter-all">[ALL]</div>
-        <div class="filter-tab" onclick="filterTransactions('book')" id="filter-book">📚 <span id="book-count">0</span></div>
-        <div class="filter-tab" onclick="filterTransactions('referral')" id="filter-referral">👥 <span id="referral-count">0</span></div>
-        <div class="filter-tab" onclick="filterTransactions('deposit')" id="filter-deposit">💰 <span id="deposit-count">0</span></div>
-        <div class="filter-tab" onclick="filterTransactions('withdrawal')" id="filter-withdrawal">💸 <span id="withdrawal-count">0</span></div>
-        <div class="filter-tab" onclick="filterTransactions('refund')" id="filter-refund">🔄 <span id="refund-count">0</span></div>
-        <div class="filter-tab" onclick="filterTransactions('level_upgrade')" id="filter-upgrade">⬆️ <span id="upgrade-count">0</span></div>
-      </div>
-      
-      <div id="currentFilterLabel" style="margin-bottom: 10px; font-size: 0.9rem; color: #666;">Showing: ALL TRANSACTIONS</div>
-      
-      <div class="transaction-list" id="transactionList">
-        <!-- Transactions will be loaded here -->
-      </div>
-    </div>
-    <div class="bottom-nav">
-      <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
-      <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
-      <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
-      <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
-      <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
-    </div>
-  </div>
-
-  <!-- POSITION SALARY PAGE - COMPLETELY REMOVED -->
-</div>
-
-  <!-- NEW DEPOSIT MODAL - GREEN THEME WITH 4 SCREENS (UPDATED) -->
+  <!-- DEPOSIT MODAL - GREEN THEME WITH 4 SCREENS (UPDATED) -->
   <div class="modal-overlay" id="depositModal">
     <div class="modal-content deposit-modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -4364,7 +4643,7 @@
         <button class="close-btn" onclick="closeDepositModal()" style="font-size:1.8rem; background:none; border:none;">&times;</button>
       </div>
       
-      <!-- Screen 1: Select Payment Method - DPK PAY PAY NOW ACTIVE -->
+      <!-- Screen 1: Select Payment Method -->
       <div id="depositScreen1" class="deposit-screen active">
         <div class="notification-banner">
           🔔 PLEASE SELECT YOUR PAYMENT METHOD
@@ -4375,12 +4654,12 @@
           <i class="fas fa-mobile-alt"></i> PEAR PAY
         </div>
         
-        <!-- DPK PAY PAY - NOW ACTIVE (Coming Soon removed) -->
+        <!-- DPK PAY PAY - NOW ACTIVE -->
         <div class="deposit-method-card" onclick="selectDepositMethod('dpk')" id="method-dpk">
           <i class="fas fa-credit-card"></i> DPK PAY PAY
         </div>
         
-        <!-- UNKA PT - DISABLED (Coming Soon) -->
+        <!-- UNKA PT - DISABLED -->
         <div class="deposit-method-card disabled-method" id="method-unka" onclick="return false;">
           <i class="fas fa-university"></i> UNKA PT
         </div>
@@ -4415,7 +4694,7 @@
         <button class="deposit-back-btn" onclick="goToDepositScreen1()">← Back</button>
       </div>
       
-      <!-- Screen 3 (FIXED): Network and Phone Number - More Comfortable Continue Button -->
+      <!-- Screen 3: Network and Phone Number -->
       <div id="depositScreen3" class="deposit-screen">
         <div class="deposit-method-label">Payment Method:</div>
         <div class="deposit-method-value" id="selectedMethodDisplay2">PEAR PAY</div>
@@ -4440,14 +4719,14 @@
         <!-- Spacer to push buttons to bottom -->
         <div class="screen3-spacer"></div>
         
-        <!-- Button container at bottom - FIXED POSITIONING -->
+        <!-- Button container at bottom -->
         <div class="screen3-button-container">
           <button class="deposit-continue-btn" id="depositContinueBtn3" onclick="goToDepositScreen4()" disabled>CONTINUE</button>
           <button class="deposit-back-btn" onclick="goToDepositScreen2()">← Back</button>
         </div>
       </div>
       
-      <!-- Screen 4 (UPDATED): Confirm Deposit with Message Detection - NOW SUPPORTS DPK PAY PAY -->
+      <!-- Screen 4: Confirm Deposit with Message Detection -->
       <div id="depositScreen4" class="deposit-screen">
         <div class="deposit-method-label">COMPLETE YOUR DEPOSIT</div>
         
@@ -4455,7 +4734,7 @@
           📱 <span id="networkInstruction">AIRTEL</span> INSTRUCTIONS
         </div>
         
-        <!-- Step 1: Dial Code - Will be dynamically updated based on method and network -->
+        <!-- Step 1: Dial Code -->
         <div class="deposit-step">
           <strong>STEP 1:</strong> Dial <span style="color: #FFD700; font-size: 1.2rem;" id="dialCode">*165*1#</span> on your phone
           <div style="margin-top: 5px;">
@@ -4463,7 +4742,7 @@
           </div>
         </div>
         
-        <!-- Step 2: Send Amount - Will show merchant code for DPK -->
+        <!-- Step 2: Send Amount -->
         <div class="deposit-step">
           <strong>STEP 2:</strong> Send <span style="color: #FFD700; font-size: 1.2rem;" id="stepAmount">50,000 UGX</span>
           <div id="merchantInfo" style="margin-top: 5px; color: #FFD700;"></div>
@@ -4485,10 +4764,10 @@
           <textarea class="message-input" id="depositMessageInput" placeholder="Paste your confirmation message here..." oninput="validateDepositMessage()"></textarea>
         </div>
         
-        <!-- Detection Status (dynamic) -->
+        <!-- Detection Status -->
         <div id="detectionStatus" class="detection-status" style="display: none;"></div>
         
-        <!-- Detected Info (shows what system found) -->
+        <!-- Detected Info -->
         <div id="detectedInfo" style="background: #1A1A1A; border-radius: 10px; padding: 10px; margin: 10px 0; display: none;">
           <div class="detected-item">
             <span class="detected-label">TID:</span>
@@ -4509,13 +4788,12 @@
         </div>
         
         <button class="deposit-continue-btn" id="depositConfirmBtn" onclick="submitDeposit()" disabled>CONFIRM DEPOSIT</button>
-        <!-- ADDED BACK BUTTON TO SCREEN 4 -->
         <button class="deposit-back-btn" onclick="goToDepositScreen3()">← Back</button>
       </div>
     </div>
   </div>
 
-  <!-- WITHDRAW MODAL - REMOVED FIRST 100 WITHDRAWALS BANNER -->
+  <!-- WITHDRAW MODAL -->
   <div class="modal-overlay" id="withdrawModal">
     <div class="modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -4534,8 +4812,6 @@
       <div id="internRestrictionMessage" class="limit-message" style="display: none; background: #ffebee; color: #c62828;">
         <i class="fas fa-lock"></i> Upgrade to D Level to withdraw.
       </div>
-      
-      <!-- Withdrawal Progress Badge - REMOVED -->
       
       <div class="wallet-selector" style="display:flex; gap:10px; margin:15px 0;">
         <div class="wallet-option" id="walletOperatingOption" onclick="selectWallet('operating')" style="flex:1; background:#f9f9f9; border:2px solid #ddd; border-radius:15px; padding:15px; text-align:center; cursor:pointer;">
@@ -4585,7 +4861,7 @@
     </div>
   </div>
 
-  <!-- DOWNLOAD TOAST NOTIFICATION - KEPT FOR OTHER FEATURES -->
+  <!-- DOWNLOAD TOAST NOTIFICATION -->
   <div class="toast-notification" id="downloadToast" style="background: #28a745;">
     <div class="toast-content">
       <div class="toast-header">
@@ -4601,7 +4877,7 @@
     </div>
   </div>
 
-  <!-- USER DETAILS MODAL - UPDATED WITH THEME ICON AND LOST COMMISSION SECTION -->
+  <!-- USER DETAILS MODAL -->
   <div class="modal-overlay" id="userDetailsModal">
     <div class="modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -4654,7 +4930,7 @@
         </div>
       </div>
 
-      <!-- ===== LOST COMMISSION SECTION - ADDED BELOW REFERRAL CODE ===== -->
+      <!-- LOST COMMISSION SECTION -->
       <div id="lostCommissionContainer" style="margin: 20px 0; background: #fff3cd; border-radius: 15px; padding: 15px; border-left: 4px solid #ff9800; display: none;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
           <i class="fas fa-undo-alt" style="color: #ff9800;"></i>
@@ -4685,7 +4961,7 @@
         <button class="submit-btn" id="modalChangePasswordBtn" onclick="handleModalChangePassword()">Change Password</button>
       </div>
 
-      <!-- Harvest Account Section - Dynamic (Form or Summary) -->
+      <!-- Harvest Account Section -->
       <div id="harvestAccountContainer"></div>
 
       <!-- Logout Button -->
@@ -4693,7 +4969,7 @@
     </div>
   </div>
 
-  <!-- NEW: DAILY REPORT MODAL -->
+  <!-- DAILY REPORT MODAL -->
   <div class="modal-overlay" id="dailyReportModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -4704,7 +4980,7 @@
     </div>
   </div>
 
-  <!-- NEW: COMPANY PROFILE MODAL WITH FOREST GREEN THEME -->
+  <!-- COMPANY PROFILE MODAL -->
   <div class="modal-overlay" id="companyProfileModal">
     <div class="modal-content" style="padding:0; background:transparent;">
       <div class="company-profile-content">
@@ -4829,8 +5105,6 @@
     </div>
   </div>
 
-  <!-- POSITION DETAIL MODAL - REMOVED -->
-
   <!-- CUSTOM CONFIRMATION MODAL -->
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-content confirm-modal-content">
@@ -4844,7 +5118,7 @@
     </div>
   </div>
 
-  <!-- PULL-TO-REFRESH OVERLAY (NEW - ADDED SAFELY) -->
+  <!-- PULL-TO-REFRESH OVERLAY -->
   <div id="refreshOverlay" class="refresh-overlay">
     <div class="refresh-spinner"></div>
     <div class="refresh-message" id="refreshMessage">Refreshing...</div>
@@ -4872,7 +5146,7 @@ const db = firebase.database();
 
 // ========== GLOBAL VARIABLES ==========
 let users = {};
-let currentUser = null; // Start with null, will be set from localStorage after checking referral
+let currentUser = null;
 let pendingDeposits = [];
 let pendingWithdrawals = [];
 let selectedWallet = 'operating';
@@ -4894,7 +5168,7 @@ let confirmActionType = '';
 
 // Long press variables for table download
 let pressTimer = null;
-let longPressDuration = 500; // 500ms
+let longPressDuration = 500;
 
 // Farmer positions
 const farmerPositions = {
@@ -4912,7 +5186,7 @@ let todaysBookOrder = [];
 let totalSuccessfulWithdrawals = 0;
 let currentFilter = 'all';
 
-// ========== COMPANY SETTINGS (LOADED FROM FIREBASE) ==========
+// ========== COMPANY SETTINGS ==========
 let companySettings = {
   mtn: { phone: "0766913235", name: "NAMUHANGA VERONIC" },
   airtel: { phone: "0756673144", name: "NAMUHANGA VERONIC" },
@@ -4920,7 +5194,30 @@ let companySettings = {
   dpkAirtel: { merchant: "6874567", name: "PAY TO PAY UGANDA LTD" }
 };
 
-// ========== 107 COFFEE GROWING BOOKS (UPDATED) ==========
+// ========== GIRARE WHEEL CONFIGURATION ==========
+let girareConfig = {
+  segments: [
+    { id: 1, prize: "10,000 UGX", value: 10000, locked: false },
+    { id: 2, prize: "25,000 UGX", value: 25000, locked: false },
+    { id: 3, prize: "50,000 UGX", value: 50000, locked: false },
+    { id: 4, prize: "Free Spin", value: "freespin", locked: false },
+    { id: 5, prize: "100,000 UGX", value: 100000, locked: false },
+    { id: 6, prize: "2x Multiplier", value: "multiplier", locked: false },
+    { id: 7, prize: "Better Luck", value: 0, locked: false },
+    { id: 8, prize: "500,000 UGX", value: 500000, locked: false }
+  ],
+  wheelLocked: false,
+  lockMessage: "Wheel under maintenance",
+  minLevel: 2,
+  weeklySchedule: {
+    week1: [],
+    week2: [],
+    week3: [],
+    week4: []
+  }
+};
+
+// ========== 107 COFFEE GROWING BOOKS ==========
 let allBooks = [
   { id: 1, title: "Regenerative Agriculture in Coffee", desc: "Handbook for practitioners in Uganda - Bioversity International, 2023" },
   { id: 2, title: "Coffee Agroforestry Training Handbook", desc: "Training of Trainers - World Agroforestry Centre, 2025" },
@@ -5046,14 +5343,14 @@ const levels = {
   9: { name: "D9", dailyBooks: 74, reward: 40000, deposit: 84000000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 60 }
 };
 
-// Referral commission rates (UPDATED to 10%/4%/1% based on referrer's own deposit)
+// Referral commission rates
 const referralRates = {
   a: 0.10,
   b: 0.04,
   c: 0.01
 };
 
-// Daily Motivation Messages (4 time periods)
+// Daily Motivation Messages
 const motivationMessages = {
   morning: {
     icon: '🌅',
@@ -5121,8 +5418,9 @@ function loadFromFirebase() {
       if (document.getElementById('taskPage').style.display === 'flex') {
         loadTaskBooks();
       } else if (document.getElementById('mainDashboard').style.display === 'flex') {
-        // Don't load home books anymore, load motivation instead
         updateMotivationMessage();
+      } else if (document.getElementById('girarePage').style.display === 'flex') {
+        loadGirarePage();
       }
     }
   });
@@ -5145,14 +5443,27 @@ function loadFromFirebase() {
     totalSuccessfulWithdrawals = snapshot.val() || 0;
   });
   
-  // ===== LOAD COMPANY SETTINGS =====
+  // Load company settings
   db.ref('companySettings').on('value', (snapshot) => {
     const settings = snapshot.val();
     if (settings) {
       companySettings = settings;
     }
-    // Update admin input fields if they exist
     updateCompanySettingsInputs();
+  });
+  
+  // Load girare configuration
+  db.ref('girareConfig').on('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      girareConfig = config;
+    }
+    if (document.getElementById('girarePage').style.display === 'flex') {
+      loadGirarePage();
+    }
+    if (document.getElementById('adminGirareSection')?.classList.contains('active')) {
+      loadGirareAdminControls();
+    }
   });
 }
 
@@ -5239,6 +5550,7 @@ function saveCompanySetting(section, field) {
 function saveUsers() { db.ref('users').set(users); }
 function saveDeposits() { db.ref('pendingDeposits').set(pendingDeposits); }
 function saveWithdrawals() { db.ref('pendingWithdrawals').set(pendingWithdrawals); }
+function saveGirareConfig() { db.ref('girareConfig').set(girareConfig); }
 
 // ========== MOTIVATION MESSAGE FUNCTION ==========
 function updateMotivationMessage() {
@@ -5342,7 +5654,7 @@ function getTodaysBooks() {
   return todaysBookOrder;
 }
 
-// ========== REFERRAL FUNCTIONS (UPDATED) ==========
+// ========== REFERRAL FUNCTIONS ==========
 function findReferrers(userPhone) {
   const referrers = { a: null, b: null, c: null };
   const user = users[userPhone];
@@ -5365,8 +5677,7 @@ function findReferrers(userPhone) {
   return referrers;
 }
 
-// ===== SYSTEM 3: LOST COMMISSION RECOVERY - MODIFIED FUNCTION =====
-// UPDATED: Commission based on referrer's OWN level deposit, AND track lost commissions
+// ===== LOST COMMISSION RECOVERY =====
 function payReferralCommissions(userPhone) {
   const user = users[userPhone];
   if (!user) return;
@@ -5381,20 +5692,16 @@ function payReferralCommissions(userPhone) {
     const aCommission = Math.floor(aDeposit * referralRates.a);
     
     if (aCommission > 0) {
-      // Pay the commission
       aReferrer.operatingWallet = (aReferrer.operatingWallet || 0) + aCommission;
       
-      // Track statistics
       aReferrer.referralCommissions = aReferrer.referralCommissions || { a:0, b:0, c:0, total:0 };
       aReferrer.referralCommissions.a += aCommission;
       aReferrer.referralCommissions.total += aCommission;
       
-      // Add transaction
       aReferrer.transactions = aReferrer.transactions || [];
       aReferrer.transactions.unshift({ type:'referral', level:'A', amount:aCommission, date:new Date().toLocaleString(), desc:`A-level commission from ${userPhone}` });
       
-      // ===== TRACK LOST COMMISSION =====
-      // Calculate what they SHOULD have gotten if they were at downline's level
+      // Track lost commission
       const downlineLevel = user.memberLevel || 0;
       const downlineDeposit = levels[downlineLevel]?.deposit || 0;
       const shouldHaveGotten = Math.floor(downlineDeposit * referralRates.a);
@@ -5403,10 +5710,8 @@ function payReferralCommissions(userPhone) {
         const lostAmount = shouldHaveGotten - aCommission;
         const recoverAt = `D${downlineLevel}`;
         
-        // Initialize lostCommissions array if needed
         if (!aReferrer.lostCommissions) aReferrer.lostCommissions = [];
         
-        // Add lost commission record
         aReferrer.lostCommissions.push({
           fromUser: userPhone,
           fromUserName: user.fullName,
@@ -5461,13 +5766,12 @@ function payReferralCommissions(userPhone) {
   saveUsers();
 }
 
-// ===== SYSTEM 1: SUBSIDIARY MOTIVATORS - FIXED TO PAY ONCE PER DAY AFTER ALL BOOKS COMPLETED =====
-// ===== ALSO IGNORES INTERN READERS =====
+// ===== SUBSIDIARY MOTIVATORS =====
 function paySubsidiaryMotivators(readerPhone) {
   const reader = users[readerPhone];
   if (!reader) return;
   
-  // IGNORE INTERNS - No one earns from Intern readers
+  // Ignore Interns
   if (reader.memberLevel === 0) {
     console.log('ℹ️ Reader is Intern - no subsidiary motivators paid');
     return;
@@ -5476,7 +5780,6 @@ function paySubsidiaryMotivators(readerPhone) {
   console.log('🔍 ===== SUBSIDIARY MOTIVATORS DEBUG =====');
   console.log(`📱 Reader: ${reader.phone} (${reader.fullName})`);
 
-  // Get reader's level and daily earnings
   const readerLevel = reader.memberLevel || 0;
   const levelData = levels[readerLevel];
   const readerDaily = (levelData.dailyBooks || 0) * (levelData.reward || 0);
@@ -5488,7 +5791,6 @@ function paySubsidiaryMotivators(readerPhone) {
     return;
   }
 
-  // Find referrers chain
   const referrers = findReferrers(readerPhone);
   if (!referrers.a) {
     console.log('❌ No direct referrer (A-level) found.');
@@ -5497,7 +5799,7 @@ function paySubsidiaryMotivators(readerPhone) {
 
   console.log(`🔗 Referrer A: ${referrers.a}`);
 
-  // ===== STEP 1: Calculate and pay DIRECT REFERRER (A-level) =====
+  // STEP 1: Calculate and pay DIRECT REFERRER (A-level)
   const directReferrer = users[referrers.a];
   if (!directReferrer) {
     console.log('❌ Direct referrer user object not found.');
@@ -5514,36 +5816,28 @@ function paySubsidiaryMotivators(readerPhone) {
   let directBonus = 0;
   let baseUsed = 0;
 
-  // Compare direct referrer's level with reader's level
   if (directLevel >= readerLevel) {
-    // Direct referrer is HIGHER or EQUAL than reader
-    // Use MIN of both daily earnings
     baseUsed = Math.min(directDaily, readerDaily);
-    directBonus = Math.floor(baseUsed * 0.04); // 4%
+    directBonus = Math.floor(baseUsed * 0.04);
     console.log(`🔢 Calculation: Referrer level (D${directLevel}) >= Reader level (D${readerLevel}) → using MIN(${directDaily.toLocaleString()}, ${readerDaily.toLocaleString()}) = ${baseUsed.toLocaleString()}`);
     console.log(`   4% of ${baseUsed.toLocaleString()} = ${directBonus} UGX`);
   } else {
-    // Direct referrer is LOWER than reader
-    // Use direct referrer's own daily earnings
     baseUsed = directDaily;
-    directBonus = Math.floor(baseUsed * 0.04); // 4%
+    directBonus = Math.floor(baseUsed * 0.04);
     console.log(`🔢 Calculation: Referrer level (D${directLevel}) < Reader level (D${readerLevel}) → using referrer's own daily: ${baseUsed.toLocaleString()}`);
     console.log(`   4% of ${baseUsed.toLocaleString()} = ${directBonus} UGX`);
   }
 
-  // Pay direct referrer
   if (directBonus > 0) {
     const beforeWallet = directReferrer.incentiveWallet || 0;
     directReferrer.incentiveWallet = (directReferrer.incentiveWallet || 0) + directBonus;
 
     console.log(`💰 Payment: +${directBonus} UGX to ${directReferrer.phone}'s Incentive Wallet (was ${beforeWallet.toLocaleString()}, now ${directReferrer.incentiveWallet.toLocaleString()})`);
 
-    // Track statistics
     directReferrer.subsidiaryMotivators = directReferrer.subsidiaryMotivators || { a:0, b:0, total:0 };
     directReferrer.subsidiaryMotivators.a += directBonus;
     directReferrer.subsidiaryMotivators.total += directBonus;
 
-    // Add transaction record - UPDATED description to indicate it's for completing all daily books
     directReferrer.transactions = directReferrer.transactions || [];
     directReferrer.transactions.unshift({
       type: 'subsidiary',
@@ -5556,11 +5850,10 @@ function paySubsidiaryMotivators(readerPhone) {
     console.log(`ℹ️ Direct bonus was 0, nothing paid.`);
   }
 
-  // ===== STEP 2: Calculate and pay UPLINE (B-level) =====
-  // Upline gets 1% of what direct referrer earned
+  // STEP 2: Calculate and pay UPLINE (B-level)
   if (referrers.b && users[referrers.b]) {
     const upline = users[referrers.b];
-    const uplineBonus = Math.floor(directBonus * 0.01); // 1% of direct's bonus
+    const uplineBonus = Math.floor(directBonus * 0.01);
 
     console.log(`⬆️ Upline (B): ${upline.phone} (${upline.fullName})`);
 
@@ -5590,7 +5883,7 @@ function paySubsidiaryMotivators(readerPhone) {
     console.log(`ℹ️ No B-level upline found.`);
   }
 
-  // ===== STEP 3: C-level gets nothing for Subsidiary Motivators =====
+  // STEP 3: C-level gets nothing
   if (referrers.c) {
     console.log(`❌ C-level (${referrers.c}) gets no subsidiary motivator bonus.`);
   }
@@ -5600,7 +5893,7 @@ function paySubsidiaryMotivators(readerPhone) {
   saveUsers();
 }
 
-// ===== NEW HELPER FUNCTION: Check if user has completed all daily books =====
+// ===== HELPER FUNCTION: Check if user has completed all daily books =====
 function hasCompletedAllDailyBooks(user) {
   const level = user.memberLevel || 0;
   const dailyLimit = levels[level].dailyBooks;
@@ -5608,28 +5901,23 @@ function hasCompletedAllDailyBooks(user) {
   return booksRead >= dailyLimit;
 }
 
-// ===== NEW FUNCTION: Check and pay subsidiary motivators if all books completed =====
+// ===== FUNCTION: Check and pay subsidiary motivators =====
 function checkAndPayDailyBonus(readerPhone) {
   const reader = users[readerPhone];
   if (!reader) return false;
   
-  // Ignore Interns
   if (reader.memberLevel === 0) return false;
   
-  // Check if all books completed
   if (!hasCompletedAllDailyBooks(reader)) return false;
   
-  // Check if bonus already paid today
   const today = new Date().toDateString();
   if (reader.dailyBonusPaidDate === today) {
     console.log('ℹ️ Daily bonus already paid today for', readerPhone);
     return false;
   }
   
-  // Pay the bonus
   paySubsidiaryMotivators(readerPhone);
   
-  // Mark as paid
   reader.dailyBonusPaidDate = today;
   saveUsers();
   
@@ -5773,17 +6061,27 @@ function handleRegister(e) {
     transactions: [],
     heldPosition: null,
     farmerPosition: 0,
-    theme: 'purple', // default theme
+    theme: 'purple',
     // ===== NEW FIELDS =====
     pendingRefund: null,
     lostCommissions: [],
-    dailyBonusPaidDate: null // Track when daily bonus was last paid
+    dailyBonusPaidDate: null,
+    // ===== GIRARE FIELDS =====
+    dailyReferrals: {},
+    spinsToday: 0,
+    spinExpiry: null,
+    spinHistory: []
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
   if (referrer) {
     if (!referrer.referrals) referrer.referrals = [];
     if (!referrer.referrals.includes(phone)) referrer.referrals.push(phone);
+    
+    // Track daily referral (only if referrer is D-level)
+    if (referrer.memberLevel > 0) {
+      trackDailyReferral(referrer.phone, phone);
+    }
   }
 
   saveUsers();
@@ -5807,7 +6105,7 @@ function handleLogin(e) {
   if (users[phone] && users[phone].password === password) {
     localStorage.setItem('currentUser', phone);
     currentUser = phone;
-    sessionStorage.removeItem('pendingReferralCode'); // Ensure referral code is cleared
+    sessionStorage.removeItem('pendingReferralCode');
     loadUserData();
     showPage('home');
     resetInactivityTimer();
@@ -5818,21 +6116,17 @@ function handleLogin(e) {
 
 // ========== PAGE NAVIGATION ==========
 function showPage(page) {
-  // Save current state before changing page (for refresh restoration)
   saveSessionState();
 
-  // Clear any active reading timer when changing pages - FIXED: Remove pending task from database
   if (activeReadingTimer) {
     clearInterval(activeReadingTimer);
     activeReadingTimer = null;
   }
   
-  // If there was an active reading, remove the pending task from database
   if (activeReadingBookId && currentUser && users[currentUser]) {
     const user = users[currentUser];
     const today = new Date().toLocaleDateString();
     if (user.taskHistory) {
-      // Remove the pending task for this book
       user.taskHistory = user.taskHistory.filter(task => 
         !(task.book === activeReadingBookId && task.date === today && task.status === 'pending')
       );
@@ -5855,6 +6149,7 @@ function showPage(page) {
   document.getElementById('transactionHistoryPage').style.display = page === 'transactionHistory' ? 'flex' : 'none';
   document.getElementById('growthJourneyPage').style.display = page === 'growthJourney' ? 'flex' : 'none';
   document.getElementById('stakesPage').style.display = page === 'stakes' ? 'flex' : 'none';
+  document.getElementById('girarePage').style.display = page === 'girare' ? 'flex' : 'none';
 
   document.querySelectorAll('.bottom-nav').forEach(nav => {
     const items = nav.querySelectorAll('.nav-item');
@@ -5868,16 +6163,16 @@ function showPage(page) {
 
   if (page === 'task') loadTaskBooks();
   if (page === 'home') {
-    // Don't load books on home anymore
     updateMotivationMessage();
   }
-  if (page === 'taskRecord') loadActivityLog(); // UPDATED function name
+  if (page === 'taskRecord') loadActivityLog();
   if (page === 'teamReport') loadTeamReport();
   if (page === 'level') updateLevelWalletDisplay();
   if (page === 'goldenHandshake') loadGoldenHandshake();
   if (page === 'transactionHistory') loadTransactionHistory();
   if (page === 'growthJourney') loadGrowthJourney();
   if (page === 'stakes') loadStakesPage();
+  if (page === 'girare') loadGirarePage();
   
   resetInactivityTimer();
 }
@@ -5888,11 +6183,9 @@ function showTeamReport() { showPage('teamReport'); }
 function showGoldenHandshake() { showPage('goldenHandshake'); }
 function showTransactionHistory() { showPage('transactionHistory'); }
 function showGrowthJourney() { showPage('growthJourney'); }
-function showGirareMessage() { showConfirmModal('Girare', 'Girare feature coming soon!', 'success'); }
 
 // ========== STAKES PAGE ==========
 function loadStakesPage() {
-  // Just a placeholder for now
   console.log('Stakes page loaded');
 }
 
@@ -5906,7 +6199,6 @@ function loadGrowthJourney() {
   
   document.getElementById('currentPositionBadge').innerHTML = `${pos.icon} ${pos.name}`;
   
-  // Calculate A, B, C counts
   const aCount = user.referrals ? user.referrals.length : 0;
   let bCount = 0, cCount = 0;
   
@@ -5917,7 +6209,6 @@ function loadGrowthJourney() {
     });
   }
   
-  // Simplified C count calculation
   Object.values(users).forEach(u => {
     if (u.referredBy) {
       const aUser = Object.values(users).find(x => x.referralCode === u.referredBy);
@@ -5929,7 +6220,6 @@ function loadGrowthJourney() {
   document.getElementById('teamBCount').textContent = bCount;
   document.getElementById('teamCCount').textContent = cCount;
   
-  // Check if qualified for next position
   const nextPos = currentPos + 1;
   const nextPosCard = document.getElementById('nextPositionCard');
   
@@ -6099,7 +6389,7 @@ function loadTransactionHistory() {
   
   allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  const counts = { book:0, referral:0, deposit:0, withdrawal:0, refund:0, level_upgrade:0, subsidiary:0 };
+  const counts = { book:0, referral:0, deposit:0, withdrawal:0, refund:0, level_upgrade:0, subsidiary:0, girare:0 };
   allTransactions.forEach(t => { if (counts[t.type] !== undefined) counts[t.type]++; });
   
   document.getElementById('book-count').textContent = counts.book;
@@ -6137,7 +6427,7 @@ function filterTransactions(type, transactions = null) {
   
   if (type !== 'all') {
     filteredTransactions = allTransactions.filter(t => t.type === type);
-    const typeNames = { book: 'BOOKS', referral: 'REFERRALS', deposit: 'DEPOSITS', withdrawal: 'WITHDRAWALS', refund: 'REFUNDS', level_upgrade: 'UPGRADES', subsidiary: 'SUBSIDIARY' };
+    const typeNames = { book: 'BOOKS', referral: 'REFERRALS', deposit: 'DEPOSITS', withdrawal: 'WITHDRAWALS', refund: 'REFUNDS', level_upgrade: 'UPGRADES', subsidiary: 'SUBSIDIARY', girare: 'GIRARE' };
     filterLabel = typeNames[type] || 'ALL TRANSACTIONS';
   }
   
@@ -6161,6 +6451,7 @@ function filterTransactions(type, transactions = null) {
     else if (t.type === 'book') { icon = 'fa-book'; color = '#7d5ba6'; }
     else if (t.type === 'refund') { icon = 'fa-undo'; color = '#17a2b8'; }
     else if (t.type === 'subsidiary') { icon = 'fa-leaf'; color = '#2e7d32'; }
+    else if (t.type === 'girare') { icon = 'fa-dice'; color = '#ff9800'; }
     
     const sign = t.type === 'withdrawal' || t.type === 'withdraw' || t.type === 'level_upgrade' ? '-' : '+';
     
@@ -6231,7 +6522,7 @@ function loadGoldenHandshake() {
   }
 }
 
-// ===== SYSTEM 2 & 3: MODIFIED PURCHASE LEVEL FUNCTION =====
+// ===== PURCHASE LEVEL FUNCTION =====
 function purchaseLevel(level, cost) {
   const user = users[currentUser];
   if (!user) { showConfirmModal('Error', 'Please login first', 'warning'); return; }
@@ -6244,7 +6535,6 @@ function purchaseLevel(level, cost) {
   const currentLevel = user.memberLevel;
   const currentLevelCost = currentLevel > 0 ? levels[currentLevel].deposit : 0;
 
-  // Check if user has enough money (FULL amount required)
   const totalBalance = (user.operatingWallet || 0) + (user.incentiveWallet || 0);
   
   if (totalBalance < cost) {
@@ -6253,7 +6543,6 @@ function purchaseLevel(level, cost) {
   }
 
   showConfirmModal('Confirm Upgrade', `Upgrade to ${levels[level].name} for ${cost.toLocaleString()} UGX?`, 'confirm', () => {
-    // ===== STEP 1: Deduct FULL amount from wallets =====
     let remaining = cost;
     if (user.operatingWallet > 0) {
       const fromOperating = Math.min(user.operatingWallet, remaining);
@@ -6266,27 +6555,21 @@ function purchaseLevel(level, cost) {
       remaining -= fromIncentive;
     }
     
-    // ===== STEP 2: Update user level immediately =====
     const oldLevel = user.memberLevel;
     user.memberLevel = level;
     
-    // Update expiry
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 365);
     user.memberExpiry = expiry.toISOString();
     
-    // Record purchase
     if (!user.levelPurchases) user.levelPurchases = [];
     user.levelPurchases.push({ level: level, amount: cost, date: new Date().toISOString(), refunded: false });
     
-    // Add transaction
     if (!user.transactions) user.transactions = [];
     user.transactions.unshift({ type: 'level_upgrade', level: level, amount: cost, date: new Date().toLocaleString(), desc: `Upgrade to ${levels[level].name}` });
     
-    // ===== STEP 3: Pay referral commissions =====
     payReferralCommissions(user.phone);
     
-    // ===== STEP 4: Process LOST COMMISSION RECOVERY (System 3) =====
     let totalRecovered = 0;
     if (user.lostCommissions && user.lostCommissions.length > 0) {
       const targetLevel = `D${level}`;
@@ -6297,7 +6580,6 @@ function purchaseLevel(level, cost) {
         loss.recovered = true;
         totalRecovered += loss.amount;
         
-        // Add recovery transaction
         user.transactions.unshift({ 
           type: 'refund', 
           amount: loss.amount, 
@@ -6311,10 +6593,9 @@ function purchaseLevel(level, cost) {
       }
     }
     
-    // ===== STEP 5: Set up PENDING REFUND (System 2) =====
     if (oldLevel > 0 && currentLevelCost > 0) {
       const now = Date.now();
-      const releaseTime = now + (2 * 60 * 1000); // 2 minutes
+      const releaseTime = now + (2 * 60 * 1000);
       
       user.pendingRefund = {
         amount: currentLevelCost,
@@ -6330,7 +6611,6 @@ function purchaseLevel(level, cost) {
     loadUserData();
     updateLevelWalletDisplay();
     
-    // Show success message
     let message = `Congratulations! You are now ${levels[level].name}!`;
     if (totalRecovered > 0) {
       message += `\n\n🎁 You also recovered ${totalRecovered.toLocaleString()} UGX in lost commissions!`;
@@ -6339,7 +6619,7 @@ function purchaseLevel(level, cost) {
   });
 }
 
-// ===== SYSTEM 2: PROCESS PENDING REFUNDS =====
+// ===== PROCESS PENDING REFUNDS =====
 function processPendingRefunds() {
   if (!currentUser || !users[currentUser]) return;
   
@@ -6348,10 +6628,8 @@ function processPendingRefunds() {
   
   const now = Date.now();
   if (now >= user.pendingRefund.releaseTime) {
-    // Release the refund
     user.operatingWallet = (user.operatingWallet || 0) + user.pendingRefund.amount;
     
-    // Add transaction
     if (!user.transactions) user.transactions = [];
     user.transactions.unshift({ 
       type: 'refund', 
@@ -6360,18 +6638,16 @@ function processPendingRefunds() {
       desc: `Refund from D${user.pendingRefund.level} upgrade` 
     });
     
-    // Clear pending refund
     user.pendingRefund = null;
     
     saveUsers();
     loadUserData();
     
-    // Show notification
     showConfirmModal('Refund Received!', `Your refund has been added to your operating wallet!`, 'success');
   }
 }
 
-// ===== SYSTEM 2: GET REMAINING REFUND TIME =====
+// ===== GET REMAINING REFUND TIME =====
 function getRemainingRefundTime() {
   if (!currentUser || !users[currentUser]) return null;
   
@@ -6398,7 +6674,7 @@ function getRemainingRefundTime() {
   };
 }
 
-// ===== SYSTEM 3: LOAD LOST COMMISSION TOTAL =====
+// ===== LOAD LOST COMMISSION TOTAL =====
 function loadLostCommissionTotal() {
   const user = users[currentUser];
   if (!user) return;
@@ -6411,7 +6687,6 @@ function loadLostCommissionTotal() {
     return;
   }
   
-  // Calculate total of unrecovered commissions
   const total = user.lostCommissions
     .filter(loss => !loss.recovered)
     .reduce((sum, loss) => sum + loss.amount, 0);
@@ -6425,8 +6700,6 @@ function loadLostCommissionTotal() {
 }
 
 function upgradeUser(user, newLevel, cost, oldLevel, oldLevelCost) {
-  // This function is replaced by the new purchaseLevel logic
-  // Kept for compatibility but should not be called
   console.log('upgradeUser is deprecated, using purchaseLevel instead');
 }
 
@@ -6448,7 +6721,6 @@ function loadUserData() {
   if (user.lastReadDate !== today) {
     user.booksReadToday = 0;
     user.lastReadDate = today;
-    // Reset daily bonus flag for new day
     user.dailyBonusPaidDate = null;
     saveUsers();
   }
@@ -6485,7 +6757,7 @@ function loadUserData() {
   
   if (user.transactions) {
     user.transactions.forEach(t => {
-      if (t.type === 'referral' || t.type === 'subsidiary') {
+      if (t.type === 'referral' || t.type === 'subsidiary' || t.type === 'girare') {
         const tDate = new Date(t.date);
         if (tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear()) {
           monthEarnings += t.amount || 0;
@@ -6506,7 +6778,6 @@ function loadUserData() {
   document.getElementById('totalIncomeValue').innerHTML = `${(user.incentiveWallet || 0).toLocaleString()} UGX`;
   document.getElementById('monthIncomeValue').innerHTML = `${monthEarnings.toLocaleString()} UGX`;
   
-  // UPDATED: Show subsidiary motivators total
   if (user.subsidiaryMotivators) {
     document.getElementById('subsidiaryMotivatorsTotal').innerHTML = `${(user.subsidiaryMotivators.total || 0).toLocaleString()} UGX`;
   } else {
@@ -6520,13 +6791,10 @@ function loadUserData() {
   updateTime();
   updateUserDetailsModal();
   
-  // Load lost commission total
   loadLostCommissionTotal();
   
-  // Process any pending refunds
   processPendingRefunds();
   
-  // Apply user theme
   applyTheme(user.theme || 'purple');
 }
 
@@ -6560,10 +6828,8 @@ function setTheme(theme) {
 }
 
 function applyTheme(theme) {
-  // Remove existing theme classes
   document.body.classList.remove('light-theme', 'dark-theme');
   
-  // Apply new theme class
   if (theme === 'light') {
     document.body.classList.add('light-theme');
   } else if (theme === 'dark') {
@@ -6592,7 +6858,6 @@ function updateUserDetailsModal() {
   document.getElementById('modalNewPassword').value = '';
   document.getElementById('modalConfirmPassword').value = '';
   
-  // Load lost commission total
   loadLostCommissionTotal();
 }
 
@@ -6755,7 +7020,7 @@ function saveModalHarvestAccount() {
 
 function saveHarvestAccount() { saveModalHarvestAccount(); }
 
-// ========== TEAM REPORT - UPDATED for 3 columns ==========
+// ========== TEAM REPORT ==========
 function maskPhone(phone) {
   if (!phone || phone.length < 7) return phone;
   return phone.substring(0, 4) + '***' + phone.substring(phone.length - 3);
@@ -6904,7 +7169,7 @@ function loadTeamReport() {
   document.getElementById('activeTeamMembers').textContent = activeCount;
 }
 
-// ========== ACTIVITY LOG (formerly Task Record) - UPDATED ==========
+// ========== ACTIVITY LOG ==========
 function loadActivityLog() {
   const user = users[currentUser];
   if (!user) return;
@@ -6964,10 +7229,7 @@ function getAllAvailableBooks(user, allBooks) {
   });
 }
 
-// Home books function - MODIFIED to show motivation instead
 function loadHomeBooks() {
-  // This function is now replaced by updateMotivationMessage
-  // Keep empty to prevent errors
   updateMotivationMessage();
 }
 
@@ -7005,7 +7267,6 @@ function loadTaskBooks() {
       buttonHtml = `<button class="read-btn" onclick="startReading(${book.id})" id="task-book-${book.id}" ${disabled}>READ +${reward}</button><div id="task-timer-${book.id}" class="timer-display" style="display:none;">10s</div>`;
     }
     
-    // FIX: Don't disable the entire card for pending books - only completed books should be disabled
     const cardDisabled = isCompleted ? 'disabled' : '';
     html += `<div class="book-card ${cardDisabled}"><div class="book-title">${book.title}</div><div class="book-desc">${book.desc}</div>${statusBadge}${buttonHtml}</div>`;
   });
@@ -7013,7 +7274,6 @@ function loadTaskBooks() {
   grid.innerHTML = html;
 }
 
-// FIXED startReading function - Now re-queries elements every tick
 function startReading(bookId) {
   if (activeReadingBookId) { showConfirmModal('Notice', 'Please finish your current book first!', 'warning'); return; }
   
@@ -7042,7 +7302,6 @@ function startReading(bookId) {
   user.taskHistory.push({ date: new Date().toLocaleDateString(), book: book.title, status: 'pending', reward: 0 });
   saveUsers();
 
-  // Clear any existing timer
   if (activeReadingTimer) {
     clearInterval(activeReadingTimer);
     activeReadingTimer = null;
@@ -7063,7 +7322,6 @@ function startReading(bookId) {
   activeReadingTimer = setInterval(() => {
     seconds--;
     
-    // Re-fetch elements every tick to ensure they exist
     const currentHomeTimer = document.getElementById(`home-timer-${bookId}`);
     const currentTaskTimer = document.getElementById(`task-timer-${bookId}`);
     const currentHomeBtn = document.getElementById(`home-book-${bookId}`);
@@ -7083,7 +7341,7 @@ function startReading(bookId) {
         currentHomeBtn.style.display = 'block';
         currentHomeBtn.textContent = `🌾 HARVEST +${reward}`;
         currentHomeBtn.classList.add('harvest-ready');
-        currentHomeBtn.disabled = false; // Ensure button is enabled
+        currentHomeBtn.disabled = false;
         currentHomeBtn.onclick = () => harvestReward(bookId);
       }
       if (currentTaskBtn && currentTaskTimer) {
@@ -7091,14 +7349,13 @@ function startReading(bookId) {
         currentTaskBtn.style.display = 'block';
         currentTaskBtn.textContent = `🌾 HARVEST +${reward}`;
         currentTaskBtn.classList.add('harvest-ready');
-        currentTaskBtn.disabled = false; // Ensure button is enabled
+        currentTaskBtn.disabled = false;
         currentTaskBtn.onclick = () => harvestReward(bookId);
       }
     }
   }, 1000);
 }
 
-// UPDATED harvestReward to check for daily completion and pay bonus
 function harvestReward(bookId) {
   const user = users[currentUser];
   if (!user) return;
@@ -7120,7 +7377,6 @@ function harvestReward(bookId) {
     if (pendingTask) { pendingTask.status = 'complete'; pendingTask.reward = reward; }
   }
 
-  // Check if user has completed all daily books and pay subsidiary motivators if needed
   checkAndPayDailyBonus(user.phone);
 
   if (activeReadingTimer) { clearInterval(activeReadingTimer); activeReadingTimer = null; }
@@ -7132,7 +7388,7 @@ function harvestReward(bookId) {
   loadUserData();
 }
 
-// ========== DEPOSIT FUNCTIONS (FIXED WITH DPK SUPPORT) ==========
+// ========== DEPOSIT FUNCTIONS ==========
 function openDepositModal() { 
   resetDepositModal();
   document.getElementById('depositModal').style.display = 'flex'; 
@@ -7164,13 +7420,11 @@ function resetDepositModal() {
   document.getElementById('depositCustomAmount').value = '';
   document.getElementById('depositPhoneNumber').value = '';
   
-  // Reset screen 4 elements
   document.getElementById('depositMessageInput').value = '';
   document.getElementById('detectionStatus').style.display = 'none';
   document.getElementById('detectedInfo').style.display = 'none';
   document.getElementById('depositConfirmBtn').disabled = true;
   
-  // Remove valid class from phone input container
   const phoneContainer = document.getElementById('phoneInputContainer');
   if (phoneContainer) phoneContainer.classList.remove('valid');
 }
@@ -7204,7 +7458,6 @@ function validatePhoneNumber() {
   const phone = phoneInput.value.trim();
   const networkSelected = selectedDepositNetwork !== null && selectedDepositNetwork !== undefined;
   
-  // More flexible validation: exactly 10 digits, first digit 0, second digit 7
   const isValid = /^07[0-9]{8}$/.test(phone);
   
   console.log("Phone:", phone, "Valid:", isValid, "Network selected:", networkSelected);
@@ -7225,7 +7478,6 @@ function validatePhoneNumber() {
     
     if (phoneContainer) phoneContainer.classList.add('valid');
     
-    // Visual feedback
     phoneInput.style.borderColor = "#00ff00";
     phoneInput.style.boxShadow = "0 0 10px rgba(0, 255, 0, 0.3)";
   } else {
@@ -7271,7 +7523,6 @@ function goToDepositScreen3() {
   document.getElementById('selectedMethodDisplay2').textContent = methodName;
   document.getElementById('selectedAmountDisplay').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
   
-  // Reset network and phone for screen 3
   selectedDepositNetwork = null;
   selectedDepositPhone = null;
   document.getElementById('depositPhoneNumber').value = '';
@@ -7279,7 +7530,6 @@ function goToDepositScreen3() {
   document.getElementById('network-airtel').classList.remove('selected');
   document.getElementById('depositContinueBtn3').disabled = true;
   
-  // Remove valid class and border styling
   const phoneContainer = document.getElementById('phoneInputContainer');
   if (phoneContainer) phoneContainer.classList.remove('valid');
   
@@ -7295,11 +7545,9 @@ function goToDepositScreen3() {
   document.getElementById('depositScreen4').classList.remove('active');
 }
 
-// FIXED goToDepositScreen4 function - Single version, no duplicates
 function goToDepositScreen4() {
   console.log("Continue button clicked - navigating to Screen 4");
   
-  // Double-check validation
   if (!selectedDepositNetwork) {
     alert("Please select a network first");
     return;
@@ -7310,11 +7558,9 @@ function goToDepositScreen4() {
     return;
   }
   
-  // Hide Screen 3, show Screen 4
   document.getElementById('depositScreen3').classList.remove('active');
   document.getElementById('depositScreen4').classList.add('active');
   
-  // Update Screen 4 with the correct information
   updateDepositScreen4();
   
   console.log("Successfully navigated to Screen 4 with:", {
@@ -7325,7 +7571,6 @@ function goToDepositScreen4() {
   });
 }
 
-// ===== FUNCTION: Update Screen 4 with method and network-specific details =====
 function updateDepositScreen4() {
   const method = selectedDepositMethod;
   const network = selectedDepositNetwork.toLowerCase();
@@ -7334,13 +7579,11 @@ function updateDepositScreen4() {
   let dialCode, companyNumber, companyName, merchantInfo = '';
   
   if (method === 'pear') {
-    // PEAR PAY instructions (original)
     dialCode = network === 'mtn' ? '*165#' : '*165*1#';
     const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144', name: 'NAMUHANGA VERONIC' };
     companyNumber = company.phone;
     companyName = company.name;
   } else {
-    // DPK PAY PAY instructions
     if (network === 'mtn') {
       dialCode = '*165*3*995053#';
       const dpkMtn = companySettings.dpkMtn || { merchant: '995053', name: 'NAMUHANGA VERONIC' };
@@ -7360,7 +7603,6 @@ function updateDepositScreen4() {
   document.getElementById('dialCode').textContent = dialCode;
   document.getElementById('stepAmount').textContent = selectedDepositAmount.toLocaleString() + ' UGX';
   
-  // Update merchant info if present
   const merchantInfoEl = document.getElementById('merchantInfo');
   if (merchantInfoEl) {
     merchantInfoEl.innerHTML = merchantInfo;
@@ -7371,7 +7613,6 @@ function updateDepositScreen4() {
   document.getElementById('companyNameDisplay').textContent = companyName;
 }
 
-// ===== FUNCTION: Copy dial code =====
 function copyDialCode() {
   const dialCode = document.getElementById('dialCode').textContent;
   navigator.clipboard.writeText(dialCode).then(() => {
@@ -7379,7 +7620,6 @@ function copyDialCode() {
   });
 }
 
-// ===== FUNCTION: Copy company number/merchant =====
 function copyCompanyNumber() {
   const companyNumber = document.getElementById('companyNumberDisplay').textContent.replace(/\s/g, '');
   navigator.clipboard.writeText(companyNumber).then(() => {
@@ -7387,7 +7627,6 @@ function copyCompanyNumber() {
   });
 }
 
-// ===== FUNCTION: Detect TID, amount, and names from message (supports both MTN and AIRTEL) =====
 function detectFromMessage(text) {
   const result = {
     tid: null,
@@ -7396,13 +7635,12 @@ function detectFromMessage(text) {
     merchant: null
   };
   
-  // 1. Detect TID - try multiple patterns
   const tidPatterns = [
     /TID[:\s]*(\d+)/i,
     /Transaction ID[:\s]*(\d+)/i,
     /ID[:\s]*(\d+)/i,
-    /PAID\.TID\s*(\d+)/i,  // AIRTEL format
-    /ID:\s*(\d+)/i         // MTN format
+    /PAID\.TID\s*(\d+)/i,
+    /ID:\s*(\d+)/i
   ];
   
   for (let pattern of tidPatterns) {
@@ -7413,28 +7651,23 @@ function detectFromMessage(text) {
     }
   }
   
-  // 2. Detect Amount
   const amountMatch = text.match(/UGX[,\s]*([\d,]+)/i);
   if (amountMatch) {
     const amountStr = amountMatch[1].replace(/,/g, '');
     result.amount = parseInt(amountStr);
   }
   
-  // 3. Detect Names (for verification only, not sent to admin)
-  // MTN format: "paid VERONIC NAIBOLYA" or "to VERONIC NAIBOLYA"
   const mtnNameMatch = text.match(/paid\s+([A-Z\s]+?)(?:\s+\d+|\.|$)/i) || 
                        text.match(/to\s+([A-Z\s]+?)(?:\s+\d+|\.|$)/i);
   if (mtnNameMatch) {
     result.names = mtnNameMatch[1].trim();
   }
   
-  // AIRTEL format: "to PAY TO PAY UGANDA LTD"
   const airtelNameMatch = text.match(/to\s+(.+?)(?:\s+Charge|\s+$)/i);
   if (airtelNameMatch) {
     result.names = airtelNameMatch[1].trim();
   }
   
-  // 4. Detect Merchant (optional, not sent to admin)
   const merchantMatch = text.match(/(\d{6,})/);
   if (merchantMatch && !result.tid) {
     result.merchant = merchantMatch[1];
@@ -7443,7 +7676,6 @@ function detectFromMessage(text) {
   return result;
 }
 
-// ===== FUNCTION: Validate deposit message =====
 function validateDepositMessage() {
   const message = document.getElementById('depositMessageInput').value;
   const statusDiv = document.getElementById('detectionStatus');
@@ -7460,7 +7692,6 @@ function validateDepositMessage() {
   
   const detected = detectFromMessage(message);
   
-  // Update detected info display
   document.getElementById('detectedTid').textContent = detected.tid || 'Not found';
   document.getElementById('detectedAmount').textContent = detected.amount ? detected.amount.toLocaleString() + ' UGX' : 'Not found';
   document.getElementById('detectedNames').textContent = detected.names || 'Not found';
@@ -7474,11 +7705,9 @@ function validateDepositMessage() {
   
   detectedInfo.style.display = 'block';
   
-  // Check required items
   let isValid = true;
   let errors = [];
   
-  // Amount must match
   if (!detected.amount) {
     errors.push('❌ Amount not found');
     isValid = false;
@@ -7487,13 +7716,11 @@ function validateDepositMessage() {
     isValid = false;
   }
   
-  // TID must exist
   if (!detected.tid) {
     errors.push('❌ Transaction ID not found');
     isValid = false;
   }
   
-  // Names must exist (for verification)
   if (!detected.names) {
     errors.push('❌ Recipient names not found');
     isValid = false;
@@ -7512,7 +7739,6 @@ function validateDepositMessage() {
   statusDiv.style.display = 'block';
 }
 
-// ===== FUNCTION: Submit deposit (works for both PEAR and DPK) =====
 function submitDeposit() {
   const message = document.getElementById('depositMessageInput').value;
   const detected = detectFromMessage(message);
@@ -7522,7 +7748,6 @@ function submitDeposit() {
     return;
   }
   
-  // Create deposit object with required fields only
   const deposit = {
     id: Date.now(),
     userId: currentUser,
@@ -7534,8 +7759,6 @@ function submitDeposit() {
     method: selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY',
     timestamp: new Date().toISOString(),
     status: 'pending'
-    // ❌ No merchant code
-    // ❌ No names
   };
   
   pendingDeposits.push(deposit);
@@ -7782,7 +8005,6 @@ function downloadIncomeTableAsImage() {
   const container = document.getElementById('incomeTableContainer');
   if (!container) return;
   
-  // Show loading message
   showConfirmModal('Processing', 'Generating image...', 'success');
   
   html2canvas(container, {
@@ -7792,7 +8014,6 @@ function downloadIncomeTableAsImage() {
     allowTaint: false,
     useCORS: true
   }).then(canvas => {
-    // Convert to image and download
     const link = document.createElement('a');
     const date = new Date();
     const dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
@@ -7800,7 +8021,6 @@ function downloadIncomeTableAsImage() {
     link.href = canvas.toDataURL('image/png');
     link.click();
     
-    // Show success toast
     setTimeout(() => {
       document.getElementById('downloadToast').style.display = 'block';
       setTimeout(() => {
@@ -7825,11 +8045,10 @@ function updateTime() {
   document.getElementById('currentTime').textContent = `${hours}:${mins} ${ampm}`;
 }
 
-// ===== IMPROVED LOGOUT FUNCTION - CLEARS ALL SESSION DATA =====
+// ===== LOGOUT FUNCTION =====
 function logout() {
   console.log('Logging out - clearing all session data');
   
-  // Clear timers
   if (activeReadingTimer) { 
     clearInterval(activeReadingTimer); 
     activeReadingTimer = null; 
@@ -7837,24 +8056,18 @@ function logout() {
   activeReadingBookId = null;
   activeReadingPage = null;
   
-  // Clear ALL localStorage items except book shuffle (UI preference)
-  // Keep book shuffle so daily book order persists
   const bookShuffleDate = localStorage.getItem('bookShuffleDate');
   const bookShuffleOrder = localStorage.getItem('bookShuffleOrder');
   
   localStorage.clear();
   
-  // Restore book shuffle if they were there
   if (bookShuffleDate) localStorage.setItem('bookShuffleDate', bookShuffleDate);
   if (bookShuffleOrder) localStorage.setItem('bookShuffleOrder', bookShuffleOrder);
   
-  // Clear sessionStorage completely
   sessionStorage.clear();
   
-  // Reset global variables
   currentUser = null;
   
-  // Hide all dashboard pages and show auth container
   document.getElementById('authContainer').style.display = 'block';
   document.getElementById('mainDashboard').style.display = 'none';
   document.getElementById('profilePage').style.display = 'none';
@@ -7867,12 +8080,12 @@ function logout() {
   document.getElementById('transactionHistoryPage').style.display = 'none';
   document.getElementById('growthJourneyPage').style.display = 'none';
   document.getElementById('stakesPage').style.display = 'none';
+  document.getElementById('girarePage').style.display = 'none';
   
   closeUserDetailsModal();
   
   if (inactivityTimer) clearTimeout(inactivityTimer);
   
-  // Show login form by default
   document.getElementById('loginForm').classList.add('active');
   document.getElementById('registerForm').classList.remove('active');
   document.getElementById('loginTab').classList.add('active');
@@ -7936,6 +8149,7 @@ function adminLogin() {
     document.getElementById('adminLoginSection').style.display = 'none';
     document.getElementById('adminContent').style.display = 'block';
     loadAdminData();
+    loadGirareAdminControls();
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -7972,6 +8186,10 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[6].classList.add('active');
     document.getElementById('adminCompanySettingsSection').classList.add('active');
     updateCompanySettingsInputs();
+  } else if (tab === 'girare') {
+    document.querySelectorAll('.admin-tab')[7].classList.add('active');
+    document.getElementById('adminGirareSection').classList.add('active');
+    loadGirareAdminControls();
   }
 }
 
@@ -8002,7 +8220,6 @@ function loadDepositsTable() {
     return;
   }
 
-  // Sort newest first
   const sorted = [...pendingDeposits].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   
   let html = '';
@@ -8091,7 +8308,6 @@ function loadWithdrawalsTable() {
     return;
   }
 
-  // Sort oldest first
   const sorted = [...pendingWithdrawals].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
   
   let html = '';
@@ -8399,22 +8615,16 @@ function showClearAllDataConfirm() {
   showConfirmModal('⚠️ DANGER!', 'This will DELETE ALL USERS and reset all data. This CANNOT be undone!', 'delete', clearAllData);
 }
 
-// --- FIX 3: Improved clearAllData function ---
 function clearAllData() {
-    // Close the confirm modal first
     closeConfirmModal();
     
-    // Show a processing message (optional)
     showConfirmModal('Processing', 'Resetting database...', 'success');
     
-    // Set the entire database to an empty object, which will trigger the onload listener to recreate demo users
     db.ref().set({})
         .then(() => {
             console.log("Database cleared successfully.");
-            // Clear local storage
             localStorage.clear();
             sessionStorage.clear();
-            // Reload the page to start fresh
             location.reload();
         })
         .catch((error) => {
@@ -8423,20 +8633,22 @@ function clearAllData() {
         });
 }
 
-// ========== REFERRAL HANDLER - IMPROVED TO PRIORITIZE REFERRAL LINKS ==========
+// ========== REFERRAL HANDLER - FIXED ==========
 function handleReferralLink() {
   const refCode = getUrlParameter('ref');
   
   if (refCode) {
-    // Store referral code in sessionStorage
     sessionStorage.setItem('pendingReferralCode', refCode);
     
-    // Clear any existing user session
     currentUser = null;
     localStorage.removeItem('currentUser');
     localStorage.removeItem('sessionState');
     
-    // Hide all dashboard pages
+    // REMOVE the ref parameter from URL using history API
+    const url = new URL(window.location);
+    url.searchParams.delete('ref');
+    window.history.replaceState({}, document.title, url.toString());
+    
     document.getElementById('mainDashboard').style.display = 'none';
     document.getElementById('profilePage').style.display = 'none';
     document.getElementById('levelPage').style.display = 'none';
@@ -8448,18 +8660,16 @@ function handleReferralLink() {
     document.getElementById('transactionHistoryPage').style.display = 'none';
     document.getElementById('growthJourneyPage').style.display = 'none';
     document.getElementById('stakesPage').style.display = 'none';
+    document.getElementById('girarePage').style.display = 'none';
     
-    // Show auth container
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('accessRestricted').style.display = 'none';
     
-    // Force registration form to be active
     document.getElementById('registerForm').classList.add('active');
     document.getElementById('loginForm').classList.remove('active');
     document.getElementById('registerTab').classList.add('active');
     document.getElementById('loginTab').classList.remove('active');
     
-    // Set referral code field
     const refField = document.getElementById('regReferralCode');
     if (refField) {
       refField.value = refCode;
@@ -8476,15 +8686,14 @@ function handleReferralLink() {
   return false;
 }
 
-// ========== PULL-TO-REFRESH FUNCTIONS (NEW) ==========
+// ========== PULL-TO-REFRESH FUNCTIONS ==========
 let touchStartY = 0;
 let touchCurrentY = 0;
 let isPulling = false;
-let refreshThreshold = 100; // pixels to pull before triggering refresh
+let refreshThreshold = 100;
 let refreshProgress = 0;
 
 function handleTouchStart(e) {
-  // Only enable pull-to-refresh when scrolled to the top
   const scrollContent = document.querySelector('.scroll-content');
   if (scrollContent && scrollContent.scrollTop === 0) {
     touchStartY = e.touches[0].clientY;
@@ -8500,7 +8709,7 @@ function handleTouchMove(e) {
   const pullDistance = touchCurrentY - touchStartY;
 
   if (pullDistance > 0) {
-    e.preventDefault(); // Prevent default pull-to-refresh
+    e.preventDefault();
     const indicator = document.getElementById('pullIndicator');
     indicator.style.display = 'block';
     if (pullDistance < refreshThreshold) {
@@ -8518,13 +8727,11 @@ function handleTouchEnd(e) {
   document.getElementById('pullIndicator').style.display = 'none';
 
   if (pullDistance >= refreshThreshold) {
-    // Trigger refresh
     performRefresh();
   }
 }
 
 function performRefresh() {
-  // Show overlay
   const overlay = document.getElementById('refreshOverlay');
   const messageEl = document.getElementById('refreshMessage');
   const progressFill = document.getElementById('refreshProgressFill');
@@ -8548,10 +8755,8 @@ function performRefresh() {
     }
   }, 50);
 
-  // Save current state
   saveSessionState();
 
-  // Restore from localStorage and Firebase
   setTimeout(() => {
     restoreSessionState().then(() => {
       clearInterval(interval);
@@ -8566,11 +8771,10 @@ function performRefresh() {
       progressFill.style.width = '100%';
       setTimeout(() => {
         overlay.style.display = 'none';
-        // Still try to restore from cache
-        restoreSessionState(true); // force cache mode
+        restoreSessionState(true);
       }, 1000);
     });
-  }, 300); // Small delay to show progress
+  }, 300);
 }
 
 function saveSessionState() {
@@ -8602,12 +8806,11 @@ function getCurrentPage() {
   if (document.getElementById('transactionHistoryPage').style.display === 'flex') return 'transactionHistory';
   if (document.getElementById('growthJourneyPage').style.display === 'flex') return 'growthJourney';
   if (document.getElementById('stakesPage').style.display === 'flex') return 'stakes';
+  if (document.getElementById('girarePage').style.display === 'flex') return 'girare';
   return 'home';
 }
 
-// ===== IMPROVED SESSION RESTORE - NOW CHECKS FOR REFERRAL LINK FIRST =====
 async function restoreSessionState(useCacheOnly = false) {
-  // IMPORTANT: Do NOT restore session if there's a referral link
   const refCode = getUrlParameter('ref');
   if (refCode) {
     console.log('ℹ️ Referral link detected - skipping session restore');
@@ -8624,7 +8827,6 @@ async function restoreSessionState(useCacheOnly = false) {
     const session = JSON.parse(saved);
     console.log('📂 Restoring session:', session);
 
-    // Only restore if the session is less than 24 hours old (optional)
     const sessionAge = Date.now() - session.timestamp;
     if (sessionAge > 24 * 60 * 60 * 1000) {
       console.log('ℹ️ Session too old - not restoring');
@@ -8632,7 +8834,6 @@ async function restoreSessionState(useCacheOnly = false) {
       return;
     }
 
-    // Restore user if not already logged in
     if (!currentUser && session.user && users[session.user]) {
       currentUser = session.user;
       localStorage.setItem('currentUser', currentUser);
@@ -8641,12 +8842,10 @@ async function restoreSessionState(useCacheOnly = false) {
       loadUserData();
     }
 
-    // Restore page
     if (session.page) {
       showPage(session.page);
     }
 
-    // Restore scroll position after a short delay (to let page render)
     setTimeout(() => {
       const scrollContent = document.querySelector('.scroll-content');
       if (scrollContent && session.scrollY) {
@@ -8661,11 +8860,468 @@ async function restoreSessionState(useCacheOnly = false) {
   }
 }
 
+// ========== GIRARE FUNCTIONS ==========
+function loadGirarePage() {
+  const user = users[currentUser];
+  if (!user) return;
+  
+  const contentDiv = document.getElementById('girareContent');
+  
+  // Check if wheel is locked
+  if (girareConfig.wheelLocked) {
+    contentDiv.innerHTML = `
+      <div class="girare-access-denied">
+        <i class="fas fa-lock"></i>
+        <h3>🔒 WHEEL LOCKED</h3>
+        <p>${girareConfig.lockMessage || 'Wheel temporarily unavailable'}</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Check minimum level requirement
+  if (user.memberLevel < girareConfig.minLevel) {
+    contentDiv.innerHTML = `
+      <div class="girare-access-denied">
+        <i class="fas fa-ban"></i>
+        <h3>⚠️ ACCESS DENIED</h3>
+        <p>You must be D${girareConfig.minLevel} or higher to access Girare Wheel</p>
+        <button class="upgrade-now-btn" onclick="showPage('level')">UPGRADE NOW</button>
+      </div>
+    `;
+    return;
+  }
+  
+  // Check if user has spins
+  const spins = user.spinsToday || 0;
+  const expiry = user.spinExpiry ? new Date(user.spinExpiry) : null;
+  const now = new Date();
+  let timeRemaining = '';
+  
+  if (expiry && expiry > now) {
+    const hours = Math.floor((expiry - now) / (1000 * 60 * 60));
+    const minutes = Math.floor(((expiry - now) % (1000 * 60 * 60)) / (1000 * 60));
+    timeRemaining = `${hours}h ${minutes}m remaining`;
+  } else if (expiry && expiry <= now) {
+    // Expired, reset spins
+    user.spinsToday = 0;
+    user.spinExpiry = null;
+    saveUsers();
+  }
+  
+  // Get available segments (not locked)
+  const availableSegments = girareConfig.segments.filter(s => !s.locked);
+  
+  // Build wheel HTML (simplified for now - in production you'd use canvas/SVG)
+  let segmentsHtml = '';
+  girareConfig.segments.forEach((seg, index) => {
+    const color = `hsl(${index * 45}, 70%, 60%)`;
+    segmentsHtml += `<div style="position:absolute; width:100%; height:100%; transform: rotate(${index * 45}deg); overflow:hidden; border-radius:50%;"><div style="position:absolute; top:0; left:50%; width:50%; height:50%; background:${color}; transform-origin:0 100%; transform: rotate(45deg);"></div></div>`;
+  });
+  
+  contentDiv.innerHTML = `
+    <div class="wheel-container">
+      <div class="wheel-pointer"></div>
+      <div class="wheel-center" onclick="spinWheel()">SPIN</div>
+      <svg class="wheel-svg" viewBox="0 0 100 100" id="wheelSvg">
+        ${girareConfig.segments.map((seg, i) => {
+          const startAngle = (i * 45) * (Math.PI / 180);
+          const endAngle = ((i + 1) * 45) * (Math.PI / 180);
+          const x1 = 50 + 45 * Math.cos(startAngle);
+          const y1 = 50 + 45 * Math.sin(startAngle);
+          const x2 = 50 + 45 * Math.cos(endAngle);
+          const y2 = 50 + 45 * Math.sin(endAngle);
+          const largeArc = 0;
+          const path = `M50,50 L${x1},${y1} A45,45 0 ${largeArc},1 ${x2},${y2} Z`;
+          return `<path d="${path}" fill="hsl(${i * 45}, 70%, 60%)" stroke="#fff" stroke-width="1" />`;
+        }).join('')}
+        <circle cx="50" cy="50" r="15" fill="white" stroke="#333" stroke-width="2" />
+      </svg>
+    </div>
+    
+    <div class="spin-stats">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:1.2rem;">🎡 Your Spins: <strong>${spins}</strong></span>
+        ${timeRemaining ? `<span class="spin-countdown">⏰ ${timeRemaining}</span>` : ''}
+      </div>
+      <p style="margin-top:10px; color:#666;">Refer D-level members in one day to earn spins! (2 members = 1 spin, max 5)</p>
+    </div>
+    
+    <div class="spin-history">
+      <h4>📜 Recent Spins</h4>
+      <div id="spinHistoryList">
+        ${user.spinHistory && user.spinHistory.length > 0 ? 
+          user.spinHistory.slice(-5).reverse().map(s => `
+            <div class="spin-history-item">
+              <span>${s.date}</span>
+              <span class="${s.win ? 'spin-win' : 'spin-lose'}">${s.result}</span>
+            </div>
+          `).join('') : 
+          '<p style="color:#999;">No spins yet</p>'}
+      </div>
+    </div>
+  `;
+}
+
+function spinWheel() {
+  const user = users[currentUser];
+  if (!user) return;
+  
+  // Check level again
+  if (user.memberLevel < girareConfig.minLevel) {
+    showConfirmModal('Access Denied', `D${girareConfig.minLevel}+ required`, 'warning');
+    loadGirarePage();
+    return;
+  }
+  
+  // Check wheel lock
+  if (girareConfig.wheelLocked) {
+    showConfirmModal('Wheel Locked', girareConfig.lockMessage || 'Wheel temporarily unavailable', 'warning');
+    return;
+  }
+  
+  // Check spins
+  if ((user.spinsToday || 0) <= 0) {
+    showConfirmModal('No Spins', 'You have no spins left today. Refer D-level members to earn more!', 'warning');
+    return;
+  }
+  
+  // Check expiry
+  const expiry = user.spinExpiry ? new Date(user.spinExpiry) : null;
+  const now = new Date();
+  if (expiry && expiry <= now) {
+    user.spinsToday = 0;
+    user.spinExpiry = null;
+    saveUsers();
+    loadGirarePage();
+    showConfirmModal('Spins Expired', 'Your spins expired. Refer D-level members to get new ones!', 'warning');
+    return;
+  }
+  
+  // Get available segments (not locked)
+  const availableSegments = girareConfig.segments.filter(s => !s.locked);
+  
+  if (availableSegments.length === 0) {
+    showConfirmModal('Error', 'No available segments to spin!', 'warning');
+    return;
+  }
+  
+  // Randomly select segment
+  const randomIndex = Math.floor(Math.random() * availableSegments.length);
+  const result = availableSegments[randomIndex];
+  
+  // Animate wheel
+  const wheel = document.getElementById('wheelSvg');
+  if (wheel) {
+    const spins = 5 + Math.random() * 5; // 5-10 full rotations
+    const targetAngle = 360 - (randomIndex * 45) - 22.5; // Center the segment
+    const finalAngle = spins * 360 + targetAngle;
+    wheel.style.transform = `rotate(${finalAngle}deg)`;
+  }
+  
+  // Apply prize
+  setTimeout(() => {
+    let prizeAmount = 0;
+    let prizeText = '';
+    
+    if (result.value === 'freespin') {
+      user.spinsToday = (user.spinsToday || 0) + 1;
+      prizeText = 'Free Spin';
+      showConfirmModal('🎉 You won!', 'Free Spin added to your account!', 'success');
+    } else if (result.value === 'multiplier') {
+      // Store multiplier for next win
+      user.nextWinMultiplier = 2;
+      prizeText = '2x Multiplier';
+      showConfirmModal('🎉 You won!', '2x Multiplier on your next win!', 'success');
+    } else {
+      prizeAmount = result.value;
+      user.incentiveWallet = (user.incentiveWallet || 0) + prizeAmount;
+      prizeText = result.prize;
+      showConfirmModal('🎉 You won!', `${result.prize} added to Incentive Wallet!`, 'success');
+    }
+    
+    // Record transaction
+    if (!user.transactions) user.transactions = [];
+    user.transactions.unshift({
+      type: 'girare',
+      amount: prizeAmount,
+      date: new Date().toLocaleString(),
+      desc: `Girare Wheel: ${result.prize}`
+    });
+    
+    // Record spin history
+    if (!user.spinHistory) user.spinHistory = [];
+    user.spinHistory.push({
+      date: new Date().toLocaleString(),
+      result: result.prize,
+      win: prizeAmount > 0 || result.value === 'freespin' || result.value === 'multiplier'
+    });
+    
+    // Decrease spins
+    user.spinsToday = (user.spinsToday || 0) - 1;
+    
+    saveUsers();
+    loadUserData();
+    loadGirarePage();
+  }, 3000); // Match animation duration
+}
+
+// ===== GIRARE ADMIN FUNCTIONS =====
+function loadGirareAdminControls() {
+  const container = document.getElementById('girareSegmentsAdmin');
+  
+  // Set min level select
+  const minLevelSelect = document.getElementById('girareMinLevel');
+  if (minLevelSelect) {
+    minLevelSelect.value = girareConfig.minLevel || 2;
+  }
+  
+  // Set master lock radio
+  const lockRadios = document.getElementsByName('wheelLock');
+  if (lockRadios.length) {
+    if (girareConfig.wheelLocked) {
+      lockRadios[1].checked = true;
+    } else {
+      lockRadios[0].checked = true;
+    }
+  }
+  
+  // Set lock message
+  const lockMsg = document.getElementById('wheelLockMessage');
+  if (lockMsg) {
+    lockMsg.value = girareConfig.lockMessage || '';
+  }
+  
+  // Set weekly schedule
+  const week1 = document.getElementById('week1Locks');
+  const week2 = document.getElementById('week2Locks');
+  const week3 = document.getElementById('week3Locks');
+  const week4 = document.getElementById('week4Locks');
+  
+  if (week1) week1.value = girareConfig.weeklySchedule?.week1?.join(',') || '';
+  if (week2) week2.value = girareConfig.weeklySchedule?.week2?.join(',') || '';
+  if (week3) week3.value = girareConfig.weeklySchedule?.week3?.join(',') || '';
+  if (week4) week4.value = girareConfig.weeklySchedule?.week4?.join(',') || '';
+  
+  // Build segment controls
+  let html = '';
+  girareConfig.segments.forEach((seg, index) => {
+    html += `
+      <div class="segment-control">
+        <span style="min-width:30px; font-weight:600;">${index+1}</span>
+        <input type="text" id="segPrize${seg.id}" value="${seg.prize}" placeholder="Prize">
+        <input type="number" id="segValue${seg.id}" value="${seg.value === 'freespin' ? 0 : seg.value === 'multiplier' ? 0 : seg.value}" placeholder="Value" style="width:80px;">
+        <label style="display:flex; align-items:center; gap:5px;">
+          <input type="checkbox" id="segLocked${seg.id}" ${seg.locked ? 'checked' : ''}> Locked
+        </label>
+        <button onclick="saveGirareSegment(${seg.id})">Save</button>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function saveGirareMinLevel() {
+  const level = parseInt(document.getElementById('girareMinLevel').value);
+  girareConfig.minLevel = level;
+  saveGirareConfig();
+  showConfirmModal('Success', 'Minimum level updated!', 'success');
+}
+
+function toggleMasterWheelLock(locked) {
+  girareConfig.wheelLocked = locked;
+  saveGirareConfig();
+  showConfirmModal('Success', `Wheel ${locked ? 'locked' : 'unlocked'}!`, 'success');
+}
+
+function saveWheelLockMessage() {
+  const message = document.getElementById('wheelLockMessage').value;
+  girareConfig.lockMessage = message;
+  saveGirareConfig();
+  showConfirmModal('Success', 'Lock message updated!', 'success');
+}
+
+function saveGirareSegment(id) {
+  const prize = document.getElementById(`segPrize${id}`).value;
+  const valueInput = document.getElementById(`segValue${id}`).value;
+  const locked = document.getElementById(`segLocked${id}`).checked;
+  
+  let value;
+  if (prize.toLowerCase().includes('free')) {
+    value = 'freespin';
+  } else if (prize.toLowerCase().includes('multiplier')) {
+    value = 'multiplier';
+  } else {
+    value = parseInt(valueInput) || 0;
+  }
+  
+  const segment = girareConfig.segments.find(s => s.id === id);
+  if (segment) {
+    segment.prize = prize;
+    segment.value = value;
+    segment.locked = locked;
+  }
+  
+  saveGirareConfig();
+  showConfirmModal('Success', `Segment ${id} updated!`, 'success');
+}
+
+function saveAllGirareSegments() {
+  for (let i = 1; i <= 8; i++) {
+    const prize = document.getElementById(`segPrize${i}`)?.value;
+    const valueInput = document.getElementById(`segValue${i}`)?.value;
+    const locked = document.getElementById(`segLocked${i}`)?.checked;
+    
+    if (prize !== undefined) {
+      let value;
+      if (prize.toLowerCase().includes('free')) {
+        value = 'freespin';
+      } else if (prize.toLowerCase().includes('multiplier')) {
+        value = 'multiplier';
+      } else {
+        value = parseInt(valueInput) || 0;
+      }
+      
+      const segment = girareConfig.segments.find(s => s.id === i);
+      if (segment) {
+        segment.prize = prize;
+        segment.value = value;
+        segment.locked = locked;
+      }
+    }
+  }
+  
+  saveGirareConfig();
+  showConfirmModal('Success', 'All segments saved!', 'success');
+}
+
+function applyWeeklySchedule() {
+  const week1 = document.getElementById('week1Locks').value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+  const week2 = document.getElementById('week2Locks').value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+  const week3 = document.getElementById('week3Locks').value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+  const week4 = document.getElementById('week4Locks').value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+  
+  girareConfig.weeklySchedule = { week1, week2, week3, week4 };
+  
+  // Determine current week of month (simplified)
+  const now = new Date();
+  const weekOfMonth = Math.ceil(now.getDate() / 7);
+  
+  let locks = [];
+  if (weekOfMonth === 1) locks = week1;
+  else if (weekOfMonth === 2) locks = week2;
+  else if (weekOfMonth === 3) locks = week3;
+  else locks = week4;
+  
+  // Apply locks
+  girareConfig.segments.forEach(seg => {
+    seg.locked = locks.includes(seg.id);
+  });
+  
+  saveGirareConfig();
+  loadGirareAdminControls();
+  showConfirmModal('Success', `Week ${weekOfMonth} schedule applied!`, 'success');
+}
+
+// ===== TRACK DAILY REFERRALS =====
+function trackDailyReferral(referrerPhone, newUserPhone) {
+  const referrer = users[referrerPhone];
+  if (!referrer) return;
+  
+  // Only track if referrer is D-level
+  if (referrer.memberLevel === 0) return;
+  
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  
+  if (!referrer.dailyReferrals) referrer.dailyReferrals = {};
+  if (!referrer.dailyReferrals[today]) {
+    referrer.dailyReferrals[today] = { count: 0, members: [] };
+  }
+  
+  // Check if new user is D-level
+  const newUser = users[newUserPhone];
+  if (newUser && newUser.memberLevel > 0) {
+    referrer.dailyReferrals[today].count++;
+    referrer.dailyReferrals[today].members.push(newUserPhone);
+  }
+  
+  saveUsers();
+}
+
+// ===== MIDNIGHT SPIN ASSIGNMENT =====
+function scheduleMidnightReset() {
+  const now = new Date();
+  const midnight = new Date(now);
+  midnight.setHours(24, 0, 0, 0);
+  
+  const timeToMidnight = midnight - now;
+  
+  setTimeout(() => {
+    processDailySpinAssignment();
+    setInterval(processDailySpinAssignment, 24 * 60 * 60 * 1000); // Every 24 hours
+  }, timeToMidnight);
+}
+
+function processDailySpinAssignment() {
+  console.log('🌙 Processing daily spin assignment...');
+  
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+  
+  Object.values(users).forEach(user => {
+    // Skip if not D-level
+    if (user.memberLevel === 0) return;
+    
+    // Get yesterday's D referrals
+    const yesterdayData = user.dailyReferrals?.[yesterdayStr];
+    const referralCount = yesterdayData?.count || 0;
+    
+    // Calculate spins (floor(referrals / 2), max 5)
+    const newSpins = Math.min(Math.floor(referralCount / 2), 5);
+    
+    // Set spins for today
+    user.spinsToday = newSpins;
+    
+    // Set expiry to tomorrow midnight
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 1);
+    expiry.setHours(24, 0, 0, 0);
+    user.spinExpiry = expiry.toISOString();
+    
+    // Clean up old daily referral data (keep last 7 days)
+    if (user.dailyReferrals) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
+      
+      Object.keys(user.dailyReferrals).forEach(date => {
+        if (date < sevenDaysAgoStr) {
+          delete user.dailyReferrals[date];
+        }
+      });
+    }
+    
+    // Notify user if they got spins
+    if (newSpins > 0 && user.transactions) {
+      user.transactions.unshift({
+        type: 'girare',
+        amount: 0,
+        date: new Date().toLocaleString(),
+        desc: `🎡 You got ${newSpins} Girare spins from yesterday's ${referralCount} D referrals!`
+      });
+    }
+  });
+  
+  saveUsers();
+  console.log('✅ Daily spin assignment complete');
+}
+
 // ========== INIT ==========
 window.onload = function() {
   loadFromFirebase();
 
-  // Add touch event listeners for pull-to-refresh
   const scrollContent = document.querySelector('.scroll-content');
   if (scrollContent) {
     scrollContent.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -8673,12 +9329,9 @@ window.onload = function() {
     scrollContent.addEventListener('touchend', handleTouchEnd, { passive: false });
   }
 
-  // Check for referral link FIRST - this overrides everything
   const hasReferral = handleReferralLink();
   
-  // Only try to restore session if no referral link
   if (!hasReferral) {
-    // Try to restore session after a short delay
     setTimeout(() => {
       restoreSessionState();
     }, 500);
@@ -8690,7 +9343,6 @@ window.onload = function() {
       const internCode = generateReferralCode();
       const d1Code = generateReferralCode();
       
-      // --- FIX 1: Ensure memberLevel is a NUMBER (it already is, but this is the confirmation) ---
       const demoUsers = {
         '0756673144': {
           fullName: 'Admin User',
@@ -8698,7 +9350,7 @@ window.onload = function() {
           country: 'Uganda',
           password: 'admin123',
           referralCode: adminCode,
-          memberLevel: 9, // <--- NUMBER
+          memberLevel: 9,
           memberExpiry: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
           operatingWallet: 1000000,
           incentiveWallet: 500000,
@@ -8721,10 +9373,17 @@ window.onload = function() {
           heldPosition: null,
           farmerPosition: 5,
           theme: 'purple',
-          // ===== NEW FIELDS =====
           pendingRefund: null,
           lostCommissions: [],
-          dailyBonusPaidDate: null
+          dailyBonusPaidDate: null,
+          // Girare fields
+          dailyReferrals: {},
+          spinsToday: 3,
+          spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
+          spinHistory: [
+            { date: new Date().toLocaleString(), result: '25,000 UGX', win: true },
+            { date: new Date(Date.now() - 24*60*60*1000).toLocaleString(), result: 'Better Luck', win: false }
+          ]
         },
         '0777123456': {
           fullName: 'Intern User',
@@ -8732,7 +9391,7 @@ window.onload = function() {
           country: 'Uganda',
           password: '123456',
           referralCode: internCode,
-          memberLevel: 0, // <--- NUMBER
+          memberLevel: 0,
           memberExpiry: new Date(Date.now() + 4*24*60*60*1000).toISOString(),
           operatingWallet: 100000,
           incentiveWallet: 1500,
@@ -8751,10 +9410,14 @@ window.onload = function() {
           heldPosition: null,
           farmerPosition: 0,
           theme: 'purple',
-          // ===== NEW FIELDS =====
           pendingRefund: null,
           lostCommissions: [],
-          dailyBonusPaidDate: null
+          dailyBonusPaidDate: null,
+          // Girare fields
+          dailyReferrals: {},
+          spinsToday: 0,
+          spinExpiry: null,
+          spinHistory: []
         },
         '0788123456': {
           fullName: 'John D1',
@@ -8762,7 +9425,7 @@ window.onload = function() {
           country: 'Uganda',
           password: '123456',
           referralCode: d1Code,
-          memberLevel: 1, // <--- NUMBER
+          memberLevel: 1,
           memberExpiry: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
           operatingWallet: 150000,
           incentiveWallet: 30000,
@@ -8781,20 +9444,20 @@ window.onload = function() {
           heldPosition: null,
           farmerPosition: 1,
           theme: 'purple',
-          // ===== NEW FIELDS =====
           pendingRefund: null,
           lostCommissions: [],
-          dailyBonusPaidDate: null
+          dailyBonusPaidDate: null,
+          // Girare fields
+          dailyReferrals: {},
+          spinsToday: 1,
+          spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
+          spinHistory: []
         }
       };
 
-      // --- FIX 2: Write data and then force a reload for the current user ---
       db.ref('users').set(demoUsers).then(() => {
           console.log("Demo users created successfully.");
-          // If the user is already logged in (e.g., from a previous session), reload their data.
-          // This is especially important after a reset.
           if (currentUser && demoUsers[currentUser]) {
-              // Small timeout to ensure the database update propagates to the listener
               setTimeout(() => {
                   loadUserData();
                   if (document.getElementById('levelPage').style.display === 'flex') {
@@ -8812,17 +9475,14 @@ window.onload = function() {
     }
   });
 
-  // If there was no referral link, check if user is already logged in
   if (!hasReferral) {
     let checkCount = 0;
     function checkLoginStatus() {
       if (users && Object.keys(users).length > 0) {
-        // Check if there's a saved user in localStorage
         const savedUser = localStorage.getItem('currentUser');
         if (savedUser && users[savedUser]) {
           currentUser = savedUser;
           loadUserData();
-          // REMOVED THE HARDCODED showPage('home') - let session restore handle it
           resetInactivityTimer();
         }
       } else if (checkCount < 20) {
@@ -8838,12 +9498,14 @@ window.onload = function() {
 
   setTimeout(() => { initGallery(); }, 500);
   
-  // ===== SYSTEM 2: Set up interval to check pending refunds =====
   setInterval(() => {
     if (currentUser && users[currentUser]) {
       processPendingRefunds();
     }
   }, 1000);
+  
+  // Schedule midnight spin assignment
+  scheduleMidnightReset();
 };
   </script>
 </body>
