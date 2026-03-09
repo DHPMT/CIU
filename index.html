@@ -5807,7 +5807,7 @@ function handleLogin(e) {
   if (users[phone] && users[phone].password === password) {
     localStorage.setItem('currentUser', phone);
     currentUser = phone;
-    sessionStorage.removeItem('pendingReferralCode');
+    sessionStorage.removeItem('pendingReferralCode'); // Ensure referral code is cleared
     loadUserData();
     showPage('home');
     resetInactivityTimer();
@@ -8822,7 +8822,7 @@ window.onload = function() {
         if (savedUser && users[savedUser]) {
           currentUser = savedUser;
           loadUserData();
-          showPage('home');
+          // REMOVED THE HARDCODED showPage('home') - let session restore handle it
           resetInactivityTimer();
         }
       } else if (checkCount < 20) {
