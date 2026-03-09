@@ -3507,6 +3507,102 @@
     .income-table tbody tr:nth-child(8) { background-color: #e6ffff; } /* D7 - Light Lavender */
     .income-table tbody tr:nth-child(9) { background-color: #ffe6e6; } /* D8 - Light Coral */
     .income-table tbody tr:nth-child(10) { background-color: #f2e6ff; } /* D9 - Light Gold */
+    
+    /* ===== FIX 3: CUSTOM INVEST MODAL STYLES ===== */
+    .invest-modal-content {
+      background: white;
+      border-radius: 30px;
+      padding: 24px;
+      max-width: 350px;
+    }
+    .invest-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .invest-modal-header h2 {
+      color: #28a745;
+      font-size: 1.5rem;
+    }
+    .invest-amount-presets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .invest-preset-btn {
+      background: #f5edff;
+      border: 2px solid #7d5ba6;
+      border-radius: 15px;
+      padding: 12px 5px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4a3b5e;
+      cursor: pointer;
+      text-align: center;
+    }
+    .invest-preset-btn.selected {
+      background: #7d5ba6;
+      color: white;
+    }
+    .invest-wallet-selector {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .invest-wallet-option {
+      flex: 1;
+      background: #f9f9f9;
+      border: 2px solid #ddd;
+      border-radius: 15px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .invest-wallet-option.selected {
+      border-color: #28a745;
+      background: #e8f5e9;
+    }
+    .invest-wallet-balance {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    .invest-error {
+      color: #dc3545;
+      font-size: 0.9rem;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .invest-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .invest-confirm-btn {
+      flex: 2;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .invest-confirm-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .invest-cancel-btn {
+      flex: 1;
+      background: #f0f0f0;
+      border: none;
+      padding: 15px;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -5289,6 +5385,18 @@
     </div>
   </div>
 
+  <!-- FIX 3: CUSTOM INVEST MODAL -->
+  <div class="modal-overlay" id="investModal">
+    <div class="modal-content invest-modal-content">
+      <div class="invest-modal-header">
+        <h2 id="investModalTitle">Invest</h2>
+        <button class="close-btn" onclick="closeInvestModal()" style="font-size:1.8rem; background:none; border:none;">&times;</button>
+      </div>
+      
+      <div id="investModalBody"></div>
+    </div>
+  </div>
+
   <!-- PULL-TO-REFRESH OVERLAY -->
   <div id="refreshOverlay" class="refresh-overlay">
     <div class="refresh-spinner"></div>
@@ -6488,51 +6596,143 @@ function loadStakesPage() {
   contentDiv.innerHTML = html;
 }
 
-// ===== INVESTMENT FUNCTIONS =====
+// ===== FIX 3: INVESTMENT FUNCTIONS WITH CUSTOM MODAL =====
 let selectedPoolForInvest = null;
+let investSelectedAmount = null;
+let investSelectedWallet = 'operating';
 
 function openInvestModal(poolId) {
   const pool = stakesConfig.pools.find(p => p.id === poolId);
   if (!pool) return;
   
   selectedPoolForInvest = pool;
+  investSelectedAmount = null;
+  investSelectedWallet = 'operating';
   
   const user = users[currentUser];
   const operating = user.operatingWallet || 0;
   const incentive = user.incentiveWallet || 0;
   
-  // Simple prompt for now - in production you'd create a modal
-  const amount = prompt(`Enter amount to invest in ${pool.name} (${pool.minAmount.toLocaleString()} - ${pool.maxAmount.toLocaleString()} UGX):`, pool.minAmount);
+  // Generate preset amounts (3 presets within min-max range)
+  const step = Math.floor((pool.maxAmount - pool.minAmount) / 4);
+  const presets = [
+    pool.minAmount,
+    pool.minAmount + step,
+    pool.minAmount + step * 2,
+    pool.maxAmount - step,
+    pool.maxAmount
+  ].filter((v, i, a) => a.indexOf(v) === i).sort((a, b) => a - b);
   
-  if (!amount) return;
+  let html = `
+    <p><strong>${pool.name}</strong></p>
+    <p style="color: #666; font-size: 0.9rem; margin-bottom: 15px;">${pool.description || ''}</p>
+    <p>Range: ${pool.minAmount.toLocaleString()} - ${pool.maxAmount.toLocaleString()} UGX</p>
+    
+    <div class="invest-amount-presets" id="investPresets">
+      ${presets.map(amount => `
+        <div class="invest-preset-btn" onclick="selectInvestAmount(${amount})">${amount.toLocaleString()}</div>
+      `).join('')}
+    </div>
+    
+    <div style="margin: 15px 0;">
+      <label>Custom Amount:</label>
+      <input type="number" id="investCustomAmount" placeholder="Enter amount" min="${pool.minAmount}" max="${pool.maxAmount}" style="width:100%; padding:12px; border:2px solid #e0d0eb; border-radius:20px; margin-top:5px;" oninput="validateInvestAmount()">
+    </div>
+    
+    <div class="invest-wallet-selector">
+      <div class="invest-wallet-option ${investSelectedWallet === 'operating' ? 'selected' : ''}" onclick="selectInvestWallet('operating')">
+        <div>OPERATING</div>
+        <div class="invest-wallet-balance">${operating.toLocaleString()} UGX</div>
+      </div>
+      <div class="invest-wallet-option ${investSelectedWallet === 'incentive' ? 'selected' : ''}" onclick="selectInvestWallet('incentive')">
+        <div>INCENTIVE</div>
+        <div class="invest-wallet-balance">${incentive.toLocaleString()} UGX</div>
+      </div>
+    </div>
+    
+    <div id="investError" class="invest-error" style="display: none;"></div>
+    
+    <div class="invest-buttons">
+      <button class="invest-cancel-btn" onclick="closeInvestModal()">CANCEL</button>
+      <button class="invest-confirm-btn" id="investConfirmBtn" onclick="confirmInvestment()" disabled>CONFIRM</button>
+    </div>
+  `;
   
-  const investAmount = parseInt(amount);
-  if (isNaN(investAmount) || investAmount < pool.minAmount || investAmount > pool.maxAmount) {
-    showConfirmModal('Error', `Amount must be between ${pool.minAmount.toLocaleString()} and ${pool.maxAmount.toLocaleString()} UGX`, 'warning');
+  document.getElementById('investModalTitle').textContent = `Invest in ${pool.name}`;
+  document.getElementById('investModalBody').innerHTML = html;
+  document.getElementById('investModal').style.display = 'flex';
+}
+
+function selectInvestAmount(amount) {
+  investSelectedAmount = amount;
+  document.querySelectorAll('.invest-preset-btn').forEach(btn => btn.classList.remove('selected'));
+  event.target.classList.add('selected');
+  document.getElementById('investCustomAmount').value = amount;
+  validateInvestAmount();
+}
+
+function selectInvestWallet(wallet) {
+  investSelectedWallet = wallet;
+  document.querySelectorAll('.invest-wallet-option').forEach(opt => opt.classList.remove('selected'));
+  event.target.classList.add('selected');
+  validateInvestAmount();
+}
+
+function validateInvestAmount() {
+  const customAmount = document.getElementById('investCustomAmount')?.value;
+  const amount = customAmount ? parseInt(customAmount) : investSelectedAmount;
+  const pool = selectedPoolForInvest;
+  const user = users[currentUser];
+  
+  if (!pool || !user) return;
+  
+  const errorDiv = document.getElementById('investError');
+  const confirmBtn = document.getElementById('investConfirmBtn');
+  
+  if (!amount || isNaN(amount)) {
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = 'Please enter an amount';
+    confirmBtn.disabled = true;
     return;
   }
   
-  // Choose wallet
-  const walletChoice = prompt('Choose wallet: 1 for Operating, 2 for Incentive', '1');
-  let walletType = 'operating';
-  if (walletChoice === '2') walletType = 'incentive';
-  
-  const balance = walletType === 'operating' ? operating : incentive;
-  
-  if (investAmount > balance) {
-    showConfirmModal('Error', `Insufficient balance in ${walletType} wallet`, 'warning');
+  if (amount < pool.minAmount || amount > pool.maxAmount) {
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = `Amount must be between ${pool.minAmount.toLocaleString()} and ${pool.maxAmount.toLocaleString()} UGX`;
+    confirmBtn.disabled = true;
     return;
   }
+  
+  const balance = investSelectedWallet === 'operating' ? user.operatingWallet : user.incentiveWallet;
+  if (amount > balance) {
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = `Insufficient balance in ${investSelectedWallet} wallet`;
+    confirmBtn.disabled = true;
+    return;
+  }
+  
+  investSelectedAmount = amount;
+  errorDiv.style.display = 'none';
+  confirmBtn.disabled = false;
+}
+
+function confirmInvestment() {
+  const pool = selectedPoolForInvest;
+  const user = users[currentUser];
+  const amount = investSelectedAmount;
+  const walletType = investSelectedWallet;
+  
+  if (!pool || !user || !amount) return;
   
   // Deduct from wallet
   if (walletType === 'operating') {
-    user.operatingWallet -= investAmount;
+    user.operatingWallet -= amount;
   } else {
-    user.incentiveWallet -= investAmount;
+    user.incentiveWallet -= amount;
   }
   
   // Calculate return
-  const expectedReturn = investAmount + Math.floor(investAmount * (pool.profitPercent / 100));
+  const expectedReturn = amount + Math.floor(amount * (pool.profitPercent / 100));
   
   // Create stake
   const startDate = new Date();
@@ -6542,7 +6742,7 @@ function openInvestModal(poolId) {
   const stake = {
     id: Date.now(),
     poolId: pool.id,
-    amount: investAmount,
+    amount: amount,
     expectedReturn: expectedReturn,
     startDate: startDate.toISOString(),
     maturityDate: maturityDate.toISOString(),
@@ -6554,22 +6754,30 @@ function openInvestModal(poolId) {
   user.activeStakes.push(stake);
   
   // Update pool total
-  pool.currentTotal = (pool.currentTotal || 0) + investAmount;
+  pool.currentTotal = (pool.currentTotal || 0) + amount;
   
   // Add transaction
   if (!user.transactions) user.transactions = [];
   user.transactions.unshift({
     type: 'stake',
-    amount: investAmount,
+    amount: amount,
     date: new Date().toLocaleString(),
     desc: `Invested in ${pool.name} (${pool.durationDays} days, ${pool.profitPercent}%)`
   });
   
   saveUsers();
   saveStakesConfig();
+  
+  closeInvestModal();
   loadStakesPage();
   
-  showConfirmModal('Success', `Investment of ${investAmount.toLocaleString()} UGX placed! Matures on ${maturityDate.toLocaleDateString()}`, 'success');
+  showConfirmModal('Success', `Investment of ${amount.toLocaleString()} UGX placed! Matures on ${maturityDate.toLocaleDateString()}`, 'success');
+}
+
+function closeInvestModal() {
+  document.getElementById('investModal').style.display = 'none';
+  selectedPoolForInvest = null;
+  investSelectedAmount = null;
 }
 
 // ===== STAKES ADMIN FUNCTIONS =====
@@ -9979,7 +10187,7 @@ function processDailySpinAssignment() {
   console.log('✅ Daily spin assignment complete');
 }
 
-// ========== INIT ==========
+// ========== FIX 1: UPDATED INIT WITH 3.5 SECOND TIMEOUT ==========
 window.onload = function() {
   loadFromFirebase();
 
@@ -9993,201 +10201,31 @@ window.onload = function() {
   const hasReferral = handleReferralLink();
   
   if (!hasReferral) {
-    setTimeout(() => {
-      restoreSessionState();
-    }, 500);
-  }
-
-  db.ref('users').once('value', (snapshot) => {
-    if (!snapshot.exists()) {
-      const adminCode = generateReferralCode();
-      const internCode = generateReferralCode();
-      const d1Code = generateReferralCode();
-      
-      const demoUsers = {
-        '0756673144': {
-          fullName: 'Admin User',
-          phone: '0756673144',
-          country: 'Uganda',
-          password: 'admin123',
-          referralCode: adminCode,
-          memberLevel: 9,
-          memberExpiry: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
-          operatingWallet: 1000000,
-          incentiveWallet: 500000,
-          booksReadToday: 0,
-          lastReadDate: new Date().toDateString(),
-          totalEarned: 0,
-          taskHistory: [],
-          referredBy: null,
-          referrals: [],
-          referralCommissions: { a: 25000, b: 8000, c: 3000, total: 36000 },
-          subsidiaryMotivators: { a: 5000, b: 1000, total: 6000 },
-          levelPurchases: [],
-          harvestAccount: { network: 'MTN', phone: '0756673144', names: 'Admin User', password: '123456' },
-          lastWithdrawDate: null,
-          transactions: [
-            { type: 'book', amount: 40000, date: new Date().toLocaleString(), desc: 'Harvested: Coffee Growing Guide' },
-            { type: 'referral', amount: 25000, date: new Date().toLocaleString(), desc: 'A-level commission' },
-            { type: 'subsidiary', amount: 5000, date: new Date().toLocaleString(), desc: 'Subsidiary motivator' }
-          ],
-          heldPosition: null,
-          farmerPosition: 5,
-          theme: 'purple',
-          pendingRefund: null,
-          lostCommissions: [],
-          dailyBonusPaidDate: null,
-          // Girare fields
-          dailyReferrals: {},
-          spinsToday: 3,
-          spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
-          spinHistory: [
-            { date: new Date().toLocaleString(), result: '25,000 UGX', win: true },
-            { date: new Date(Date.now() - 24*60*60*1000).toLocaleString(), result: 'Better Luck', win: false }
-          ],
-          // Stakes fields
-          activeStakes: [
-            {
-              id: 1,
-              poolId: 'pool1',
-              amount: 80000,
-              expectedReturn: 104000,
-              startDate: new Date().toISOString(),
-              maturityDate: new Date(Date.now() + 70*24*60*60*1000).toISOString(),
-              walletUsed: 'operating',
-              status: 'active'
-            }
-          ],
-          stakeHistory: []
-        },
-        '0777123456': {
-          fullName: 'Intern User',
-          phone: '0777123456',
-          country: 'Uganda',
-          password: '123456',
-          referralCode: internCode,
-          memberLevel: 0,
-          memberExpiry: new Date(Date.now() + 4*24*60*60*1000).toISOString(),
-          operatingWallet: 100000,
-          incentiveWallet: 1500,
-          booksReadToday: 0,
-          lastReadDate: new Date().toDateString(),
-          totalEarned: 1500,
-          taskHistory: [],
-          referredBy: null,
-          referrals: [],
-          referralCommissions: { a: 0, b: 0, c: 0, total: 0 },
-          subsidiaryMotivators: { a: 0, b: 0, total: 0 },
-          levelPurchases: [],
-          harvestAccount: { network: 'AIRTEL', phone: '0777123456', names: 'Intern User', password: '123456' },
-          lastWithdrawDate: null,
-          transactions: [],
-          heldPosition: null,
-          farmerPosition: 0,
-          theme: 'purple',
-          pendingRefund: null,
-          lostCommissions: [],
-          dailyBonusPaidDate: null,
-          // Girare fields
-          dailyReferrals: {},
-          spinsToday: 0,
-          spinExpiry: null,
-          spinHistory: [],
-          // Stakes fields
-          activeStakes: [],
-          stakeHistory: []
-        },
-        '0788123456': {
-          fullName: 'John D1',
-          phone: '0788123456',
-          country: 'Uganda',
-          password: '123456',
-          referralCode: d1Code,
-          memberLevel: 1,
-          memberExpiry: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
-          operatingWallet: 150000,
-          incentiveWallet: 30000,
-          booksReadToday: 0,
-          lastReadDate: new Date().toDateString(),
-          totalEarned: 3000,
-          taskHistory: [],
-          referredBy: null,
-          referrals: [],
-          referralCommissions: { a: 5000, b: 0, c: 0, total: 5000 },
-          subsidiaryMotivators: { a: 0, b: 0, total: 0 },
-          levelPurchases: [{ level: 1, amount: 63000, date: new Date().toISOString(), refunded: false }],
-          harvestAccount: { network: 'MTN', phone: '0788123456', names: 'John D1', password: '123456' },
-          lastWithdrawDate: null,
-          transactions: [{ type: 'level_upgrade', amount: 63000, date: new Date().toLocaleString(), desc: 'Upgrade to D1' }],
-          heldPosition: null,
-          farmerPosition: 1,
-          theme: 'purple',
-          pendingRefund: null,
-          lostCommissions: [],
-          dailyBonusPaidDate: null,
-          // Girare fields
-          dailyReferrals: {},
-          spinsToday: 1,
-          spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
-          spinHistory: [],
-          // Stakes fields
-          activeStakes: [],
-          stakeHistory: []
-        }
-      };
-
-      // Create demo investment pools
-      stakesConfig.pools = [
-        {
-          id: 'pool1',
-          name: 'Coffee Growth Fund',
-          description: 'Invest in coffee farming projects',
-          minAmount: 50000,
-          maxAmount: 1000000,
-          durationDays: 70,
-          profitPercent: 30,
-          totalCapacity: 10000000,
-          currentTotal: 80000,
-          active: true,
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 'pool2',
-          name: 'Coffee Equipment Fund',
-          description: 'Support coffee equipment purchases',
-          minAmount: 100000,
-          maxAmount: 2000000,
-          durationDays: 90,
-          profitPercent: 40,
-          totalCapacity: 20000000,
-          currentTotal: 0,
-          active: true,
-          createdAt: new Date().toISOString()
-        }
-      ];
-
-      db.ref('users').set(demoUsers).then(() => {
-          console.log("Demo users created successfully.");
-          saveStakesConfig();
-          if (currentUser && demoUsers[currentUser]) {
-              setTimeout(() => {
-                  loadUserData();
-                  if (document.getElementById('levelPage').style.display === 'flex') {
-                      updateLevelWalletDisplay();
-                  }
-                  showConfirmModal('Demo Accounts', `Admin: 0756673144 / admin123\nIntern: 0777123456 / 123456\nD1: 0788123456 / 123456\n\nD1 Referral Code: ${d1Code}`, 'success');
-              }, 500);
-          } else {
-              showConfirmModal('Demo Accounts', `Admin: 0756673144 / admin123\nIntern: 0777123456 / 123456\nD1: 0788123456 / 123456\n\nD1 Referral Code: ${d1Code}`, 'success');
-          }
-      }).catch((error) => {
-          console.error("Error creating demo users: ", error);
-      });
-      
-    }
-  });
-
-  if (!hasReferral) {
+    // Show loading overlay immediately
+    const overlay = document.getElementById('refreshOverlay');
+    const messageEl = document.getElementById('refreshMessage');
+    const progressFill = document.getElementById('refreshProgressFill');
+    overlay.style.display = 'flex';
+    messageEl.textContent = 'Loading your account...';
+    progressFill.style.width = '0%';
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 5;
+      if (progress <= 30) {
+        messageEl.textContent = 'Connecting to server...';
+      } else if (progress <= 60) {
+        messageEl.textContent = 'Loading your data...';
+      } else if (progress <= 90) {
+        messageEl.textContent = 'Almost ready...';
+      }
+      progressFill.style.width = progress + '%';
+      if (progress >= 100) {
+        clearInterval(interval);
+      }
+    }, 175); // 3.5 seconds / 20 steps = 175ms per step
+    
+    // Check for saved user after Firebase loads
     let checkCount = 0;
     function checkLoginStatus() {
       if (users && Object.keys(users).length > 0) {
@@ -10196,14 +10234,257 @@ window.onload = function() {
           currentUser = savedUser;
           loadUserData();
           resetInactivityTimer();
+          
+          // Restore last page
+          const savedSession = localStorage.getItem('sessionState');
+          if (savedSession) {
+            try {
+              const session = JSON.parse(savedSession);
+              if (session.page && session.user === savedUser) {
+                const sessionAge = Date.now() - session.timestamp;
+                if (sessionAge < 24 * 60 * 60 * 1000) {
+                  setTimeout(() => {
+                    showPage(session.page);
+                    setTimeout(() => {
+                      const scrollContent = document.querySelector('.scroll-content');
+                      if (scrollContent && session.scrollY) {
+                        scrollContent.scrollTop = session.scrollY;
+                      }
+                    }, 100);
+                  }, 100);
+                } else {
+                  showPage('home');
+                  localStorage.removeItem('sessionState');
+                }
+              } else {
+                showPage('home');
+              }
+            } catch (e) {
+              showPage('home');
+            }
+          } else {
+            showPage('home');
+          }
+        } else if (savedUser) {
+          // Saved user doesn't exist anymore
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('sessionState');
+          showAuthPage();
+        } else {
+          showAuthPage();
         }
-      } else if (checkCount < 20) {
+        
+        // Hide overlay after 3.5 seconds
+        setTimeout(() => {
+          clearInterval(interval);
+          progressFill.style.width = '100%';
+          messageEl.textContent = 'Ready!';
+          setTimeout(() => {
+            overlay.style.display = 'none';
+          }, 500);
+        }, 3500);
+        
+        return;
+      }
+      
+      if (checkCount < 35) { // Check for up to 3.5 seconds (35 * 100ms)
         checkCount++;
         setTimeout(checkLoginStatus, 100);
+      } else {
+        // Timeout - show auth page
+        clearInterval(interval);
+        overlay.style.display = 'none';
+        showAuthPage();
       }
     }
+    
     checkLoginStatus();
   }
+
+  // Demo users creation - only if no users exist AND no one is logged in
+  db.ref('users').once('value', (snapshot) => {
+    if (!snapshot.exists()) {
+      const savedUser = localStorage.getItem('currentUser');
+      if (!savedUser) {
+        const adminCode = generateReferralCode();
+        const internCode = generateReferralCode();
+        const d1Code = generateReferralCode();
+        
+        const demoUsers = {
+          '0756673144': {
+            fullName: 'Admin User',
+            phone: '0756673144',
+            country: 'Uganda',
+            password: 'admin123',
+            referralCode: adminCode,
+            memberLevel: 9,
+            memberExpiry: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
+            operatingWallet: 1000000,
+            incentiveWallet: 500000,
+            booksReadToday: 0,
+            lastReadDate: new Date().toDateString(),
+            totalEarned: 0,
+            taskHistory: [],
+            referredBy: null,
+            referrals: [],
+            referralCommissions: { a: 25000, b: 8000, c: 3000, total: 36000 },
+            subsidiaryMotivators: { a: 5000, b: 1000, total: 6000 },
+            levelPurchases: [],
+            harvestAccount: { network: 'MTN', phone: '0756673144', names: 'Admin User', password: '123456' },
+            lastWithdrawDate: null,
+            transactions: [
+              { type: 'book', amount: 40000, date: new Date().toLocaleString(), desc: 'Harvested: Coffee Growing Guide' },
+              { type: 'referral', amount: 25000, date: new Date().toLocaleString(), desc: 'A-level commission' },
+              { type: 'subsidiary', amount: 5000, date: new Date().toLocaleString(), desc: 'Subsidiary motivator' }
+            ],
+            heldPosition: null,
+            farmerPosition: 5,
+            theme: 'purple',
+            pendingRefund: null,
+            lostCommissions: [],
+            dailyBonusPaidDate: null,
+            // Girare fields
+            dailyReferrals: {},
+            spinsToday: 3,
+            spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
+            spinHistory: [
+              { date: new Date().toLocaleString(), result: '25,000 UGX', win: true },
+              { date: new Date(Date.now() - 24*60*60*1000).toLocaleString(), result: 'Better Luck', win: false }
+            ],
+            // Stakes fields
+            activeStakes: [
+              {
+                id: 1,
+                poolId: 'pool1',
+                amount: 80000,
+                expectedReturn: 104000,
+                startDate: new Date().toISOString(),
+                maturityDate: new Date(Date.now() + 70*24*60*60*1000).toISOString(),
+                walletUsed: 'operating',
+                status: 'active'
+              }
+            ],
+            stakeHistory: []
+          },
+          '0777123456': {
+            fullName: 'Intern User',
+            phone: '0777123456',
+            country: 'Uganda',
+            password: '123456',
+            referralCode: internCode,
+            memberLevel: 0,
+            memberExpiry: new Date(Date.now() + 4*24*60*60*1000).toISOString(),
+            operatingWallet: 100000,
+            incentiveWallet: 1500,
+            booksReadToday: 0,
+            lastReadDate: new Date().toDateString(),
+            totalEarned: 1500,
+            taskHistory: [],
+            referredBy: null,
+            referrals: [],
+            referralCommissions: { a: 0, b: 0, c: 0, total: 0 },
+            subsidiaryMotivators: { a: 0, b: 0, total: 0 },
+            levelPurchases: [],
+            harvestAccount: { network: 'AIRTEL', phone: '0777123456', names: 'Intern User', password: '123456' },
+            lastWithdrawDate: null,
+            transactions: [],
+            heldPosition: null,
+            farmerPosition: 0,
+            theme: 'purple',
+            pendingRefund: null,
+            lostCommissions: [],
+            dailyBonusPaidDate: null,
+            // Girare fields
+            dailyReferrals: {},
+            spinsToday: 0,
+            spinExpiry: null,
+            spinHistory: [],
+            // Stakes fields
+            activeStakes: [],
+            stakeHistory: []
+          },
+          '0788123456': {
+            fullName: 'John D1',
+            phone: '0788123456',
+            country: 'Uganda',
+            password: '123456',
+            referralCode: d1Code,
+            memberLevel: 1,
+            memberExpiry: new Date(Date.now() + 365*24*60*60*1000).toISOString(),
+            operatingWallet: 150000,
+            incentiveWallet: 30000,
+            booksReadToday: 0,
+            lastReadDate: new Date().toDateString(),
+            totalEarned: 3000,
+            taskHistory: [],
+            referredBy: null,
+            referrals: [],
+            referralCommissions: { a: 5000, b: 0, c: 0, total: 5000 },
+            subsidiaryMotivators: { a: 0, b: 0, total: 0 },
+            levelPurchases: [{ level: 1, amount: 63000, date: new Date().toISOString(), refunded: false }],
+            harvestAccount: { network: 'MTN', phone: '0788123456', names: 'John D1', password: '123456' },
+            lastWithdrawDate: null,
+            transactions: [{ type: 'level_upgrade', amount: 63000, date: new Date().toLocaleString(), desc: 'Upgrade to D1' }],
+            heldPosition: null,
+            farmerPosition: 1,
+            theme: 'purple',
+            pendingRefund: null,
+            lostCommissions: [],
+            dailyBonusPaidDate: null,
+            // Girare fields
+            dailyReferrals: {},
+            spinsToday: 1,
+            spinExpiry: new Date(Date.now() + 24*60*60*1000).toISOString(),
+            spinHistory: [],
+            // Stakes fields
+            activeStakes: [],
+            stakeHistory: []
+          }
+        };
+
+        // Create demo investment pools
+        stakesConfig.pools = [
+          {
+            id: 'pool1',
+            name: 'Coffee Growth Fund',
+            description: 'Invest in coffee farming projects',
+            minAmount: 50000,
+            maxAmount: 1000000,
+            durationDays: 70,
+            profitPercent: 30,
+            totalCapacity: 10000000,
+            currentTotal: 80000,
+            active: true,
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: 'pool2',
+            name: 'Coffee Equipment Fund',
+            description: 'Support coffee equipment purchases',
+            minAmount: 100000,
+            maxAmount: 2000000,
+            durationDays: 90,
+            profitPercent: 40,
+            totalCapacity: 20000000,
+            currentTotal: 0,
+            active: true,
+            createdAt: new Date().toISOString()
+          }
+        ];
+
+        db.ref('users').set(demoUsers).then(() => {
+            console.log("Demo users created successfully.");
+            saveStakesConfig();
+            // Only show demo message if no user is logged in
+            if (!currentUser) {
+              showConfirmModal('Demo Accounts', `Admin: 0756673144 / admin123\nIntern: 0777123456 / 123456\nD1: 0788123456 / 123456\n\nD1 Referral Code: ${d1Code}`, 'success');
+            }
+        }).catch((error) => {
+            console.error("Error creating demo users: ", error);
+        });
+      }
+    }
+  });
 
   setInterval(updateTime, 60000);
   updateTime();
@@ -10219,6 +10500,23 @@ window.onload = function() {
   // Schedule midnight spin assignment
   scheduleMidnightReset();
 };
+
+// Helper function to show auth page
+function showAuthPage() {
+  document.getElementById('authContainer').style.display = 'block';
+  document.getElementById('mainDashboard').style.display = 'none';
+  document.getElementById('profilePage').style.display = 'none';
+  document.getElementById('levelPage').style.display = 'none';
+  document.getElementById('taskPage').style.display = 'none';
+  document.getElementById('incomePage').style.display = 'none';
+  document.getElementById('taskRecordPage').style.display = 'none';
+  document.getElementById('teamReportPage').style.display = 'none';
+  document.getElementById('goldenHandshakePage').style.display = 'none';
+  document.getElementById('transactionHistoryPage').style.display = 'none';
+  document.getElementById('growthJourneyPage').style.display = 'none';
+  document.getElementById('stakesPage').style.display = 'none';
+  document.getElementById('girarePage').style.display = 'none';
+}
   </script>
 </body>
 </html>
