@@ -13,6 +13,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <!-- html2canvas for image download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Tesseract.js for OCR screenshot detection (FIX 2) -->
+  <script src='https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js'></script>
   <style>
     /* ===== ALL YOUR ORIGINAL STYLES - UNCHANGED ===== */
     * {
@@ -2186,7 +2188,7 @@
       color: #FFD700;
     }
     
-    /* ===== NEW STYLES FOR DISABLED PAYMENT METHODS ===== */
+    /* ===== FIX 2: UNKA PT - ENABLED (NO DPK) ===== */
     .deposit-method-card.disabled-method {
       opacity: 0.5;
       cursor: not-allowed;
@@ -2504,7 +2506,6 @@
       font-weight: 700;
       font-size: 1.1rem;
       cursor: pointer;
-      transition: all 0.2s;
       margin: 10px 0;
     }
     .confirm-upgrade-btn:hover {
@@ -3957,6 +3958,324 @@
       width: 100%;
       margin-top: 15px;
     }
+    
+    /* ===== FIX 1: LIVE ACTIVITY TICKER STYLES ===== */
+    .activity-ticker-container {
+      background: linear-gradient(135deg, #f5edff, #ffffff);
+      border: 2px solid #7d5ba6;
+      border-radius: 15px;
+      margin: 15px 0 20px 0;
+      padding: 8px 12px;
+      box-shadow: 0 4px 10px rgba(125, 91, 166, 0.15);
+    }
+    
+    .ticker-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #4a3b5e;
+      font-weight: 600;
+      font-size: 0.8rem;
+      border-bottom: 1px solid #e0d0eb;
+      padding-bottom: 5px;
+    }
+    
+    .ticker-header i:first-child {
+      color: #7d5ba6;
+    }
+    
+    .ticker-wrapper {
+      height: 120px;
+      overflow: hidden;
+      position: relative;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+      padding: 5px;
+    }
+    
+    .ticker-content-vertical {
+      display: flex;
+      flex-direction: column;
+      animation: scroll-vertical 24s linear infinite;
+    }
+    
+    .ticker-content-vertical:hover {
+      animation-play-state: paused;
+      cursor: pointer;
+    }
+    
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0f0f0;
+      padding: 8px 12px;
+      border-radius: 20px;
+      margin: 4px 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      font-size: 0.85rem;
+    }
+    
+    .ticker-item.deposit {
+      background: #e6f7e6;
+      border-left: 3px solid #28a745;
+    }
+    
+    .ticker-item.withdrawal {
+      background: #fff0f0;
+      border-left: 3px solid #dc3545;
+    }
+    
+    .ticker-item.upgrade {
+      background: #e6f0ff;
+      border-left: 3px solid #0066cc;
+    }
+    
+    .ticker-item.referral {
+      background: #fff3e0;
+      border-left: 3px solid #ff9800;
+    }
+    
+    .ticker-item.book {
+      background: #f0e6ff;
+      border-left: 3px solid #7d5ba6;
+    }
+    
+    .ticker-item i {
+      font-size: 0.9rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    @keyframes scroll-vertical {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+    
+    body.dark-theme .activity-ticker-container {
+      background: linear-gradient(135deg, #2d2d2d, #1e1e1e);
+      border-color: #b8a3d9;
+    }
+    
+    body.dark-theme .ticker-header {
+      color: #f0f0f0;
+      border-bottom-color: #444;
+    }
+    
+    body.dark-theme .ticker-item {
+      background: #333;
+      color: #f0f0f0;
+    }
+    
+    /* ===== FIX 2: UNKA PT SCREENSHOT UPLOAD STYLES ===== */
+    .screenshot-upload-area {
+      background: #1A1A1A;
+      border: 2px dashed #FFD700;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      margin: 15px 0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .screenshot-upload-area:hover {
+      background: #333;
+    }
+    
+    .screenshot-upload-area i {
+      font-size: 2rem;
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+    
+    .screenshot-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1A1A1A;
+      border: 2px solid #28a745;
+      border-radius: 15px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    
+    .screenshot-preview img {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    
+    .screenshot-preview .file-info {
+      flex: 1;
+      color: #FFD700;
+    }
+    
+    .screenshot-preview .remove-file {
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    
+    .detection-attempts {
+      text-align: center;
+      color: #FFD700;
+      font-size: 0.9rem;
+      margin: 10px 0;
+    }
+    
+    .contact-support-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 30px;
+      width: 100%;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    
+    /* ===== FIX 3: FORGOT PASSWORD & CUSTOMER CARE STYLES ===== */
+    .auth-footer-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e0d0eb;
+    }
+    
+    .auth-footer-link {
+      color: #7d5ba6;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .auth-footer-link i {
+      font-size: 1rem;
+    }
+    
+    .auth-footer-link:hover {
+      text-decoration: underline;
+    }
+    
+    .forgot-password-modal {
+      text-align: center;
+    }
+    
+    .support-whatsapp-btn {
+      background: #25D366;
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 50px;
+      width: 100%;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    
+    .support-whatsapp-btn i {
+      font-size: 1.5rem;
+    }
+    
+    .support-whatsapp-btn:hover {
+      background: #128C7E;
+    }
+    
+    /* ===== FIX 4: ADMIN REFERRAL MANAGEMENT STYLES ===== */
+    .referral-management-container {
+      background: #f9f9f9;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .referral-user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #7d5ba6;
+    }
+    
+    .referral-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+    
+    .referral-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: white;
+      border-radius: 10px;
+      margin-bottom: 5px;
+      border-left: 4px solid #7d5ba6;
+    }
+    
+    .referral-item .info {
+      flex: 1;
+    }
+    
+    .referral-item .name {
+      font-weight: 600;
+      color: #4a3b5e;
+    }
+    
+    .referral-item .phone {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    .referral-item .level {
+      font-size: 0.7rem;
+      background: #7d5ba6;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-left: 5px;
+    }
+    
+    .referral-remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .referral-remove-btn:hover {
+      background: #c82333;
+    }
+    
+    .past-commissions-badge {
+      background: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
@@ -4001,13 +4320,14 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs - ADDED GIRARE TAB AND STAKES TAB AND SUPPORT TAB AND WITHDRAWAL CONTROL TAB -->
+        <!-- Tabs - ADDED REFERRAL NETWORK TAB (FIX 4) -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
           <div class="admin-tab" onclick="switchAdminTab('users')"><i class="fas fa-users"></i> Users</div>
           <div class="admin-tab" onclick="switchAdminTab('system')"><i class="fas fa-chart-bar"></i> System</div>
           <div class="admin-tab" onclick="switchAdminTab('positionMembers')"><i class="fas fa-trophy"></i> Position Members</div>
+          <!-- FIX 4: Referral Network Tab -->
           <div class="admin-tab" onclick="switchAdminTab('referralNetwork')"><i class="fas fa-network-wired"></i> Referral Network</div>
           <div class="admin-tab" onclick="switchAdminTab('companySettings')"><i class="fas fa-building"></i> Company Settings</div>
           <!-- NEW GIRARE TAB -->
@@ -4068,7 +4388,7 @@
           </table>
         </div>
 
-        <!-- Users Section -->
+        <!-- Users Section (FIX 3: Passwords Visible) -->
         <div id="adminUsersSection" class="admin-section">
           <h3 style="margin-bottom: 20px;">User Management</h3>
           <div style="display: flex; gap: 20px; margin-bottom: 20px;">
@@ -4098,6 +4418,7 @@
               <tr>
                 <th>Phone</th>
                 <th>Name</th>
+                <th>Password</th>
                 <th>Level</th>
                 <th>Operating</th>
                 <th>Incentive</th>
@@ -4133,14 +4454,18 @@
           <div id="positionMembersList"></div>
         </div>
 
-        <!-- Referral Network Section -->
+        <!-- FIX 4: Referral Network Section (with Remove + Auto-reassign) -->
         <div id="adminReferralNetworkSection" class="admin-section">
-          <h3 style="margin-bottom: 20px;">Referral Network (D-Level Only)</h3>
-          <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
-            <input type="text" id="searchReferralInput" placeholder="Enter user phone to view network..." style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 30px;">
-            <button onclick="loadReferralNetwork()" style="background: #7d5ba6; color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer;">View</button>
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-network-wired"></i> Referral Network Management</h3>
+          
+          <div class="referral-management-container">
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+              <input type="text" id="referralSearchInput" placeholder="Enter user phone to manage..." style="flex: 1; padding: 12px; border: 2px solid #e0d0eb; border-radius: 30px;">
+              <button onclick="searchReferralUser()" style="background: #7d5ba6; color: white; border: none; padding: 12px 25px; border-radius: 30px; cursor: pointer;">Search</button>
+            </div>
+            
+            <div id="referralManagementResult"></div>
           </div>
-          <div id="referralNetworkDisplay"></div>
         </div>
 
         <!-- Company Settings Section -->
@@ -4156,7 +4481,7 @@
               </div>
               <div class="company-setting-row">
                 <label>Name:</label>
-                <input type="text" id="mtnNameInput" placeholder="NAMUHANGA VERONIC" value="NAMUHANGA VERONIC">
+                <input type="text" id="mtnNameInput" placeholder="VERONIC NAIBOLYA NAMUHANGA" value="VERONIC NAIBOLYA NAMUHANGA">
                 <button onclick="saveCompanySetting('mtn', 'name')">Save</button>
               </div>
             </div>
@@ -4170,12 +4495,12 @@
               </div>
               <div class="company-setting-row">
                 <label>Name:</label>
-                <input type="text" id="airtelNameInput" placeholder="NAMUHANGA VERONIC" value="NAMUHANGA VERONIC">
+                <input type="text" id="airtelNameInput" placeholder="BUSINESS" value="BUSINESS">
                 <button onclick="saveCompanySetting('airtel', 'name')">Save</button>
               </div>
             </div>
 
-            <!-- DPK PAY PAY SETTINGS -->
+            <!-- DPK PAY PAY SETTINGS - KEPT BUT NOT USED FOR UNKA PT -->
             <div style="margin-bottom: 20px; margin-top: 30px; border-top: 2px solid #7d5ba6; padding-top: 20px;">
               <h4 style="color: #7d5ba6; margin-bottom: 15px;">💳 DPK PAY PAY</h4>
               <div class="company-setting-row">
@@ -4371,7 +4696,7 @@
               <h4 style="color: #7d5ba6; margin-bottom: 15px;">📱 WhatsApp</h4>
               <div class="company-setting-row">
                 <label>Link:</label>
-                <input type="text" id="whatsappLinkInput" placeholder="https://wa.me/message/46VN6BN2FXN4J1" value="https://wa.me/message/46VN6BN2FXN4J1">
+                <input type="text" id="whatsappLinkInput" placeholder="https://wa.me/256756673144" value="https://wa.me/256756673144">
                 <button onclick="saveSupportSetting('whatsapp', 'link')">Save</button>
               </div>
             </div>
@@ -4528,7 +4853,7 @@
         <div class="auth-tab" onclick="switchAuthTab('register')" id="registerTab">Register</div>
       </div>
 
-      <!-- LOGIN FORM -->
+      <!-- LOGIN FORM (FIX 3: Added Forgot Password & Customer Care) -->
       <div id="loginForm" class="auth-form active">
         <form onsubmit="handleLogin(event)">
           <div class="form-group">
@@ -4546,6 +4871,14 @@
             </div>
           </div>
           <button type="submit" class="auth-btn">Login</button>
+          <div class="auth-footer-links">
+            <span class="auth-footer-link" onclick="openForgotPasswordModal()">
+              <i class="fas fa-question-circle"></i> Forgot Password?
+            </span>
+            <span class="auth-footer-link" onclick="openCustomerCareWhatsApp()">
+              <i class="fab fa-whatsapp"></i> Customer Care
+            </span>
+          </div>
           <div class="auth-footer">
             Don't have an account? <a href="#" onclick="switchAuthTab('register'); return false;">Register now</a>
           </div>
@@ -4676,7 +5009,6 @@
           <span>💰 Earned: <span id="dailyEarnings">0</span> UGX</span>
         </div>
 
-        <!-- Books - REMOVED from Home Dashboard -->
         <!-- Daily Motivation Card (NEW) -->
         <div class="motivation-card" id="motivationCard">
           <div class="motivation-icon" id="motivationIcon">🌅</div>
@@ -4708,6 +5040,20 @@
         <div class="company-line" onclick="openCompanyProfileModal()">
           <span>Company Profile</span>
           <i class="fas fa-chevron-right"></i>
+        </div>
+
+        <!-- FIX 1: Live Activity Ticker (Auto-generating, 6-second rotation, 4 items) -->
+        <div class="activity-ticker-container">
+          <div class="ticker-header">
+            <i class="fas fa-rss"></i>
+            <span>LIVE ACTIVITY</span>
+            <i class="fas fa-circle" style="color: #ff4444; font-size: 0.5rem; animation: pulse 1.5s infinite;"></i>
+          </div>
+          <div class="ticker-wrapper">
+            <div class="ticker-content-vertical" id="activityTicker">
+              <!-- Will be populated by JavaScript -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -5549,7 +5895,7 @@
     </div>
   </div>
 
-  <!-- DEPOSIT MODAL - GREEN THEME WITH 4 SCREENS (UPDATED) -->
+  <!-- DEPOSIT MODAL - GREEN THEME WITH 4 SCREENS (FIX 2: UNKA PT ENABLED) -->
   <div class="modal-overlay" id="depositModal">
     <div class="modal-content deposit-modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -5568,14 +5914,14 @@
           <i class="fas fa-mobile-alt"></i> PEAR PAY
         </div>
         
-        <!-- DPK PAY PAY - NOW ACTIVE -->
+        <!-- DPK PAY PAY - ACTIVE (kept as is) -->
         <div class="deposit-method-card" onclick="selectDepositMethod('dpk')" id="method-dpk">
           <i class="fas fa-credit-card"></i> DPK PAY PAY
         </div>
         
-        <!-- UNKA PT - DISABLED -->
-        <div class="deposit-method-card disabled-method" id="method-unka" onclick="return false;">
-          <i class="fas fa-university"></i> UNKA PT
+        <!-- FIX 2: UNKA PT - ENABLED (NO DPK) -->
+        <div class="deposit-method-card" onclick="selectDepositMethod('unka')" id="method-unka">
+          <i class="fas fa-camera"></i> UNKA PT (Upload Screenshot)
         </div>
         
         <button class="deposit-continue-btn" id="depositContinueBtn1" onclick="goToDepositScreen2()" disabled>CONTINUE</button>
@@ -5640,68 +5986,127 @@
         </div>
       </div>
       
-      <!-- Screen 4: Confirm Deposit with Message Detection -->
+      <!-- Screen 4: Confirm Deposit - Now handles both PEAR/DPK (paste) and UNKA PT (screenshot) -->
       <div id="depositScreen4" class="deposit-screen">
         <div class="deposit-method-label">COMPLETE YOUR DEPOSIT</div>
         
-        <div class="notification-banner" style="margin: 10px 0;">
-          📱 <span id="networkInstruction">AIRTEL</span> INSTRUCTIONS
+        <div id="unkaPTSection" style="display: none;">
+          <!-- UNKA PT Screenshot Upload Section -->
+          <div class="notification-banner" style="margin: 10px 0;">
+            📷 UNKA PT - UPLOAD SCREENSHOT
+          </div>
+          
+          <!-- Step 1: Send to Company -->
+          <div class="deposit-step">
+            <strong>STEP 1:</strong> Send money to:
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #1A1A1A; padding: 10px; border-radius: 10px; margin-top: 5px;">
+              <span style="color: #FFD700; font-size: 1.3rem; font-weight: bold;" id="unkaCompanyNumber">0766 913 235</span>
+              <button class="copy-number-btn" onclick="copyUnkaCompanyNumber()"><i class="fas fa-copy"></i> COPY</button>
+            </div>
+            <div style="color: #FFD700; margin-top: 5px;" id="unkaCompanyName">VERONIC NAIBOLYA NAMUHANGA</div>
+          </div>
+          
+          <!-- Step 2: Upload Screenshot -->
+          <div class="deposit-step">
+            <strong>STEP 2:</strong> Take screenshot and upload:
+            <div class="screenshot-upload-area" onclick="document.getElementById('screenshotFile').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <div>Click to upload screenshot</div>
+              <small>PNG, JPG up to 5MB</small>
+              <input type="file" id="screenshotFile" accept="image/*" style="display: none;" onchange="handleScreenshotUpload(this)">
+            </div>
+            <div id="screenshotPreview" style="display: none;"></div>
+          </div>
+          
+          <!-- Detection Status -->
+          <div id="unkaDetectionStatus" class="detection-status" style="display: none;"></div>
+          
+          <!-- Detected Info -->
+          <div id="unkaDetectedInfo" style="background: #1A1A1A; border-radius: 10px; padding: 10px; margin: 10px 0; display: none;">
+            <div class="detected-item">
+              <span class="detected-label">TID:</span>
+              <span class="detected-value" id="unkaDetectedTid">-</span>
+            </div>
+            <div class="detected-item">
+              <span class="detected-label">Amount:</span>
+              <span class="detected-value" id="unkaDetectedAmount">-</span>
+            </div>
+            <div class="detected-item">
+              <span class="detected-label">Names:</span>
+              <span class="detected-value" id="unkaDetectedNames">-</span>
+            </div>
+          </div>
+          
+          <!-- Detection Attempts -->
+          <div id="unkaDetectionAttempts" class="detection-attempts">Attempt 1/3</div>
         </div>
         
-        <!-- Step 1: Dial Code -->
-        <div class="deposit-step">
-          <strong>STEP 1:</strong> Dial <span style="color: #FFD700; font-size: 1.2rem;" id="dialCode">*165*1#</span> on your phone
-          <div style="margin-top: 5px;">
-            <button class="copy-number-btn" onclick="copyDialCode()" id="copyDialBtn"><i class="fas fa-copy"></i> COPY</button>
+        <div id="pearDpkSection">
+          <!-- Original PEAR/DPK paste message section -->
+          <div class="notification-banner" style="margin: 10px 0;">
+            📱 <span id="networkInstruction">AIRTEL</span> INSTRUCTIONS
           </div>
-        </div>
-        
-        <!-- Step 2: Send Amount -->
-        <div class="deposit-step">
-          <strong>STEP 2:</strong> Send <span style="color: #FFD700; font-size: 1.2rem;" id="stepAmount">50,000 UGX</span>
-          <div id="merchantInfo" style="margin-top: 5px; color: #FFD700;"></div>
-        </div>
-        
-        <!-- Step 3: Send to Company/ Merchant -->
-        <div class="deposit-step">
-          <strong>STEP 3:</strong> Send to:
-          <div style="display: flex; align-items: center; justify-content: space-between; background: #1A1A1A; padding: 10px; border-radius: 10px; margin-top: 5px;">
-            <span style="color: #FFD700; font-size: 1.3rem; font-weight: bold;" id="companyNumberDisplay">0756 673 144</span>
-            <button class="copy-number-btn" onclick="copyCompanyNumber()" id="copyCompanyBtn"><i class="fas fa-copy"></i> COPY</button>
+          
+          <!-- Step 1: Dial Code -->
+          <div class="deposit-step">
+            <strong>STEP 1:</strong> Dial <span style="color: #FFD700; font-size: 1.2rem;" id="dialCode">*165*1#</span> on your phone
+            <div style="margin-top: 5px;">
+              <button class="copy-number-btn" onclick="copyDialCode()" id="copyDialBtn"><i class="fas fa-copy"></i> COPY</button>
+            </div>
           </div>
-          <div style="color: #FFD700; margin-top: 5px;" id="companyNameDisplay">NAMUHANGA VERONIC</div>
-        </div>
-        
-        <!-- Step 4: Paste Message -->
-        <div class="deposit-step">
-          <strong>STEP 4:</strong> After sending, paste the confirmation message below:
-          <textarea class="message-input" id="depositMessageInput" placeholder="Paste your confirmation message here..." oninput="validateDepositMessage()"></textarea>
-        </div>
-        
-        <!-- Detection Status -->
-        <div id="detectionStatus" class="detection-status" style="display: none;"></div>
-        
-        <!-- Detected Info -->
-        <div id="detectedInfo" style="background: #1A1A1A; border-radius: 10px; padding: 10px; margin: 10px 0; display: none;">
-          <div class="detected-item">
-            <span class="detected-label">TID:</span>
-            <span class="detected-value" id="detectedTid">-</span>
+          
+          <!-- Step 2: Send Amount -->
+          <div class="deposit-step">
+            <strong>STEP 2:</strong> Send <span style="color: #FFD700; font-size: 1.2rem;" id="stepAmount">50,000 UGX</span>
+            <div id="merchantInfo" style="margin-top: 5px; color: #FFD700;"></div>
           </div>
-          <div class="detected-item">
-            <span class="detected-label">Amount:</span>
-            <span class="detected-value" id="detectedAmount">-</span>
+          
+          <!-- Step 3: Send to Company/ Merchant -->
+          <div class="deposit-step">
+            <strong>STEP 3:</strong> Send to:
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #1A1A1A; padding: 10px; border-radius: 10px; margin-top: 5px;">
+              <span style="color: #FFD700; font-size: 1.3rem; font-weight: bold;" id="companyNumberDisplay">0756 673 144</span>
+              <button class="copy-number-btn" onclick="copyCompanyNumber()" id="copyCompanyBtn"><i class="fas fa-copy"></i> COPY</button>
+            </div>
+            <div style="color: #FFD700; margin-top: 5px;" id="companyNameDisplay">NAMUHANGA VERONIC</div>
           </div>
-          <div class="detected-item">
-            <span class="detected-label">Names:</span>
-            <span class="detected-value" id="detectedNames">-</span>
+          
+          <!-- Step 4: Paste Message -->
+          <div class="deposit-step">
+            <strong>STEP 4:</strong> After sending, paste the confirmation message below:
+            <textarea class="message-input" id="depositMessageInput" placeholder="Paste your confirmation message here..." oninput="validateDepositMessage()"></textarea>
           </div>
-          <div class="detected-item" id="detectedMerchantRow" style="display: none;">
-            <span class="detected-label">Merchant:</span>
-            <span class="detected-value" id="detectedMerchant">-</span>
+          
+          <!-- Detection Status -->
+          <div id="detectionStatus" class="detection-status" style="display: none;"></div>
+          
+          <!-- Detected Info -->
+          <div id="detectedInfo" style="background: #1A1A1A; border-radius: 10px; padding: 10px; margin: 10px 0; display: none;">
+            <div class="detected-item">
+              <span class="detected-label">TID:</span>
+              <span class="detected-value" id="detectedTid">-</span>
+            </div>
+            <div class="detected-item">
+              <span class="detected-label">Amount:</span>
+              <span class="detected-value" id="detectedAmount">-</span>
+            </div>
+            <div class="detected-item">
+              <span class="detected-label">Names:</span>
+              <span class="detected-value" id="detectedNames">-</span>
+            </div>
+            <div class="detected-item" id="detectedMerchantRow" style="display: none;">
+              <span class="detected-label">Merchant:</span>
+              <span class="detected-value" id="detectedMerchant">-</span>
+            </div>
           </div>
         </div>
         
         <button class="deposit-continue-btn" id="depositConfirmBtn" onclick="submitDeposit()" disabled>CONFIRM DEPOSIT</button>
+        <div id="unkaContactSupport" style="display: none;">
+          <button class="contact-support-btn" onclick="openWhatsAppSupport()">
+            <i class="fab fa-whatsapp"></i> CONTACT SUPPORT
+          </button>
+        </div>
         <button class="deposit-back-btn" onclick="goToDepositScreen3()">← Back</button>
       </div>
     </div>
@@ -6031,6 +6436,26 @@
     </div>
   </div>
 
+  <!-- FIX 3: FORGOT PASSWORD MODAL -->
+  <div class="modal-overlay" id="forgotPasswordModal">
+    <div class="modal-content forgot-password-modal">
+      <div class="modal-header" style="justify-content: center;">
+        <h2 style="color: #4a3b5e;">🔐 Forgot Password?</h2>
+      </div>
+      <div style="padding: 20px 0;">
+        <p style="margin-bottom: 20px;">For assistance with your password, please contact our support team via WhatsApp.</p>
+        
+        <button class="support-whatsapp-btn" onclick="openWhatsAppSupport()">
+          <i class="fab fa-whatsapp"></i> TAP TO CHAT WITH SUPPORT
+        </button>
+        
+        <p style="color: #666; font-size: 0.9rem; margin-top: 15px;">⏰ Support hours: 8am - 8pm</p>
+        
+        <button class="deposit-back-btn" onclick="closeForgotPasswordModal()" style="margin-top: 20px; color: #7d5ba6;">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CUSTOM CONFIRMATION MODAL -->
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-content confirm-modal-content">
@@ -6100,6 +6525,10 @@ let selectedDepositNetwork = null;
 let selectedDepositPhone = null;
 const depositAmountPresets = [20000, 63000, 150000, 200000, 532000, 1000000, 1450000, 2200000, 3920000];
 
+// FIX 2: UNKA PT variables
+let unkaDetectionAttempts = 0;
+let unkaScreenshotData = null;
+
 // Custom confirm modal variables
 let confirmActionCallback = null;
 let confirmActionType = '';
@@ -6126,15 +6555,15 @@ let currentFilter = 'all';
 
 // ========== COMPANY SETTINGS ==========
 let companySettings = {
-  mtn: { phone: "0766913235", name: "NAMUHANGA VERONIC" },
-  airtel: { phone: "0756673144", name: "NAMUHANGA VERONIC" },
+  mtn: { phone: "0766913235", name: "VERONIC NAIBOLYA NAMUHANGA" },
+  airtel: { phone: "0756673144", name: "BUSINESS" },
   dpkMtn: { merchant: "995053", name: "NAMUHANGA VERONIC" },
   dpkAirtel: { merchant: "6874567", name: "PAY TO PAY UGANDA LTD" }
 };
 
 // ========== SUPPORT SETTINGS ==========
 let supportSettings = {
-  whatsapp: { link: "https://wa.me/message/46VN6BN2FXN4J1" },
+  whatsapp: { link: "https://wa.me/256756673144" },
   email: { address: "support@uic.ug" },
   phone: { number: "0756673144" },
   livechat: { url: "https://t.me/uic_support" }
@@ -6455,6 +6884,7 @@ function loadFromFirebase() {
         loadTaskBooks();
       } else if (document.getElementById('mainDashboard').style.display === 'flex') {
         updateMotivationMessage();
+        updateActivityTicker(); // FIX 1: Update ticker
       } else if (document.getElementById('girarePage').style.display === 'flex') {
         loadGirarePage();
       } else if (document.getElementById('stakesPage').style.display === 'flex') {
@@ -6560,9 +6990,9 @@ function updateCompanySettingsInputs() {
   const airtelName = document.getElementById('airtelNameInput');
   
   if (mtnPhone) mtnPhone.value = companySettings.mtn?.phone || "0766913235";
-  if (mtnName) mtnName.value = companySettings.mtn?.name || "NAMUHANGA VERONIC";
+  if (mtnName) mtnName.value = companySettings.mtn?.name || "VERONIC NAIBOLYA NAMUHANGA";
   if (airtelPhone) airtelPhone.value = companySettings.airtel?.phone || "0756673144";
-  if (airtelName) airtelName.value = companySettings.airtel?.name || "NAMUHANGA VERONIC";
+  if (airtelName) airtelName.value = companySettings.airtel?.name || "BUSINESS";
   
   // DPK fields
   const dpkMtnMerchant = document.getElementById('dpkMtnMerchantInput');
@@ -6583,7 +7013,7 @@ function updateSupportSettingsInputs() {
   const phoneNumber = document.getElementById('phoneNumberInput');
   const livechatUrl = document.getElementById('livechatUrlInput');
   
-  if (whatsappLink) whatsappLink.value = supportSettings.whatsapp?.link || "https://wa.me/message/46VN6BN2FXN4J1";
+  if (whatsappLink) whatsappLink.value = supportSettings.whatsapp?.link || "https://wa.me/256756673144";
   if (emailAddress) emailAddress.value = supportSettings.email?.address || "support@uic.ug";
   if (phoneNumber) phoneNumber.value = supportSettings.phone?.number || "0756673144";
   if (livechatUrl) livechatUrl.value = supportSettings.livechat?.url || "https://t.me/uic_support";
@@ -6596,7 +7026,7 @@ function updateSupportPageContactInfo() {
   const phoneDisplay = document.getElementById('phoneDisplay');
   
   if (whatsappDisplay) {
-    const link = supportSettings.whatsapp?.link || "https://wa.me/message/46VN6BN2FXN4J1";
+    const link = supportSettings.whatsapp?.link || "https://wa.me/256756673144";
     const match = link.match(/\/(\d+)/);
     if (match) {
       whatsappDisplay.textContent = formatPhoneNumber(match[1]);
@@ -7394,6 +7824,7 @@ function showPage(page) {
   if (page === 'task') loadTaskBooks();
   if (page === 'home') {
     updateMotivationMessage();
+    updateActivityTicker(); // FIX 1: Update ticker
   }
   if (page === 'taskRecord') loadActivityLog();
   if (page === 'teamReport') loadTeamReport();
@@ -7454,7 +7885,7 @@ function loadSupportTickets() {
 }
 
 function openWhatsAppSupport() {
-  const link = supportSettings.whatsapp?.link || "https://wa.me/message/46VN6BN2FXN4J1";
+  const link = supportSettings.whatsapp?.link || "https://wa.me/256756673144";
   window.open(link, '_blank');
 }
 
@@ -9345,6 +9776,8 @@ function resetDepositModal() {
   selectedDepositAmount = null;
   selectedDepositNetwork = null;
   selectedDepositPhone = null;
+  unkaDetectionAttempts = 0;
+  unkaScreenshotData = null;
   
   document.getElementById('depositScreen1').classList.add('active');
   document.getElementById('depositScreen2').classList.remove('active');
@@ -9368,6 +9801,11 @@ function resetDepositModal() {
   document.getElementById('detectionStatus').style.display = 'none';
   document.getElementById('detectedInfo').style.display = 'none';
   document.getElementById('depositConfirmBtn').disabled = true;
+  
+  // Hide UNKA PT sections
+  document.getElementById('unkaPTSection').style.display = 'none';
+  document.getElementById('pearDpkSection').style.display = 'block';
+  document.getElementById('unkaContactSupport').style.display = 'none';
   
   const phoneContainer = document.getElementById('phoneInputContainer');
   if (phoneContainer) phoneContainer.classList.remove('valid');
@@ -9505,7 +9943,16 @@ function goToDepositScreen4() {
   document.getElementById('depositScreen3').classList.remove('active');
   document.getElementById('depositScreen4').classList.add('active');
   
-  updateDepositScreen4();
+  // Show/hide appropriate section based on method
+  if (selectedDepositMethod === 'unka') {
+    document.getElementById('unkaPTSection').style.display = 'block';
+    document.getElementById('pearDpkSection').style.display = 'none';
+    updateUnkaScreen4();
+  } else {
+    document.getElementById('unkaPTSection').style.display = 'none';
+    document.getElementById('pearDpkSection').style.display = 'block';
+    updateDepositScreen4();
+  }
   
   console.log("Successfully navigated to Screen 4 with:", {
     method: selectedDepositMethod,
@@ -9524,7 +9971,7 @@ function updateDepositScreen4() {
   
   if (method === 'pear') {
     dialCode = network === 'mtn' ? '*165#' : '*165*1#';
-    const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144', name: 'NAMUHANGA VERONIC' };
+    const company = companySettings[network] || { phone: network === 'mtn' ? '0766913235' : '0756673144', name: network === 'mtn' ? 'VERONIC NAIBOLYA NAMUHANGA' : 'BUSINESS' };
     companyNumber = company.phone;
     companyName = company.name;
   } else {
@@ -9557,6 +10004,44 @@ function updateDepositScreen4() {
   document.getElementById('companyNameDisplay').textContent = companyName;
 }
 
+function updateUnkaScreen4() {
+  const network = selectedDepositNetwork.toLowerCase();
+  
+  // Get company details based on network (NO DPK)
+  let companyNumber, companyName;
+  
+  if (network === 'mtn') {
+    companyNumber = companySettings.mtn?.phone || "0766913235";
+    companyName = companySettings.mtn?.name || "VERONIC NAIBOLYA NAMUHANGA";
+  } else {
+    companyNumber = companySettings.airtel?.phone || "0756673144";
+    companyName = companySettings.airtel?.name || "BUSINESS";
+  }
+  
+  const displayNumber = companyNumber.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3');
+  document.getElementById('unkaCompanyNumber').textContent = displayNumber;
+  document.getElementById('unkaCompanyName').textContent = companyName;
+  
+  // Reset UNKA specific elements
+  document.getElementById('screenshotPreview').style.display = 'none';
+  document.getElementById('screenshotPreview').innerHTML = '';
+  document.getElementById('unkaDetectionStatus').style.display = 'none';
+  document.getElementById('unkaDetectedInfo').style.display = 'none';
+  document.getElementById('unkaDetectionAttempts').textContent = 'Attempt 1/3';
+  document.getElementById('unkaContactSupport').style.display = 'none';
+  document.getElementById('depositConfirmBtn').disabled = true;
+  
+  unkaDetectionAttempts = 0;
+  unkaScreenshotData = null;
+}
+
+function copyUnkaCompanyNumber() {
+  const companyNumber = document.getElementById('unkaCompanyNumber').textContent.replace(/\s/g, '');
+  navigator.clipboard.writeText(companyNumber).then(() => {
+    showConfirmModal('Copied!', 'Number copied to clipboard', 'success');
+  });
+}
+
 function copyDialCode() {
   const dialCode = document.getElementById('dialCode').textContent;
   navigator.clipboard.writeText(dialCode).then(() => {
@@ -9569,6 +10054,236 @@ function copyCompanyNumber() {
   navigator.clipboard.writeText(companyNumber).then(() => {
     showConfirmModal('Copied!', 'Number copied to clipboard', 'success');
   });
+}
+
+// FIX 2: Handle screenshot upload for UNKA PT
+function handleScreenshotUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  
+  const file = input.files[0];
+  
+  // Check file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showConfirmModal('Error', 'File too large. Maximum 5MB.', 'warning');
+    return;
+  }
+  
+  // Check file type
+  if (!file.type.startsWith('image/')) {
+    showConfirmModal('Error', 'Please upload an image file.', 'warning');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    unkaScreenshotData = e.target.result;
+    
+    // Show preview
+    const previewDiv = document.getElementById('screenshotPreview');
+    previewDiv.style.display = 'block';
+    previewDiv.innerHTML = `
+      <div class="screenshot-preview">
+        <img src="${e.target.result}" alt="Screenshot preview">
+        <div class="file-info">
+          <div>${file.name}</div>
+          <small>${(file.size / 1024).toFixed(1)} KB</small>
+        </div>
+        <span class="remove-file" onclick="removeScreenshot()">✖</span>
+      </div>
+    `;
+    
+    // Process screenshot with OCR
+    processScreenshot(e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeScreenshot() {
+  unkaScreenshotData = null;
+  document.getElementById('screenshotPreview').style.display = 'none';
+  document.getElementById('screenshotPreview').innerHTML = '';
+  document.getElementById('screenshotFile').value = '';
+  document.getElementById('unkaDetectionStatus').style.display = 'none';
+  document.getElementById('unkaDetectedInfo').style.display = 'none';
+  document.getElementById('depositConfirmBtn').disabled = true;
+}
+
+async function processScreenshot(imageData) {
+  const statusDiv = document.getElementById('unkaDetectionStatus');
+  const detectedInfo = document.getElementById('unkaDetectedInfo');
+  const confirmBtn = document.getElementById('depositConfirmBtn');
+  const attemptsDiv = document.getElementById('unkaDetectionAttempts');
+  
+  statusDiv.style.display = 'block';
+  statusDiv.className = 'detection-status status-warning';
+  statusDiv.innerHTML = '🔍 Analyzing screenshot...';
+  
+  try {
+    // Use Tesseract to extract text from image
+    const { data: { text } } = await Tesseract.recognize(
+      imageData,
+      'eng',
+      { logger: m => console.log(m) }
+    );
+    
+    console.log("OCR Text:", text);
+    
+    // Detect company name first (MTN or Airtel)
+    const lines = text.split('\n');
+    let relevantMessage = '';
+    let companyFound = false;
+    
+    // MTN company name patterns
+    const mtnPatterns = [
+      /VERONIC NAIBOLYA NAMUHANGA/i,
+      /NAMUHANGA VERONIC/i,
+      /VERONIC NAMUHANGA/i
+    ];
+    
+    // Airtel company name patterns  
+    const airtelPatterns = [
+      /BUSINESS/i,
+      /NULU NASSALI/i
+    ];
+    
+    // Find the message containing company name
+    for (const line of lines) {
+      for (const pattern of mtnPatterns) {
+        if (pattern.test(line)) {
+          relevantMessage = line;
+          companyFound = true;
+          break;
+        }
+      }
+      if (!companyFound) {
+        for (const pattern of airtelPatterns) {
+          if (pattern.test(line)) {
+            relevantMessage = line;
+            companyFound = true;
+            break;
+          }
+        }
+      }
+      if (companyFound) break;
+    }
+    
+    if (!companyFound) {
+      // Try concatenating lines if single line not found
+      const fullText = text.replace(/\n/g, ' ');
+      for (const pattern of [...mtnPatterns, ...airtelPatterns]) {
+        if (pattern.test(fullText)) {
+          relevantMessage = fullText;
+          companyFound = true;
+          break;
+        }
+      }
+    }
+    
+    if (!companyFound) {
+      throw new Error('Company name not found in screenshot');
+    }
+    
+    console.log("Relevant message:", relevantMessage);
+    
+    // Detect amount from the relevant message
+    const amountMatch = relevantMessage.match(/UGX[,\s]*([\d,]+)/i) || 
+                        relevantMessage.match(/([\d,]+)\s*UGX/i);
+    
+    let detectedAmount = null;
+    if (amountMatch) {
+      const amountStr = amountMatch[1].replace(/,/g, '');
+      detectedAmount = parseInt(amountStr);
+    }
+    
+    // Detect TID from the relevant message
+    const tidPatterns = [
+      /ID[:\s]*(\d+)/i,
+      /TID[:\s]*(\d+)/i,
+      /Transaction ID[:\s]*(\d+)/i
+    ];
+    
+    let detectedTid = null;
+    for (const pattern of tidPatterns) {
+      const match = relevantMessage.match(pattern);
+      if (match) {
+        detectedTid = match[1];
+        break;
+      }
+    }
+    
+    // Detect phone number (optional)
+    const phoneMatch = relevantMessage.match(/0[7-9][0-9]{8}/);
+    const detectedPhone = phoneMatch ? phoneMatch[0] : null;
+    
+    // Update UI with detected info
+    document.getElementById('unkaDetectedTid').textContent = detectedTid || 'Not found';
+    document.getElementById('unkaDetectedAmount').textContent = detectedAmount ? detectedAmount.toLocaleString() + ' UGX' : 'Not found';
+    document.getElementById('unkaDetectedNames').textContent = companyFound ? '✓ Verified' : 'Not found';
+    
+    detectedInfo.style.display = 'block';
+    
+    // Validate
+    let isValid = true;
+    let errors = [];
+    
+    if (!detectedAmount) {
+      errors.push('❌ Amount not found');
+      isValid = false;
+    } else if (detectedAmount !== selectedDepositAmount) {
+      errors.push(`❌ Amount mismatch: expected ${selectedDepositAmount.toLocaleString()} UGX, found ${detectedAmount.toLocaleString()} UGX`);
+      isValid = false;
+    }
+    
+    if (!detectedTid) {
+      errors.push('❌ Transaction ID not found');
+      isValid = false;
+    }
+    
+    if (!companyFound) {
+      errors.push('❌ Company name not found');
+      isValid = false;
+    }
+    
+    if (isValid) {
+      statusDiv.className = 'detection-status status-success';
+      statusDiv.innerHTML = '✅ Verification successful! You can now confirm.';
+      confirmBtn.disabled = false;
+      
+      // Screenshot will be discarded - not saved
+      console.log('Screenshot verified and will be discarded');
+      
+    } else {
+      unkaDetectionAttempts++;
+      attemptsDiv.textContent = `Attempt ${unkaDetectionAttempts}/3`;
+      
+      if (unkaDetectionAttempts >= 3) {
+        statusDiv.className = 'detection-status status-error';
+        statusDiv.innerHTML = '❌ Verification failed after 3 attempts. Please contact support.';
+        document.getElementById('unkaContactSupport').style.display = 'block';
+        confirmBtn.disabled = true;
+      } else {
+        statusDiv.className = 'detection-status status-error';
+        statusDiv.innerHTML = errors.join('<br>') + '<br>Please try again with a clearer screenshot.';
+        confirmBtn.disabled = true;
+      }
+    }
+    
+  } catch (error) {
+    console.error('OCR Error:', error);
+    
+    unkaDetectionAttempts++;
+    attemptsDiv.textContent = `Attempt ${unkaDetectionAttempts}/3`;
+    
+    if (unkaDetectionAttempts >= 3) {
+      statusDiv.className = 'detection-status status-error';
+      statusDiv.innerHTML = '❌ Verification failed after 3 attempts. Please contact support.';
+      document.getElementById('unkaContactSupport').style.display = 'block';
+    } else {
+      statusDiv.className = 'detection-status status-error';
+      statusDiv.innerHTML = '❌ Could not read screenshot. Please ensure text is clear and try again.';
+    }
+    confirmBtn.disabled = true;
+  }
 }
 
 function detectFromMessage(text) {
@@ -9684,32 +10399,74 @@ function validateDepositMessage() {
 }
 
 function submitDeposit() {
-  const message = document.getElementById('depositMessageInput').value;
-  const detected = detectFromMessage(message);
-  
-  if (!detected.tid || !detected.amount || !detected.names) {
-    showConfirmModal('Error', 'Missing required information', 'warning');
-    return;
+  if (selectedDepositMethod === 'unka') {
+    // UNKA PT submission - no screenshot saved
+    if (!unkaScreenshotData) {
+      showConfirmModal('Error', 'Please upload a screenshot first', 'warning');
+      return;
+    }
+    
+    // Get detected values from UI
+    const detectedAmount = document.getElementById('unkaDetectedAmount').textContent.replace(' UGX', '').replace(/,/g, '');
+    const detectedTid = document.getElementById('unkaDetectedTid').textContent;
+    
+    if (detectedTid === 'Not found' || detectedAmount === 'Not found') {
+      showConfirmModal('Error', 'Verification failed. Please try again.', 'warning');
+      return;
+    }
+    
+    const deposit = {
+      id: Date.now(),
+      userId: currentUser,
+      userPhone: users[currentUser]?.phone,
+      mobileNumber: selectedDepositPhone,
+      amount: parseInt(detectedAmount),
+      transactionId: detectedTid,
+      network: selectedDepositNetwork,
+      method: 'UNKA PT',
+      timestamp: new Date().toISOString(),
+      status: 'pending'
+      // NO screenshot data saved
+    };
+    
+    pendingDeposits.push(deposit);
+    saveDeposits();
+    
+    showConfirmModal('Success', 'UNKA PT deposit request sent! Admin will verify within 24 hours.', 'success');
+    
+    // Discard screenshot data
+    unkaScreenshotData = null;
+    
+  } else {
+    // Original PEAR/DPK submission
+    const message = document.getElementById('depositMessageInput').value;
+    const detected = detectFromMessage(message);
+    
+    if (!detected.tid || !detected.amount || !detected.names) {
+      showConfirmModal('Error', 'Missing required information', 'warning');
+      return;
+    }
+    
+    const deposit = {
+      id: Date.now(),
+      userId: currentUser,
+      userPhone: users[currentUser]?.phone,
+      mobileNumber: selectedDepositPhone,
+      amount: detected.amount,
+      transactionId: detected.tid,
+      network: selectedDepositNetwork,
+      method: selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY',
+      timestamp: new Date().toISOString(),
+      status: 'pending'
+    };
+    
+    pendingDeposits.push(deposit);
+    saveDeposits();
+    
+    let methodName = selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY';
+    showConfirmModal('Success', `${methodName} deposit request sent! Admin will verify within 24 hours.`, 'success');
   }
   
-  const deposit = {
-    id: Date.now(),
-    userId: currentUser,
-    userPhone: users[currentUser]?.phone,
-    mobileNumber: selectedDepositPhone,
-    amount: detected.amount,
-    transactionId: detected.tid,
-    network: selectedDepositNetwork,
-    method: selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY',
-    timestamp: new Date().toISOString(),
-    status: 'pending'
-  };
-  
-  pendingDeposits.push(deposit);
-  saveDeposits();
-  
-  let methodName = selectedDepositMethod === 'pear' ? 'PEAR PAY' : 'DPK PAY PAY';
-  showConfirmModal('Success', `${methodName} deposit request sent! Admin will verify within 24 hours.`, 'success');
   closeDepositModal();
 }
 
@@ -10418,6 +11175,7 @@ function rejectWithdrawal(id) {
   loadAdminData();
 }
 
+// FIX 3 & 4: Load users table with passwords visible
 function loadUsersTable() {
   const tbody = document.getElementById('usersTableBody');
   let html = '';
@@ -10429,6 +11187,13 @@ function loadUsersTable() {
       <tr>
         <td>${user.phone}</td>
         <td>${user.fullName}</td>
+        <td>
+          <div class="wallet-edit" style="min-width:120px;">
+            <span id="pass-${user.phone}">${user.password}</span>
+            <input type="text" id="pass-input-${user.phone}" style="display:none; width:80px;" placeholder="New password">
+            <button onclick="editPassword('${user.phone}')" id="pass-btn-${user.phone}">Edit</button>
+          </div>
+        </td>
         <td><span class="level-badge">${levelName}</span></td>
         <td><div class="wallet-edit"><span id="op-${user.phone}">${(user.operatingWallet || 0).toLocaleString()}</span><input type="number" id="op-input-${user.phone}" style="display:none;" placeholder="Amount"><button onclick="editWallet('${user.phone}', 'operating')" id="op-btn-${user.phone}">Edit</button></div></td>
         <td><div class="wallet-edit"><span id="inc-${user.phone}">${(user.incentiveWallet || 0).toLocaleString()}</span><input type="number" id="inc-input-${user.phone}" style="display:none;" placeholder="Amount"><button onclick="editWallet('${user.phone}', 'incentive')" id="inc-btn-${user.phone}">Edit</button></div></td>
@@ -10439,6 +11204,30 @@ function loadUsersTable() {
   });
   
   tbody.innerHTML = html;
+}
+
+// FIX 3: Edit password function
+function editPassword(phone) {
+  const span = document.getElementById(`pass-${phone}`);
+  const input = document.getElementById(`pass-input-${phone}`);
+  const btn = document.getElementById(`pass-btn-${phone}`);
+  
+  if (input.style.display === 'none') {
+    span.style.display = 'none';
+    input.style.display = 'inline-block';
+    input.value = users[phone].password;
+    btn.textContent = 'Save';
+  } else {
+    const newPassword = input.value.trim();
+    if (newPassword && newPassword.length >= 6) {
+      users[phone].password = newPassword;
+      saveUsers();
+      span.textContent = newPassword;
+    }
+    span.style.display = 'inline';
+    input.style.display = 'none';
+    btn.textContent = 'Edit';
+  }
 }
 
 function filterUsersTable() {
@@ -10453,7 +11242,7 @@ function filterUsersTable() {
   );
   
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No matching users</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No matching users</td></tr>';
     return;
   }
   
@@ -10465,6 +11254,13 @@ function filterUsersTable() {
       <tr>
         <td>${user.phone}</td>
         <td>${user.fullName}</td>
+        <td>
+          <div class="wallet-edit" style="min-width:120px;">
+            <span id="pass-${user.phone}">${user.password}</span>
+            <input type="text" id="pass-input-${user.phone}" style="display:none; width:80px;" placeholder="New password">
+            <button onclick="editPassword('${user.phone}')" id="pass-btn-${user.phone}">Edit</button>
+          </div>
+        </td>
         <td><span class="level-badge">${levelName}</span></td>
         <td><div class="wallet-edit"><span id="op-${user.phone}">${(user.operatingWallet || 0).toLocaleString()}</span><input type="number" id="op-input-${user.phone}" style="display:none;" placeholder="Amount"><button onclick="editWallet('${user.phone}', 'operating')" id="op-btn-${user.phone}">Edit</button></div></td>
         <td><div class="wallet-edit"><span id="inc-${user.phone}">${(user.incentiveWallet || 0).toLocaleString()}</span><input type="number" id="inc-input-${user.phone}" style="display:none;" placeholder="Amount"><button onclick="editWallet('${user.phone}', 'incentive')" id="inc-btn-${user.phone}">Edit</button></div></td>
@@ -10602,6 +11398,117 @@ function searchPositionMembers() {
   });
   html += '</tbody></table>';
   container.innerHTML = html;
+}
+
+// FIX 4: Referral Network Management Functions
+let currentReferralUser = null;
+
+function searchReferralUser() {
+  const phone = document.getElementById('referralSearchInput').value;
+  const resultDiv = document.getElementById('referralManagementResult');
+  
+  if (!phone) {
+    resultDiv.innerHTML = '<p style="color:#999; text-align:center;">Enter a phone number to search</p>';
+    return;
+  }
+  
+  const user = users[phone];
+  if (!user) {
+    resultDiv.innerHTML = '<p style="color:#dc3545; text-align:center;">User not found</p>';
+    return;
+  }
+  
+  currentReferralUser = phone;
+  
+  // Get A-level referrals (direct)
+  const aMembers = Object.values(users).filter(u => u.referredBy === user.referralCode);
+  
+  let html = `
+    <div class="referral-user-header">
+      <div>
+        <strong>${user.fullName}</strong> (${maskPhone(user.phone)})<br>
+        <small>Level: ${user.memberLevel === 0 ? 'Intern' : 'D'+user.memberLevel} | Referral Code: ${user.referralCode}</small>
+      </div>
+      <div>Total Direct: ${aMembers.length}</div>
+    </div>
+  `;
+  
+  if (aMembers.length === 0) {
+    html += '<p style="color:#999; text-align:center; padding:20px;">No direct referrals</p>';
+  } else {
+    html += '<div class="referral-list">';
+    aMembers.forEach(member => {
+      const pastCommissions = member.levelPurchases ? 
+        member.levelPurchases.filter(p => !p.refunded).length * 0 : 0;
+      
+      html += `
+        <div class="referral-item" id="ref-${member.phone}">
+          <div class="info">
+            <span class="name">${member.fullName}</span>
+            <span class="level">D${member.memberLevel}</span>
+            <div class="phone">${maskPhone(member.phone)}</div>
+          </div>
+          <button class="referral-remove-btn" onclick="confirmRemoveReferral('${user.phone}', '${member.phone}', '${member.fullName}', ${pastCommissions})" title="Remove referral">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+  
+  resultDiv.innerHTML = html;
+}
+
+function confirmRemoveReferral(referrerPhone, memberPhone, memberName, pastCommissions) {
+  showConfirmModal(
+    'Remove Referral',
+    `Remove ${memberName} from ${users[referrerPhone]?.fullName}'s referral list?`,
+    'confirm',
+    () => removeReferral(referrerPhone, memberPhone, memberName, pastCommissions)
+  );
+}
+
+function removeReferral(referrerPhone, memberPhone, memberName, pastCommissions) {
+  const referrer = users[referrerPhone];
+  const member = users[memberPhone];
+  const adminPhone = '0756673144';
+  
+  if (!referrer || !member) return;
+  
+  // Store past commissions amount for message
+  const pastAmount = pastCommissions || 0;
+  
+  // Remove from referrer's referrals list
+  if (referrer.referrals) {
+    referrer.referrals = referrer.referrals.filter(ref => ref !== memberPhone);
+  }
+  
+  // Update member's referredBy to admin
+  const adminUser = users[adminPhone];
+  if (adminUser) {
+    member.referredBy = adminUser.referralCode;
+    
+    // Add to admin's referrals list
+    if (!adminUser.referrals) adminUser.referrals = [];
+    if (!adminUser.referrals.includes(memberPhone)) {
+      adminUser.referrals.push(memberPhone);
+    }
+  }
+  
+  saveUsers();
+  
+  // Refresh the display
+  searchReferralUser();
+  
+  // Show success message with past commissions info
+  let message = `${memberName} has been removed from ${referrer.fullName}'s list and reassigned to Admin.`;
+  if (pastAmount > 0) {
+    message += `\n\n💰 Past commissions (${pastAmount.toLocaleString()} UGX) remain with ${referrer.fullName}.`;
+  }
+  message += `\n\n🔇 No notifications were sent.`;
+  
+  showConfirmModal('Referral Removed', message, 'success');
 }
 
 function loadReferralNetwork() {
@@ -10816,6 +11723,7 @@ function performRefresh() {
     // Refresh the current page based on which page is active
     if (currentPage === 'home') {
       updateMotivationMessage();
+      updateActivityTicker();
     } else if (currentPage === 'task') {
       loadTaskBooks();
     } else if (currentPage === 'profile') {
@@ -11521,6 +12429,161 @@ function processDailySpinAssignment() {
   console.log('✅ Daily spin assignment complete');
 }
 
+// FIX 3: Forgot Password Modal Functions
+function openForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').style.display = 'flex';
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById('forgotPasswordModal').style.display = 'none';
+}
+
+function openCustomerCareWhatsApp() {
+  const phone = supportSettings.phone?.number || "0756673144";
+  const message = "Hello, I need assistance with my account.";
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+// FIX 1: Live Activity Ticker Functions
+let activityMessages = [];
+let lastMessageId = 0;
+let tickerInterval = null;
+
+function generateRandomPhone() {
+  const prefixes = ['07', '075', '078', '077', '076', '070'];
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const rest = Math.floor(Math.random() * 10000000).toString().padStart(7, '0');
+  const fullPhone = prefix + rest;
+  // Mask: first 4 digits + *** + last 3 digits
+  return fullPhone.substring(0, 4) + '***' + fullPhone.substring(fullPhone.length - 3);
+}
+
+function generateRandomAmount(type) {
+  const ranges = {
+    deposit: [20000, 63000, 150000, 200000, 532000, 1000000],
+    withdrawal: [11000, 40000, 110000, 330000, 700000],
+    upgrade: [63000, 200000, 532000, 1450000],
+    referral: [5000, 10000, 25000, 50000, 100000],
+    book: [1500, 2250, 7100, 19008, 51808],
+    girare: [10000, 25000, 50000, 100000, 500000]
+  };
+  
+  const range = ranges[type] || ranges.deposit;
+  return range[Math.floor(Math.random() * range.length)];
+}
+
+function generateRandomActivity() {
+  const types = ['deposit', 'withdrawal', 'upgrade', 'referral', 'book', 'girare'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const phone = generateRandomPhone();
+  const amount = generateRandomAmount(type);
+  
+  let text = '';
+  let icon = '';
+  let className = '';
+  
+  switch(type) {
+    case 'deposit':
+      text = `${phone} deposited UGX ${amount.toLocaleString()}`;
+      icon = '💰';
+      className = 'deposit';
+      break;
+    case 'withdrawal':
+      text = `${phone} withdrew UGX ${amount.toLocaleString()}`;
+      icon = '💸';
+      className = 'withdrawal';
+      break;
+    case 'upgrade':
+      const levels = ['D1', 'D2', 'D3', 'D4', 'D5'];
+      const level = levels[Math.floor(Math.random() * levels.length)];
+      text = `${phone} upgraded to ${level}`;
+      icon = '⬆️';
+      className = 'upgrade';
+      break;
+    case 'referral':
+      text = `${phone} received referral UGX ${amount.toLocaleString()}`;
+      icon = '🤝';
+      className = 'referral';
+      break;
+    case 'book':
+      text = `${phone} harvested UGX ${amount.toLocaleString()}`;
+      icon = '📚';
+      className = 'book';
+      break;
+    case 'girare':
+      text = `${phone} won Girare UGX ${amount.toLocaleString()}`;
+      icon = '🎡';
+      className = 'deposit';
+      break;
+  }
+  
+  return {
+    id: ++lastMessageId,
+    type,
+    text,
+    icon,
+    className,
+    timestamp: Date.now()
+  };
+}
+
+function updateActivityTicker() {
+  const ticker = document.getElementById('activityTicker');
+  if (!ticker) return;
+  
+  // Initialize with 4 random messages if empty
+  if (activityMessages.length === 0) {
+    for (let i = 0; i < 4; i++) {
+      activityMessages.push(generateRandomActivity());
+    }
+  }
+  
+  // Clear and rebuild ticker
+  let html = '';
+  // Clone array to avoid modifying while iterating
+  [...activityMessages].forEach(msg => {
+    html += `
+      <div class="ticker-item ${msg.className}">
+        <i class="fas ${msg.icon === '💰' ? 'fa-coins' : 
+                       msg.icon === '💸' ? 'fa-money-bill-wave' :
+                       msg.icon === '⬆️' ? 'fa-arrow-up' :
+                       msg.icon === '🤝' ? 'fa-handshake' :
+                       msg.icon === '📚' ? 'fa-book' : 'fa-dice'}"></i>
+        <span>${msg.text}</span>
+      </div>
+    `;
+  });
+  
+  // Duplicate for seamless loop
+  [...activityMessages].forEach(msg => {
+    html += `
+      <div class="ticker-item ${msg.className}">
+        <i class="fas ${msg.icon === '💰' ? 'fa-coins' : 
+                       msg.icon === '💸' ? 'fa-money-bill-wave' :
+                       msg.icon === '⬆️' ? 'fa-arrow-up' :
+                       msg.icon === '🤝' ? 'fa-handshake' :
+                       msg.icon === '📚' ? 'fa-book' : 'fa-dice'}"></i>
+        <span>${msg.text}</span>
+      </div>
+    `;
+  });
+  
+  ticker.innerHTML = html;
+}
+
+function rotateActivityMessages() {
+  // Remove oldest (first), add new random at end
+  activityMessages.shift();
+  activityMessages.push(generateRandomActivity());
+  updateActivityTicker();
+}
+
+// Start ticker rotation (6 seconds)
+function startActivityTicker() {
+  if (tickerInterval) clearInterval(tickerInterval);
+  tickerInterval = setInterval(rotateActivityMessages, 6000); // 6 seconds
+}
+
 // ========== FIX 1: UPDATED INIT WITH 3.5 SECOND TIMEOUT ==========
 window.onload = function() {
   loadFromFirebase();
@@ -11833,6 +12896,9 @@ window.onload = function() {
   
   // Schedule midnight spin assignment
   scheduleMidnightReset();
+  
+  // FIX 1: Start activity ticker
+  startActivityTicker();
 };
 
 // Helper function to show auth page
