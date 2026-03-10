@@ -10186,50 +10186,84 @@ function handleTouchEnd(e) {
   }
 }
 
+// ===== FIXED: performRefresh function - now just refreshes data without logging out =====
 function performRefresh() {
   const overlay = document.getElementById('refreshOverlay');
   const messageEl = document.getElementById('refreshMessage');
   const progressFill = document.getElementById('refreshProgressFill');
+  
+  if (!currentUser) {
+    // If not logged in, don't do anything
+    return;
+  }
+  
   overlay.style.display = 'flex';
-  messageEl.textContent = 'Starting refresh...';
+  messageEl.textContent = 'Refreshing data...';
   progressFill.style.width = '0%';
 
   let progress = 0;
   const interval = setInterval(() => {
-    progress += 5;
+    progress += 10;
     if (progress <= 30) {
-      messageEl.textContent = 'Checking local data...';
+      messageEl.textContent = 'Updating wallet balances...';
     } else if (progress <= 60) {
-      messageEl.textContent = 'Verifying with server...';
+      messageEl.textContent = 'Refreshing books...';
     } else if (progress <= 90) {
-      messageEl.textContent = 'Restoring session...';
+      messageEl.textContent = 'Almost done...';
     }
     progressFill.style.width = progress + '%';
     if (progress >= 100) {
       clearInterval(interval);
     }
-  }, 50);
+  }, 100);
 
-  saveSessionState();
-
+  // Simply reload the current page data
   setTimeout(() => {
-    restoreSessionState().then(() => {
-      clearInterval(interval);
-      progressFill.style.width = '100%';
-      messageEl.textContent = 'Refresh complete!';
-      setTimeout(() => {
-        overlay.style.display = 'none';
-      }, 500);
-    }).catch(() => {
-      clearInterval(interval);
-      messageEl.textContent = 'Error, using cached data';
-      progressFill.style.width = '100%';
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        restoreSessionState(true);
-      }, 1000);
-    });
-  }, 300);
+    const currentPage = getCurrentPage();
+    
+    // Reload user data from Firebase
+    loadUserData();
+    
+    // Refresh the current page based on which page is active
+    if (currentPage === 'home') {
+      updateMotivationMessage();
+    } else if (currentPage === 'task') {
+      loadTaskBooks();
+    } else if (currentPage === 'profile') {
+      // Profile data already loaded in loadUserData()
+      if (document.getElementById('teamReportPage').style.display === 'flex') {
+        loadTeamReport();
+      }
+    } else if (currentPage === 'level') {
+      updateLevelWalletDisplay();
+    } else if (currentPage === 'income') {
+      // Income table is static, no need to reload
+    } else if (currentPage === 'taskRecord') {
+      loadActivityLog();
+    } else if (currentPage === 'teamReport') {
+      loadTeamReport();
+    } else if (currentPage === 'goldenHandshake') {
+      loadGoldenHandshake();
+    } else if (currentPage === 'transactionHistory') {
+      loadTransactionHistory();
+    } else if (currentPage === 'growthJourney') {
+      loadGrowthJourney();
+    } else if (currentPage === 'stakes') {
+      loadStakesPage();
+    } else if (currentPage === 'girare') {
+      loadGirarePage();
+    } else if (currentPage === 'support') {
+      loadSupportPage();
+    }
+    
+    clearInterval(interval);
+    progressFill.style.width = '100%';
+    messageEl.textContent = 'Refresh complete!';
+    
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 500);
+  }, 1000);
 }
 
 function saveSessionState() {
