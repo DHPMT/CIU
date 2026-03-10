@@ -3876,6 +3876,87 @@
       font-size: 0.7rem;
       color: #999;
     }
+
+    /* ===== NEW WITHDRAWAL LOCK MESSAGE STYLES ===== */
+    .lock-message-container {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .lock-icon {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    
+    .lock-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #b45f06;
+      margin-bottom: 10px;
+    }
+    
+    .lock-reason {
+      font-size: 1rem;
+      color: #856404;
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+    
+    .lock-holiday-list {
+      background: white;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 10px 0;
+      text-align: left;
+    }
+    
+    .lock-holiday-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .lock-holiday-item:last-child {
+      border-bottom: none;
+    }
+    
+    .lock-country-icon {
+      font-size: 1.3rem;
+      width: 30px;
+    }
+    
+    .lock-holiday-name {
+      font-weight: 600;
+      color: #4a3b5e;
+    }
+    
+    .lock-resume-time {
+      background: #e8f0e8;
+      border-radius: 15px;
+      padding: 12px;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #28a745;
+    }
+    
+    .lock-dismiss-btn {
+      background: #7d5ba6;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -3920,7 +4001,7 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs - ADDED GIRARE TAB AND STAKES TAB AND SUPPORT TAB -->
+        <!-- Tabs - ADDED GIRARE TAB AND STAKES TAB AND SUPPORT TAB AND WITHDRAWAL CONTROL TAB -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
@@ -3935,6 +4016,8 @@
           <div class="admin-tab" onclick="switchAdminTab('stakes')"><i class="fas fa-trophy"></i> Stakes</div>
           <!-- NEW SUPPORT SETTINGS TAB -->
           <div class="admin-tab" onclick="switchAdminTab('support')"><i class="fas fa-headset"></i> Support</div>
+          <!-- NEW WITHDRAWAL CONTROL TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('withdrawalControl')"><i class="fas fa-lock"></i> Withdrawal Control</div>
         </div>
 
         <!-- Deposits Section -->
@@ -4323,6 +4406,104 @@
             <div style="background: #e8f0e8; padding: 15px; border-radius: 15px; margin-top: 20px;">
               <p style="color: #28a745; font-weight: 600;"><i class="fas fa-info-circle"></i> Support contact settings are updated in real-time</p>
               <p style="color: #666; font-size: 0.9rem;">Changes will immediately affect the WhatsApp, Email, Phone and Live Chat buttons on the Support page.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW WITHDRAWAL CONTROL SECTION -->
+        <div id="adminWithdrawalControlSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-lock"></i> Withdrawal Control Center</h3>
+          
+          <!-- Master Lock -->
+          <div class="master-lock-control">
+            <h4 style="color: #f44336; margin-bottom: 10px;">🔒 Master Withdrawal Lock</h4>
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+              <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" name="withdrawalLock" value="false" onclick="toggleMasterWithdrawalLock(false)"> 🔓 Unlocked
+              </label>
+              <label style="display: flex; align-items: center; gap: 5px;">
+                <input type="radio" name="withdrawalLock" value="true" onclick="toggleMasterWithdrawalLock(true)"> 🔒 Locked
+              </label>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label>Lock Type:</label>
+              <select id="withdrawalLockType" style="width: 100%; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;" onchange="updateWithdrawalLockType()">
+                <option value="manual">🔧 Manual Lock</option>
+                <option value="maintenance">⚙️ System Maintenance</option>
+                <option value="upgrade">🚀 Scheduled Upgrade</option>
+                <option value="emergency">⚠️ Emergency</option>
+                <option value="event">🎉 Special Event</option>
+              </select>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label>Custom Message:</label>
+              <textarea id="withdrawalLockMessage" rows="4" style="width: 100%; padding: 10px; border: 2px solid #e0d0eb; border-radius: 15px; margin-top: 5px;" placeholder="Enter reason for withdrawal lock...">We're upgrading our withdrawal system to serve you better! Expected completion: 2-3 hours. Thank you for your patience! 🚀</textarea>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label>Expected Duration (optional):</label>
+              <input type="text" id="withdrawalLockDuration" placeholder="e.g., 2-3 hours, Tomorrow 8am" style="width: 100%; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px; margin-top: 5px;">
+            </div>
+            
+            <div style="background: #e8f0e8; border-radius: 15px; padding: 15px; margin: 15px 0;">
+              <h4 style="color: #28a745; margin-bottom: 10px;">📋 Preview</h4>
+              <div id="withdrawalLockPreview" style="background: white; border-radius: 10px; padding: 15px;">
+                <div style="color: #b45f06; font-weight: 700; margin-bottom: 5px;">🔧 SYSTEM MAINTENANCE</div>
+                <div style="color: #666; margin-bottom: 5px;">We're upgrading our withdrawal system to serve you better! Expected completion: 2-3 hours. Thank you for your patience! 🚀</div>
+                <div style="color: #28a745; font-size: 0.9rem;">⏱️ Estimated: 2-3 hours</div>
+              </div>
+            </div>
+            
+            <button onclick="applyWithdrawalLock()" style="background: #28a745; color: white; border: none; padding: 12px; border-radius: 30px; width: 100%; font-weight: 600; cursor: pointer; margin-bottom: 10px;">APPLY LOCK</button>
+            <button onclick="clearWithdrawalLock()" style="background: #f0f0f0; border: none; padding: 12px; border-radius: 30px; width: 100%; font-weight: 600; cursor: pointer;">CLEAR LOCK</button>
+          </div>
+
+          <!-- Automatic Holiday Settings -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">🗓️ Automatic Holiday Locking</h4>
+            
+            <div style="margin-bottom: 15px;">
+              <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <input type="checkbox" id="enableUgandaHolidays" checked> 🇺🇬 Enable Uganda holiday locking
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <input type="checkbox" id="enableItalyHolidays" checked> 🇮🇹 Enable Italy holiday locking
+              </label>
+              <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <input type="checkbox" id="enableInternationalDays" checked> 🌍 Enable International day locking
+              </label>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+              <label>Holiday Message Template:</label>
+              <textarea id="holidayMessageTemplate" rows="3" style="width: 100%; padding: 10px; border: 2px solid #e0d0eb; border-radius: 15px; margin-top: 5px;">Today we celebrate {holidays}. Our offices are closed. Withdrawals resume tomorrow at 8am. Thank you for understanding! 💚</textarea>
+            </div>
+            
+            <button onclick="saveHolidaySettings()" style="background: #7d5ba6; color: white; border: none; padding: 12px; border-radius: 30px; width: 100%; font-weight: 600; cursor: pointer;">SAVE HOLIDAY SETTINGS</button>
+          </div>
+
+          <!-- Withdrawal Amounts Management -->
+          <div class="girare-admin-section">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">💰 Withdrawal Amounts</h4>
+            
+            <div id="withdrawalAmountsList" style="margin-bottom: 15px;">
+              <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+              <input type="number" id="newWithdrawalAmount" placeholder="Enter amount" style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 20px;">
+              <button onclick="addWithdrawalAmount()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer;">ADD</button>
+            </div>
+          </div>
+
+          <!-- Current Status -->
+          <div style="background: #f5edff; border-radius: 15px; padding: 15px; margin-top: 20px;">
+            <h4 style="color: #4a3b5e; margin-bottom: 10px;">📊 Current Status</h4>
+            <div id="withdrawalCurrentStatus">
+              <p>🔓 Withdrawals: <strong>Active</strong></p>
+              <p>🌍 Today's holidays: <span id="todaysHolidaysDisplay">None</span></p>
             </div>
           </div>
         </div>
@@ -5171,7 +5352,7 @@
       </div>
     </div>
 
-    <!-- NEW GIRARE PAGE -->
+    <!-- NEW GIRARE PAGE - WITH PRIZES ON THE WHEEL -->
     <div id="girarePage">
       <div class="scroll-content">
         <button class="back-btn" onclick="showPage('home')"><i class="fas fa-arrow-left"></i> Back to Home</button>
@@ -5526,7 +5707,7 @@
     </div>
   </div>
 
-  <!-- WITHDRAW MODAL -->
+  <!-- WITHDRAW MODAL - UPDATED WITH LOCK MESSAGES -->
   <div class="modal-overlay" id="withdrawModal">
     <div class="modal-content">
       <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
@@ -5534,46 +5715,58 @@
         <button class="close-btn" onclick="closeWithdrawModal()" style="font-size:1.8rem; background:none; border:none;">&times;</button>
       </div>
       
-      <div id="timeRestrictionMessage" class="limit-message" style="display: none; background: #ffebee; color: #c62828;">
-        <i class="fas fa-clock"></i> <span id="timeRestrictionText"></span>
+      <!-- Lock Message Container (shown when withdrawals are locked) -->
+      <div id="withdrawalLockMessageContainer" class="lock-message-container" style="display: none;">
+        <div class="lock-icon" id="lockIcon">🔧</div>
+        <div class="lock-title" id="lockTitle">SYSTEM MAINTENANCE</div>
+        <div class="lock-reason" id="lockReason">We're upgrading our withdrawal system. Please check back later.</div>
+        <div class="lock-resume-time" id="lockResumeTime">⏱️ Estimated: 2-3 hours</div>
+        <button class="lock-dismiss-btn" onclick="closeWithdrawModal()">I UNDERSTAND</button>
       </div>
       
-      <div id="dailyLimitMessage" class="limit-message" style="display: none;">
-        <i class="fas fa-clock"></i> You can only withdraw once per day. Please try again tomorrow.
-      </div>
-      
-      <div id="internRestrictionMessage" class="limit-message" style="display: none; background: #ffebee; color: #c62828;">
-        <i class="fas fa-lock"></i> Upgrade to D Level to withdraw.
-      </div>
-      
-      <div class="wallet-selector" style="display:flex; gap:10px; margin:15px 0;">
-        <div class="wallet-option" id="walletOperatingOption" onclick="selectWallet('operating')" style="flex:1; background:#f9f9f9; border:2px solid #ddd; border-radius:15px; padding:15px; text-align:center; cursor:pointer;">
-          <div class="wallet-name" style="font-weight:600;">OPERATING</div>
-          <div class="wallet-balance" id="withdrawOperatingBalance">0 UGX</div>
+      <!-- Normal Withdrawal Content (hidden when locked) -->
+      <div id="withdrawalNormalContent">
+        <div id="timeRestrictionMessage" class="limit-message" style="display: none; background: #ffebee; color: #c62828;">
+          <i class="fas fa-clock"></i> <span id="timeRestrictionText"></span>
         </div>
-        <div class="wallet-option" id="walletIncentiveOption" onclick="selectWallet('incentive')" style="flex:1; background:#f9f9f9; border:2px solid #ddd; border-radius:15px; padding:15px; text-align:center; cursor:pointer;">
-          <div class="wallet-name" style="font-weight:600;">INCENTIVE</div>
-          <div class="wallet-balance" id="withdrawIncentiveBalance">0 UGX</div>
+        
+        <div id="dailyLimitMessage" class="limit-message" style="display: none;">
+          <i class="fas fa-clock"></i> You can only withdraw once per day. Please try again tomorrow.
         </div>
-      </div>
-      
-      <!-- Amount Buttons -->
-      <div id="withdrawAmountButtons" class="withdrawal-amount-grid">
-        <!-- Buttons will be dynamically added here -->
-      </div>
-      
-      <input type="hidden" id="selectedWithdrawAmount" value="">
-      
-      <div id="withdrawHarvestSummary" style="background: #f5f5f5; border-radius: 10px; padding: 10px; margin-bottom: 15px; font-size: 0.9rem; display: none;">
-        <div style="display: flex; align-items: center; gap: 5px; color: #666;">
-          <i class="fas fa-check-circle" style="color: #28a745;"></i>
-          <span>Harvest account linked</span>
+        
+        <div id="internRestrictionMessage" class="limit-message" style="display: none; background: #ffebee; color: #c62828;">
+          <i class="fas fa-lock"></i> Upgrade to D Level to withdraw.
         </div>
+        
+        <div class="wallet-selector" style="display:flex; gap:10px; margin:15px 0;">
+          <div class="wallet-option" id="walletOperatingOption" onclick="selectWallet('operating')" style="flex:1; background:#f9f9f9; border:2px solid #ddd; border-radius:15px; padding:15px; text-align:center; cursor:pointer;">
+            <div class="wallet-name" style="font-weight:600;">OPERATING</div>
+            <div class="wallet-balance" id="withdrawOperatingBalance">0 UGX</div>
+          </div>
+          <div class="wallet-option" id="walletIncentiveOption" onclick="selectWallet('incentive')" style="flex:1; background:#f9f9f9; border:2px solid #ddd; border-radius:15px; padding:15px; text-align:center; cursor:pointer;">
+            <div class="wallet-name" style="font-weight:600;">INCENTIVE</div>
+            <div class="wallet-balance" id="withdrawIncentiveBalance">0 UGX</div>
+          </div>
+        </div>
+        
+        <!-- Amount Buttons -->
+        <div id="withdrawAmountButtons" class="withdrawal-amount-grid">
+          <!-- Buttons will be dynamically added here -->
+        </div>
+        
+        <input type="hidden" id="selectedWithdrawAmount" value="">
+        
+        <div id="withdrawHarvestSummary" style="background: #f5f5f5; border-radius: 10px; padding: 10px; margin-bottom: 15px; font-size: 0.9rem; display: none;">
+          <div style="display: flex; align-items: center; gap: 5px; color: #666;">
+            <i class="fas fa-check-circle" style="color: #28a745;"></i>
+            <span>Harvest account linked</span>
+          </div>
+        </div>
+        
+        <input type="password" id="withdrawPassword" placeholder="Withdrawal Password" style="width:100%; padding:15px; border:1px solid #ddd; border-radius:15px; margin-bottom:10px;">
+        
+        <button onclick="submitWithdraw()" id="withdrawSubmitBtn" style="background:#7d5ba6; color:white; width:100%; padding:15px; border:none; border-radius:30px;">Withdraw</button>
       </div>
-      
-      <input type="password" id="withdrawPassword" placeholder="Withdrawal Password" style="width:100%; padding:15px; border:1px solid #ddd; border-radius:15px; margin-bottom:10px;">
-      
-      <button onclick="submitWithdraw()" id="withdrawSubmitBtn" style="background:#7d5ba6; color:white; width:100%; padding:15px; border:none; border-radius:30px;">Withdraw</button>
     </div>
   </div>
 
@@ -5981,6 +6174,85 @@ let stakesConfig = {
   pools: []
 };
 
+// ========== WITHDRAWAL CONTROL CONFIGURATION ==========
+let withdrawalConfig = {
+  locked: false,
+  lockType: 'manual',
+  lockMessage: "We're upgrading our withdrawal system. Please check back later.",
+  lockDuration: "2-3 hours",
+  enableUgandaHolidays: true,
+  enableItalyHolidays: true,
+  enableInternationalDays: true,
+  holidayMessageTemplate: "Today we celebrate {holidays}. Our offices are closed. Withdrawals resume tomorrow at 8am. Thank you for understanding! 💚",
+  withdrawalAmounts: [11000, 40000, 110000, 330000, 700000, 1100000, 2000000, 3500000, 4900000]
+};
+
+// ========== HOLIDAY LISTS ==========
+const ugandaHolidays2026 = [
+  { date: "2026-01-01", name: "New Year's Day" },
+  { date: "2026-01-26", name: "NRM Liberation Day" },
+  { date: "2026-02-16", name: "Archbishop Janani Luwum Day" },
+  { date: "2026-03-08", name: "International Women's Day" },
+  { date: "2026-03-20", name: "Eid al-Fitr" },
+  { date: "2026-03-20", name: "March Equinox" },
+  { date: "2026-04-03", name: "Good Friday" },
+  { date: "2026-04-05", name: "Easter Sunday" },
+  { date: "2026-04-06", name: "Easter Monday" },
+  { date: "2026-05-01", name: "Labour Day" },
+  { date: "2026-05-27", name: "Eid al-Adha" },
+  { date: "2026-06-03", name: "Martyrs' Day" },
+  { date: "2026-06-09", name: "National Heroes Day" },
+  { date: "2026-06-21", name: "June Solstice" },
+  { date: "2026-09-23", name: "September Equinox" },
+  { date: "2026-10-09", name: "Independence Day" },
+  { date: "2026-12-21", name: "December Solstice" },
+  { date: "2026-12-25", name: "Christmas Day" },
+  { date: "2026-12-26", name: "Boxing Day" }
+];
+
+const italyHolidays2026 = [
+  { date: "2026-01-01", name: "New Year's Day" },
+  { date: "2026-01-06", name: "Epiphany" },
+  { date: "2026-04-05", name: "Easter Sunday" },
+  { date: "2026-04-06", name: "Easter Monday" },
+  { date: "2026-04-25", name: "Liberation Day" },
+  { date: "2026-05-01", name: "Labour Day" },
+  { date: "2026-06-02", name: "Republic Day" },
+  { date: "2026-08-15", name: "Ferragosto" },
+  { date: "2026-11-01", name: "All Saints' Day" },
+  { date: "2026-12-08", name: "Immaculate Conception" },
+  { date: "2026-12-25", name: "Christmas Day" },
+  { date: "2026-12-26", name: "St. Stephen's Day" }
+];
+
+const internationalDays2026 = [
+  { date: "2026-02-02", name: "World Wetlands Day" },
+  { date: "2026-02-04", name: "World Cancer Day" },
+  { date: "2026-02-10", name: "World Pulses Day" },
+  { date: "2026-02-11", name: "International Day of Women and Girls in Science" },
+  { date: "2026-02-13", name: "World Radio Day" },
+  { date: "2026-02-20", name: "World Day of Social Justice" },
+  { date: "2026-02-21", name: "International Mother Language Day" },
+  { date: "2026-03-08", name: "International Women's Day" },
+  { date: "2026-03-20", name: "March Equinox" },
+  { date: "2026-03-21", name: "World Poetry Day" },
+  { date: "2026-03-22", name: "World Water Day" },
+  { date: "2026-04-07", name: "World Health Day" },
+  { date: "2026-04-22", name: "Earth Day" },
+  { date: "2026-05-01", name: "International Workers' Day" },
+  { date: "2026-06-05", name: "World Environment Day" },
+  { date: "2026-06-21", name: "June Solstice" },
+  { date: "2026-09-08", name: "International Literacy Day" },
+  { date: "2026-09-21", name: "International Day of Peace" },
+  { date: "2026-09-23", name: "September Equinox" },
+  { date: "2026-09-27", name: "World Tourism Day" },
+  { date: "2026-10-01", name: "International Coffee Day" },
+  { date: "2026-10-16", name: "World Food Day" },
+  { date: "2026-10-24", name: "United Nations Day" },
+  { date: "2026-12-10", name: "Human Rights Day" },
+  { date: "2026-12-21", name: "December Solstice" }
+];
+
 // ========== 107 COFFEE GROWING BOOKS ==========
 let allBooks = [
   { id: 1, title: "Regenerative Agriculture in Coffee", desc: "Handbook for practitioners in Uganda - Bioversity International, 2023" },
@@ -6267,6 +6539,17 @@ function loadFromFirebase() {
       loadStakesAdminControls();
     }
   });
+  
+  // Load withdrawal configuration
+  db.ref('withdrawalConfig').on('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      withdrawalConfig = config;
+    }
+    if (document.getElementById('adminWithdrawalControlSection')?.classList.contains('active')) {
+      loadWithdrawalAdminControls();
+    }
+  });
 }
 
 // ===== UPDATE COMPANY SETTINGS INPUT FIELDS =====
@@ -6435,6 +6718,11 @@ function saveSupportSetting(section, field) {
       console.error('Error saving support settings:', error);
       showConfirmModal('Error', 'Failed to save settings', 'warning');
     });
+}
+
+// ===== SAVE WITHDRAWAL CONFIG =====
+function saveWithdrawalConfig() {
+  db.ref('withdrawalConfig').set(withdrawalConfig);
 }
 
 // ========== SAVE TO FIREBASE ==========
@@ -6818,8 +7106,49 @@ function checkAndPayDailyBonus(readerPhone) {
   return true;
 }
 
-// ========== WITHDRAWAL TIME CHECK ==========
+// ========== WITHDRAWAL TIME CHECK (UPDATED WITH HOLIDAY LOCK) ==========
 function isWithdrawalAllowed() {
+  // Check master lock first
+  if (withdrawalConfig.locked) {
+    return { 
+      allowed: false, 
+      message: withdrawalConfig.lockMessage,
+      lockType: withdrawalConfig.lockType,
+      lockDuration: withdrawalConfig.lockDuration
+    };
+  }
+  
+  // Check for holidays if enabled
+  const today = new Date().toISOString().split('T')[0];
+  const holidays = [];
+  
+  if (withdrawalConfig.enableUgandaHolidays) {
+    const ugandaToday = ugandaHolidays2026.filter(h => h.date === today);
+    ugandaToday.forEach(h => holidays.push({ country: '🇺🇬 Uganda', name: h.name }));
+  }
+  
+  if (withdrawalConfig.enableItalyHolidays) {
+    const italyToday = italyHolidays2026.filter(h => h.date === today);
+    italyToday.forEach(h => holidays.push({ country: '🇮🇹 Italy', name: h.name }));
+  }
+  
+  if (withdrawalConfig.enableInternationalDays) {
+    const intlToday = internationalDays2026.filter(h => h.date === today);
+    intlToday.forEach(h => holidays.push({ country: '🌍 International', name: h.name }));
+  }
+  
+  if (holidays.length > 0) {
+    const holidayNames = holidays.map(h => `${h.country} ${h.name}`).join(', ');
+    let message = withdrawalConfig.holidayMessageTemplate.replace('{holidays}', holidayNames);
+    return { 
+      allowed: false, 
+      message: message,
+      lockType: 'holiday',
+      holidays: holidays
+    };
+  }
+  
+  // Regular time check
   const now = new Date();
   const day = now.getDay();
   const hour = now.getHours();
@@ -6838,7 +7167,9 @@ function isWithdrawalAllowed() {
   return { allowed: false, message: "Withdrawals not allowed at this time" };
 }
 
-function getWithdrawalAmounts() { return [11000, 40000, 110000, 330000, 700000, 1100000, 2000000, 3500000, 4900000]; }
+function getWithdrawalAmounts() { 
+  return withdrawalConfig.withdrawalAmounts || [11000, 40000, 110000, 330000, 700000, 1100000, 2000000, 3500000, 4900000]; 
+}
 
 // ========== CUSTOM CONFIRM MODAL ==========
 function showConfirmModal(title, message, type = 'warning', callback = null) {
@@ -7617,6 +7948,188 @@ function deletePool(poolId) {
     loadStakesAdminControls();
     showConfirmModal('Success', 'Pool deleted!', 'success');
   });
+}
+
+// ========== WITHDRAWAL ADMIN FUNCTIONS ==========
+function loadWithdrawalAdminControls() {
+  // Set master lock radio
+  const lockRadios = document.getElementsByName('withdrawalLock');
+  if (lockRadios.length) {
+    if (withdrawalConfig.locked) {
+      lockRadios[1].checked = true;
+    } else {
+      lockRadios[0].checked = true;
+    }
+  }
+  
+  // Set lock type
+  const lockTypeSelect = document.getElementById('withdrawalLockType');
+  if (lockTypeSelect) {
+    lockTypeSelect.value = withdrawalConfig.lockType || 'manual';
+  }
+  
+  // Set lock message
+  const lockMsg = document.getElementById('withdrawalLockMessage');
+  if (lockMsg) {
+    lockMsg.value = withdrawalConfig.lockMessage || "We're upgrading our withdrawal system. Please check back later.";
+  }
+  
+  // Set lock duration
+  const lockDuration = document.getElementById('withdrawalLockDuration');
+  if (lockDuration) {
+    lockDuration.value = withdrawalConfig.lockDuration || '';
+  }
+  
+  // Set holiday checkboxes
+  const ugandaCheck = document.getElementById('enableUgandaHolidays');
+  const italyCheck = document.getElementById('enableItalyHolidays');
+  const intlCheck = document.getElementById('enableInternationalDays');
+  
+  if (ugandaCheck) ugandaCheck.checked = withdrawalConfig.enableUgandaHolidays !== false;
+  if (italyCheck) italyCheck.checked = withdrawalConfig.enableItalyHolidays !== false;
+  if (intlCheck) intlCheck.checked = withdrawalConfig.enableInternationalDays !== false;
+  
+  // Set holiday template
+  const holidayTemplate = document.getElementById('holidayMessageTemplate');
+  if (holidayTemplate) {
+    holidayTemplate.value = withdrawalConfig.holidayMessageTemplate || "Today we celebrate {holidays}. Our offices are closed. Withdrawals resume tomorrow at 8am. Thank you for understanding! 💚";
+  }
+  
+  // Update preview
+  updateWithdrawalLockPreview();
+  
+  // Load withdrawal amounts
+  loadWithdrawalAmountsList();
+}
+
+function updateWithdrawalLockPreview() {
+  const lockType = document.getElementById('withdrawalLockType')?.value || 'manual';
+  const lockMsg = document.getElementById('withdrawalLockMessage')?.value || '';
+  const lockDuration = document.getElementById('withdrawalLockDuration')?.value || '';
+  
+  let icon = '🔧';
+  let title = 'SYSTEM MAINTENANCE';
+  
+  if (lockType === 'manual') {
+    icon = '🔧';
+    title = 'SYSTEM MAINTENANCE';
+  } else if (lockType === 'maintenance') {
+    icon = '⚙️';
+    title = 'SCHEDULED MAINTENANCE';
+  } else if (lockType === 'upgrade') {
+    icon = '🚀';
+    title = 'SYSTEM UPGRADE';
+  } else if (lockType === 'emergency') {
+    icon = '⚠️';
+    title = 'TEMPORARY PAUSE';
+  } else if (lockType === 'event') {
+    icon = '🎉';
+    title = 'SPECIAL EVENT';
+  }
+  
+  const previewHtml = `
+    <div style="color: #b45f06; font-weight: 700; margin-bottom: 5px;">${icon} ${title}</div>
+    <div style="color: #666; margin-bottom: 5px;">${lockMsg}</div>
+    ${lockDuration ? `<div style="color: #28a745; font-size: 0.9rem;">⏱️ Estimated: ${lockDuration}</div>` : ''}
+  `;
+  
+  const previewEl = document.getElementById('withdrawalLockPreview');
+  if (previewEl) {
+    previewEl.innerHTML = previewHtml;
+  }
+}
+
+function toggleMasterWithdrawalLock(locked) {
+  withdrawalConfig.locked = locked;
+  saveWithdrawalConfig();
+  showConfirmModal('Success', `Withdrawals ${locked ? 'locked' : 'unlocked'}!`, 'success');
+}
+
+function updateWithdrawalLockType() {
+  updateWithdrawalLockPreview();
+}
+
+function applyWithdrawalLock() {
+  const lockType = document.getElementById('withdrawalLockType').value;
+  const lockMsg = document.getElementById('withdrawalLockMessage').value;
+  const lockDuration = document.getElementById('withdrawalLockDuration').value;
+  
+  withdrawalConfig.locked = true;
+  withdrawalConfig.lockType = lockType;
+  withdrawalConfig.lockMessage = lockMsg;
+  withdrawalConfig.lockDuration = lockDuration;
+  
+  saveWithdrawalConfig();
+  showConfirmModal('Success', 'Withdrawal lock applied with custom message!', 'success');
+}
+
+function clearWithdrawalLock() {
+  withdrawalConfig.locked = false;
+  saveWithdrawalConfig();
+  showConfirmModal('Success', 'Withdrawal lock cleared!', 'success');
+}
+
+function saveHolidaySettings() {
+  const ugandaCheck = document.getElementById('enableUgandaHolidays');
+  const italyCheck = document.getElementById('enableItalyHolidays');
+  const intlCheck = document.getElementById('enableInternationalDays');
+  const holidayTemplate = document.getElementById('holidayMessageTemplate');
+  
+  withdrawalConfig.enableUgandaHolidays = ugandaCheck ? ugandaCheck.checked : true;
+  withdrawalConfig.enableItalyHolidays = italyCheck ? italyCheck.checked : true;
+  withdrawalConfig.enableInternationalDays = intlCheck ? intlCheck.checked : true;
+  withdrawalConfig.holidayMessageTemplate = holidayTemplate ? holidayTemplate.value : "Today we celebrate {holidays}. Our offices are closed. Withdrawals resume tomorrow at 8am. Thank you for understanding! 💚";
+  
+  saveWithdrawalConfig();
+  showConfirmModal('Success', 'Holiday settings saved!', 'success');
+}
+
+function loadWithdrawalAmountsList() {
+  const container = document.getElementById('withdrawalAmountsList');
+  if (!container) return;
+  
+  let html = '<div style="background: #f9f9f9; border-radius: 15px; padding: 15px;">';
+  html += '<h5 style="margin-bottom: 10px;">Current Amounts:</h5>';
+  
+  withdrawalConfig.withdrawalAmounts.forEach((amount, index) => {
+    html += `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+        <span>${amount.toLocaleString()} UGX</span>
+        <button onclick="removeWithdrawalAmount(${index})" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; cursor: pointer;">✖</button>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+function addWithdrawalAmount() {
+  const amount = parseInt(document.getElementById('newWithdrawalAmount').value);
+  if (isNaN(amount) || amount < 1000) {
+    showConfirmModal('Error', 'Please enter a valid amount (minimum 1000 UGX)', 'warning');
+    return;
+  }
+  
+  if (!withdrawalConfig.withdrawalAmounts) {
+    withdrawalConfig.withdrawalAmounts = [];
+  }
+  
+  withdrawalConfig.withdrawalAmounts.push(amount);
+  withdrawalConfig.withdrawalAmounts.sort((a, b) => a - b);
+  
+  saveWithdrawalConfig();
+  loadWithdrawalAmountsList();
+  document.getElementById('newWithdrawalAmount').value = '';
+  
+  showConfirmModal('Success', `Added ${amount.toLocaleString()} UGX to withdrawal options!`, 'success');
+}
+
+function removeWithdrawalAmount(index) {
+  withdrawalConfig.withdrawalAmounts.splice(index, 1);
+  saveWithdrawalConfig();
+  loadWithdrawalAmountsList();
+  showConfirmModal('Success', 'Amount removed!', 'success');
 }
 
 // ========== GROWTH JOURNEY ==========
@@ -9270,52 +9783,122 @@ function openWithdrawModal() {
   const user = users[currentUser];
   if (!user) return;
   
-  const timeCheck = isWithdrawalAllowed();
-  const timeMsg = document.getElementById('timeRestrictionMessage');
-  const timeText = document.getElementById('timeRestrictionText');
+  // Check if withdrawals are locked
+  const lockCheck = isWithdrawalAllowed();
   
-  if (!timeCheck.allowed) {
-    timeMsg.style.display = 'block';
-    timeText.textContent = timeCheck.message;
-    document.getElementById('withdrawSubmitBtn').disabled = true;
-    document.getElementById('withdrawSubmitBtn').style.opacity = '0.5';
-  } else {
-    timeMsg.style.display = 'none';
-  }
-  
-  if (user.memberLevel === 0) {
-    document.getElementById('internRestrictionMessage').style.display = 'block';
-    document.getElementById('dailyLimitMessage').style.display = 'none';
-    document.getElementById('withdrawSubmitBtn').disabled = true;
-    document.getElementById('withdrawSubmitBtn').style.opacity = '0.5';
-  } else {
-    document.getElementById('internRestrictionMessage').style.display = 'none';
-    if (timeCheck.allowed) {
-      document.getElementById('withdrawSubmitBtn').disabled = false;
-      document.getElementById('withdrawSubmitBtn').style.opacity = '1';
+  if (!lockCheck.allowed) {
+    // Show lock message
+    document.getElementById('withdrawalLockMessageContainer').style.display = 'block';
+    document.getElementById('withdrawalNormalContent').style.display = 'none';
+    
+    // Set lock message based on type
+    let icon = '🔧';
+    let title = 'WITHDRAWALS PAUSED';
+    
+    if (lockCheck.lockType === 'holiday') {
+      icon = '📅';
+      title = 'HOLIDAY CLOSURE';
+      
+      // Build holiday list
+      if (lockCheck.holidays && lockCheck.holidays.length > 0) {
+        let holidayHtml = '<div class="lock-holiday-list">';
+        lockCheck.holidays.forEach(h => {
+          holidayHtml += `
+            <div class="lock-holiday-item">
+              <span class="lock-country-icon">${h.country}</span>
+              <span class="lock-holiday-name">${h.name}</span>
+            </div>
+          `;
+        });
+        holidayHtml += '</div>';
+        document.getElementById('lockReason').innerHTML = lockCheck.message + holidayHtml;
+      } else {
+        document.getElementById('lockReason').textContent = lockCheck.message;
+      }
+    } else if (lockCheck.lockType === 'maintenance') {
+      icon = '⚙️';
+      title = 'MAINTENANCE';
+      document.getElementById('lockReason').textContent = lockCheck.message;
+    } else if (lockCheck.lockType === 'upgrade') {
+      icon = '🚀';
+      title = 'SYSTEM UPGRADE';
+      document.getElementById('lockReason').textContent = lockCheck.message;
+    } else if (lockCheck.lockType === 'emergency') {
+      icon = '⚠️';
+      title = 'TEMPORARY PAUSE';
+      document.getElementById('lockReason').textContent = lockCheck.message;
+    } else if (lockCheck.lockType === 'event') {
+      icon = '🎉';
+      title = 'SPECIAL EVENT';
+      document.getElementById('lockReason').textContent = lockCheck.message;
+    } else {
+      document.getElementById('lockReason').textContent = lockCheck.message;
     }
-  }
-  
-  if (user.lastWithdrawDate) {
-    const lastWithdraw = new Date(user.lastWithdrawDate).toDateString();
-    const today = new Date().toDateString();
-    if (lastWithdraw === today) {
-      document.getElementById('dailyLimitMessage').style.display = 'block';
+    
+    document.getElementById('lockIcon').textContent = icon;
+    document.getElementById('lockTitle').textContent = title;
+    
+    if (lockCheck.lockDuration) {
+      document.getElementById('lockResumeTime').style.display = 'block';
+      document.getElementById('lockResumeTime').textContent = `⏱️ ${lockCheck.lockDuration}`;
+    } else {
+      document.getElementById('lockResumeTime').style.display = 'none';
+    }
+    
+  } else {
+    // Show normal withdrawal content
+    document.getElementById('withdrawalLockMessageContainer').style.display = 'none';
+    document.getElementById('withdrawalNormalContent').style.display = 'block';
+    
+    // Regular time check
+    const timeCheck = isWithdrawalAllowed();
+    const timeMsg = document.getElementById('timeRestrictionMessage');
+    const timeText = document.getElementById('timeRestrictionText');
+    
+    if (!timeCheck.allowed) {
+      timeMsg.style.display = 'block';
+      timeText.textContent = timeCheck.message;
       document.getElementById('withdrawSubmitBtn').disabled = true;
       document.getElementById('withdrawSubmitBtn').style.opacity = '0.5';
     } else {
-      document.getElementById('dailyLimitMessage').style.display = 'none';
+      timeMsg.style.display = 'none';
     }
+    
+    if (user.memberLevel === 0) {
+      document.getElementById('internRestrictionMessage').style.display = 'block';
+      document.getElementById('dailyLimitMessage').style.display = 'none';
+      document.getElementById('withdrawSubmitBtn').disabled = true;
+      document.getElementById('withdrawSubmitBtn').style.opacity = '0.5';
+    } else {
+      document.getElementById('internRestrictionMessage').style.display = 'none';
+      if (timeCheck.allowed) {
+        document.getElementById('withdrawSubmitBtn').disabled = false;
+        document.getElementById('withdrawSubmitBtn').style.opacity = '1';
+      }
+    }
+    
+    if (user.lastWithdrawDate) {
+      const lastWithdraw = new Date(user.lastWithdrawDate).toDateString();
+      const today = new Date().toDateString();
+      if (lastWithdraw === today) {
+        document.getElementById('dailyLimitMessage').style.display = 'block';
+        document.getElementById('withdrawSubmitBtn').disabled = true;
+        document.getElementById('withdrawSubmitBtn').style.opacity = '0.5';
+      } else {
+        document.getElementById('dailyLimitMessage').style.display = 'none';
+      }
+    }
+    
+    if (user.harvestAccount) {
+      document.getElementById('withdrawHarvestSummary').style.display = 'block';
+    } else {
+      document.getElementById('withdrawHarvestSummary').style.display = 'none';
+    }
+    
+    document.getElementById('selectedWithdrawAmount').value = '';
+    updateWithdrawalAmountButtons();
   }
   
-  if (user.harvestAccount) {
-    document.getElementById('withdrawHarvestSummary').style.display = 'block';
-  } else {
-    document.getElementById('withdrawHarvestSummary').style.display = 'none';
-  }
-  
-  document.getElementById('selectedWithdrawAmount').value = '';
-  updateWithdrawalAmountButtons();
   document.getElementById('withdrawModal').style.display = 'flex';
 }
 
@@ -9567,6 +10150,7 @@ function adminLoginModal() {
     loadGirareAdminControls();
     loadStakesAdminControls();
     updateSupportSettingsInputs();
+    loadWithdrawalAdminControls();
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -9596,6 +10180,7 @@ function adminLogin() {
     loadGirareAdminControls();
     loadStakesAdminControls();
     updateSupportSettingsInputs();
+    loadWithdrawalAdminControls();
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -9644,6 +10229,10 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[9].classList.add('active');
     document.getElementById('adminSupportSection').classList.add('active');
     updateSupportSettingsInputs();
+  } else if (tab === 'withdrawalControl') {
+    document.querySelectorAll('.admin-tab')[10].classList.add('active');
+    document.getElementById('adminWithdrawalControlSection').classList.add('active');
+    loadWithdrawalAdminControls();
   }
 }
 
@@ -10350,7 +10939,7 @@ async function restoreSessionState(useCacheOnly = false) {
   }
 }
 
-// ========== GIRARE FUNCTIONS ==========
+// ========== GIRARE FUNCTIONS - UPDATED WITH PRIZES ON WHEEL ==========
 function loadGirarePage() {
   const user = users[currentUser];
   if (!user) return;
@@ -10399,25 +10988,10 @@ function loadGirarePage() {
     saveUsers();
   }
   
-  // Get available segments (not locked)
+  // Get available segments (not locked) - but we don't show lock status to users
   const availableSegments = girareConfig.segments.filter(s => !s.locked);
   
-  // Build prize list
-  let prizeListHtml = '<div class="spin-history"><h4>🎁 Prize List</h4>';
-  girareConfig.segments.forEach(seg => {
-    const icon = seg.prize.includes('UGX') ? '💰' : 
-                seg.prize.includes('Free') ? '🎟️' : 
-                seg.prize.includes('Multiplier') ? '⚡' : 
-                seg.prize.includes('Better') ? '🍀' : '📱';
-    prizeListHtml += `
-      <div class="spin-history-item">
-        <span>${icon} ${seg.prize}</span>
-        <span class="${seg.locked ? 'spin-lose' : 'spin-win'}">${seg.locked ? '🔒 Locked' : '✅ Available'}</span>
-      </div>
-    `;
-  });
-  prizeListHtml += '</div>';
-  
+  // Build wheel with prizes on segments
   contentDiv.innerHTML = `
     <div class="wheel-container">
       <div class="wheel-pointer"></div>
@@ -10432,7 +11006,28 @@ function loadGirarePage() {
           const y2 = 50 + 45 * Math.sin(endAngle);
           const largeArc = 0;
           const path = `M50,50 L${x1},${y1} A45,45 0 ${largeArc},1 ${x2},${y2} Z`;
-          return `<path d="${path}" fill="hsl(${i * 45}, 70%, 60%)" stroke="#fff" stroke-width="1" />`;
+          
+          // Prize text to display on segment
+          let prizeText = '';
+          if (seg.prize.includes('10,000')) prizeText = '10K';
+          else if (seg.prize.includes('25,000')) prizeText = '25K';
+          else if (seg.prize.includes('50,000')) prizeText = '50K';
+          else if (seg.prize.includes('100,000')) prizeText = '100K';
+          else if (seg.prize.includes('500,000')) prizeText = '500K';
+          else if (seg.prize.includes('Free')) prizeText = 'FREE';
+          else if (seg.prize.includes('Multiplier')) prizeText = '2X';
+          else if (seg.prize.includes('Better')) prizeText = 'LUCK';
+          else prizeText = '?';
+          
+          // Calculate text position (mid-angle)
+          const midAngle = (startAngle + endAngle) / 2;
+          const textX = 50 + 28 * Math.cos(midAngle);
+          const textY = 50 + 28 * Math.sin(midAngle);
+          
+          return `
+            <path d="${path}" fill="hsl(${i * 45}, 70%, 60%)" stroke="#fff" stroke-width="1" />
+            <text x="${textX}" y="${textY}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="8" font-weight="bold" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">${prizeText}</text>
+          `;
         }).join('')}
         <circle cx="50" cy="50" r="15" fill="white" stroke="#333" stroke-width="2" />
       </svg>
@@ -10445,8 +11040,6 @@ function loadGirarePage() {
       </div>
       <p style="margin-top:10px; color:#666;">Refer D-level members in one day to earn spins! (2 members = 1 spin, max 5)</p>
     </div>
-    
-    ${prizeListHtml}
     
     <div class="spin-history">
       <h4>📜 Recent Spins</h4>
