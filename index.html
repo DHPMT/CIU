@@ -351,7 +351,7 @@
     }
 
     /* Main Dashboard Pages */
-    #mainDashboard, #profilePage, #levelPage, #taskPage, #incomePage, #taskRecordPage, #teamReportPage, #goldenHandshakePage, #transactionHistoryPage, #growthJourneyPage, #stakesPage, #girarePage {
+    #mainDashboard, #profilePage, #levelPage, #taskPage, #incomePage, #taskRecordPage, #teamReportPage, #goldenHandshakePage, #transactionHistoryPage, #growthJourneyPage, #stakesPage, #girarePage, #supportPage {
       display: none;
       flex-direction: column;
       height: 100%;
@@ -3603,6 +3603,279 @@
       font-weight: 600;
       cursor: pointer;
     }
+
+    /* ===== NEW CUSTOMER SUPPORT PAGE STYLES ===== */
+    #supportPage {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .support-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .support-icon-large {
+      background: linear-gradient(135deg, #7d5ba6, #b8a3d9);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      color: white;
+      font-size: 2.5rem;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .support-card {
+      background: white;
+      border-radius: 15px;
+      padding: 20px 10px;
+      text-align: center;
+      cursor: pointer;
+      border: 2px solid #e0d0eb;
+      transition: all 0.2s;
+    }
+
+    .support-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(125,91,166,0.2);
+      border-color: #7d5ba6;
+    }
+
+    .support-card i {
+      font-size: 2rem;
+      color: #7d5ba6;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .support-card.whatsapp { border-color: #25D366; }
+    .support-card.whatsapp i { color: #25D366; }
+    .support-card.email { border-color: #EA4335; }
+    .support-card.email i { color: #EA4335; }
+    .support-card.phone { border-color: #7d5ba6; }
+    .support-card.phone i { color: #7d5ba6; }
+    .support-card.livechat { border-color: #ff9800; }
+    .support-card.livechat i { color: #ff9800; }
+
+    .support-card span {
+      font-weight: 600;
+      color: #4a3b5e;
+    }
+
+    .support-card small {
+      display: block;
+      font-size: 0.7rem;
+      color: #8a7a9c;
+      margin-top: 4px;
+    }
+
+    .ticket-section {
+      background: #f5edff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .ticket-section h3 {
+      color: #4a3b5e;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+
+    .ticket-section h3 i {
+      color: #7d5ba6;
+      margin-right: 8px;
+    }
+
+    .ticket-field {
+      margin-bottom: 15px;
+    }
+
+    .ticket-field label {
+      display: block;
+      color: #4a3b5e;
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .ticket-field select,
+    .ticket-field input,
+    .ticket-field textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0d0eb;
+      border-radius: 15px;
+      font-size: 0.95rem;
+      outline: none;
+      background: white;
+      font-family: inherit;
+    }
+
+    .ticket-field select:focus,
+    .ticket-field input:focus,
+    .ticket-field textarea:focus {
+      border-color: #7d5ba6;
+      box-shadow: 0 0 0 3px rgba(125,91,166,0.1);
+    }
+
+    .ticket-submit-btn {
+      background: linear-gradient(135deg, #7d5ba6, #b8a3d9);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 15px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ticket-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(125,91,166,0.3);
+    }
+
+    .faq-section {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e0d0eb;
+    }
+
+    .faq-section h3 {
+      color: #4a3b5e;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+
+    .faq-section h3 i {
+      color: #7d5ba6;
+      margin-right: 8px;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #f0f0f0;
+      margin-bottom: 10px;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .faq-question {
+      padding: 12px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: #4a3b5e;
+    }
+
+    .faq-question i {
+      color: #7d5ba6;
+      transition: transform 0.2s;
+    }
+
+    .faq-question.open i {
+      transform: rotate(90deg);
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 0 12px 0;
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .faq-answer.show {
+      display: block;
+    }
+
+    .recent-tickets {
+      background: #f5edff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .recent-tickets h3 {
+      color: #4a3b5e;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+
+    .recent-tickets h3 i {
+      color: #7d5ba6;
+      margin-right: 8px;
+    }
+
+    .ticket-history-item {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 4px solid #7d5ba6;
+    }
+
+    .ticket-history-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .ticket-history-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .ticket-id {
+      font-weight: 700;
+      color: #4a3b5e;
+    }
+
+    .ticket-status {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    .status-answered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .ticket-subject {
+      font-size: 0.9rem;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .ticket-date {
+      font-size: 0.7rem;
+      color: #999;
+    }
   </style>
 </head>
 <body>
@@ -3647,7 +3920,7 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs - ADDED GIRARE TAB AND STAKES TAB -->
+        <!-- Tabs - ADDED GIRARE TAB AND STAKES TAB AND SUPPORT TAB -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
@@ -3660,6 +3933,8 @@
           <div class="admin-tab" onclick="switchAdminTab('girare')"><i class="fas fa-dice"></i> Girare Wheel</div>
           <!-- NEW STAKES TAB -->
           <div class="admin-tab" onclick="switchAdminTab('stakes')"><i class="fas fa-trophy"></i> Stakes</div>
+          <!-- NEW SUPPORT SETTINGS TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('support')"><i class="fas fa-headset"></i> Support</div>
         </div>
 
         <!-- Deposits Section -->
@@ -4003,6 +4278,54 @@
             <div id="investmentPoolsList"></div>
           </div>
         </div>
+
+        <!-- NEW SUPPORT SETTINGS SECTION -->
+        <div id="adminSupportSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-headset"></i> Support Settings</h3>
+          
+          <div class="admin-company-settings">
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📱 WhatsApp</h4>
+              <div class="company-setting-row">
+                <label>Link:</label>
+                <input type="text" id="whatsappLinkInput" placeholder="https://wa.me/message/46VN6BN2FXN4J1" value="https://wa.me/message/46VN6BN2FXN4J1">
+                <button onclick="saveSupportSetting('whatsapp', 'link')">Save</button>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📧 Email</h4>
+              <div class="company-setting-row">
+                <label>Address:</label>
+                <input type="email" id="emailAddressInput" placeholder="support@uic.ug" value="support@uic.ug">
+                <button onclick="saveSupportSetting('email', 'address')">Save</button>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📞 Phone</h4>
+              <div class="company-setting-row">
+                <label>Number:</label>
+                <input type="text" id="phoneNumberInput" placeholder="0756673144" value="0756673144">
+                <button onclick="saveSupportSetting('phone', 'number')">Save</button>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">💬 Live Chat URL</h4>
+              <div class="company-setting-row">
+                <label>URL:</label>
+                <input type="text" id="livechatUrlInput" placeholder="https://t.me/uic_support" value="https://t.me/uic_support">
+                <button onclick="saveSupportSetting('livechat', 'url')">Save</button>
+              </div>
+            </div>
+            
+            <div style="background: #e8f0e8; padding: 15px; border-radius: 15px; margin-top: 20px;">
+              <p style="color: #28a745; font-weight: 600;"><i class="fas fa-info-circle"></i> Support contact settings are updated in real-time</p>
+              <p style="color: #666; font-size: 0.9rem;">Changes will immediately affect the WhatsApp, Email, Phone and Live Chat buttons on the Support page.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -4280,7 +4603,7 @@
           <span class="incentive-value" id="subsidiaryMotivatorsTotal">0 UGX</span>
         </div>
 
-        <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" -->
+        <!-- Menu Grid - UPDATED: "task record" changed to "Activity Log" and added Support -->
         <div class="menu-grid">
           <div class="menu-item" onclick="showActivityLog()"><i class="fas fa-clipboard-list"></i> Activity Log</div>
           <div class="menu-item" onclick="showTeamReport()"><i class="fas fa-users"></i> team report</div>
@@ -4288,6 +4611,8 @@
           <div class="menu-item" onclick="showGoldenHandshake()"><i class="fas fa-handshake"></i> Golden Handshake</div>
           <div class="menu-item" onclick="showGrowthJourney()"><i class="fas fa-seedling"></i> my growth journey</div>
           <div class="menu-item" onclick="showTransactionHistory()"><i class="fas fa-history"></i> transaction history</div>
+          <!-- NEW SUPPORT MENU ITEM -->
+          <div class="menu-item" onclick="showSupportPage()"><i class="fas fa-headset"></i> customer support</div>
         </div>
       </div>
 
@@ -4860,6 +5185,147 @@
           <div id="girareContent"></div>
         </div>
       </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
+        <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
+        <div class="nav-item" onclick="showPage('level')"><i class="fas fa-chart-simple"></i><span>Level</span></div>
+        <div class="nav-item" onclick="showPage('income')"><i class="fas fa-coins"></i><span>Income</span></div>
+        <div class="nav-item" onclick="showPage('profile')"><i class="fas fa-user"></i><span>Emphatic</span></div>
+      </div>
+    </div>
+
+    <!-- NEW CUSTOMER SUPPORT PAGE -->
+    <div id="supportPage">
+      <div class="scroll-content">
+        <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+        
+        <div class="support-header">
+          <div class="support-icon-large">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h2 style="color: #4a3b5e; font-size: 1.8rem;">Customer Support</h2>
+          <p style="color: #8a7a9c;">We're here to help 24/7</p>
+        </div>
+
+        <!-- Quick Contact Grid -->
+        <div class="support-grid">
+          <div class="support-card whatsapp" onclick="openWhatsAppSupport()">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp</span>
+            <small id="whatsappNumberDisplay">+256 756 673144</small>
+          </div>
+          <div class="support-card email" onclick="openEmailSupport()">
+            <i class="fas fa-envelope"></i>
+            <span>Email</span>
+            <small id="emailDisplay">support@uic.ug</small>
+          </div>
+          <div class="support-card phone" onclick="callSupport()">
+            <i class="fas fa-phone-alt"></i>
+            <span>Call Us</span>
+            <small id="phoneDisplay">0756 673144</small>
+          </div>
+          <div class="support-card livechat" onclick="openLiveChat()">
+            <i class="fas fa-comment-dots"></i>
+            <span>Live Chat</span>
+            <small>24/7 Available</small>
+          </div>
+        </div>
+
+        <!-- Support Ticket Section -->
+        <div class="ticket-section">
+          <h3><i class="fas fa-ticket-alt"></i> Open Support Ticket</h3>
+          
+          <div class="ticket-field">
+            <label>Issue Type</label>
+            <select id="ticketType">
+              <option value="withdrawal">Withdrawal Issue</option>
+              <option value="deposit">Deposit Problem</option>
+              <option value="reading">Reading/Book Issue</option>
+              <option value="referral">Referral Commission</option>
+              <option value="account">Account Access</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="ticket-field">
+            <label>Subject</label>
+            <input type="text" id="ticketSubject" placeholder="Brief description">
+          </div>
+          
+          <div class="ticket-field">
+            <label>Message</label>
+            <textarea id="ticketMessage" rows="4" placeholder="Describe your issue in detail..."></textarea>
+          </div>
+          
+          <button class="ticket-submit-btn" onclick="submitSupportTicket()">
+            <i class="fas fa-paper-plane"></i> SUBMIT TICKET
+          </button>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="faq-section">
+          <h3><i class="fas fa-question-circle"></i> Frequently Asked Questions</h3>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              How do I withdraw my earnings?
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="faq-answer">
+              To withdraw, go to your Profile page, click WITHDRAW, select your wallet, choose an amount, and enter your withdrawal password. Withdrawals are processed Monday-Friday 8am-5pm and Saturday 9am-2pm.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              When do I get paid for referrals?
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="faq-answer">
+              Referral commissions (10% for A-level, 4% for B-level, 1% for C-level) are paid instantly when your downline upgrades to a D level. The commission is based on the downline's deposit amount.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              What is the Subsidiary Motivator bonus?
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="faq-answer">
+              When a team member completes all their daily books, their direct referrer gets a 4% bonus (based on the referrer's daily potential), and the upline gets 1% of that bonus. This encourages team support!
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              I forgot my withdrawal password. What do I do?
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="faq-answer">
+              Please contact support via WhatsApp or email to reset your withdrawal password. You'll need to verify your identity with your registered phone number.
+            </div>
+          </div>
+          
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              How do I get Girare spins?
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="faq-answer">
+              Every day at midnight, you get spins based on how many D-level members you referred the previous day: 1 spin for every 2 D-level referrals, up to 5 spins max per day.
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Tickets -->
+        <div class="recent-tickets" id="recentTicketsSection">
+          <h3><i class="fas fa-history"></i> Your Recent Tickets</h3>
+          <div id="recentTicketsList">
+            <p style="color: #999; text-align: center;">No support tickets yet</p>
+          </div>
+        </div>
+      </div>
+      
       <div class="bottom-nav">
         <div class="nav-item" onclick="showPage('home')"><i class="fas fa-home"></i><span>Home</span></div>
         <div class="nav-item" onclick="showPage('task')"><i class="fas fa-book"></i><span>Books</span></div>
@@ -5473,6 +5939,17 @@ let companySettings = {
   dpkAirtel: { merchant: "6874567", name: "PAY TO PAY UGANDA LTD" }
 };
 
+// ========== SUPPORT SETTINGS ==========
+let supportSettings = {
+  whatsapp: { link: "https://wa.me/message/46VN6BN2FXN4J1" },
+  email: { address: "support@uic.ug" },
+  phone: { number: "0756673144" },
+  livechat: { url: "https://t.me/uic_support" }
+};
+
+// ========== SUPPORT TICKETS ==========
+let supportTickets = [];
+
 // ========== GIRARE WHEEL CONFIGURATION ==========
 let girareConfig = {
   segments: [
@@ -5710,6 +6187,8 @@ function loadFromFirebase() {
         loadGirarePage();
       } else if (document.getElementById('stakesPage').style.display === 'flex') {
         loadStakesPage();
+      } else if (document.getElementById('supportPage').style.display === 'flex') {
+        loadSupportPage();
       }
     }
   });
@@ -5739,6 +6218,26 @@ function loadFromFirebase() {
       companySettings = settings;
     }
     updateCompanySettingsInputs();
+  });
+  
+  // Load support settings
+  db.ref('supportSettings').on('value', (snapshot) => {
+    const settings = snapshot.val();
+    if (settings) {
+      supportSettings = settings;
+    }
+    updateSupportSettingsInputs();
+    if (document.getElementById('supportPage').style.display === 'flex') {
+      updateSupportPageContactInfo();
+    }
+  });
+  
+  // Load support tickets
+  db.ref('supportTickets').on('value', (snapshot) => {
+    supportTickets = snapshot.val() || [];
+    if (document.getElementById('supportPage').style.display === 'flex') {
+      loadSupportTickets();
+    }
   });
   
   // Load girare configuration
@@ -5792,6 +6291,55 @@ function updateCompanySettingsInputs() {
   if (dpkMtnName) dpkMtnName.value = companySettings.dpkMtn?.name || "NAMUHANGA VERONIC";
   if (dpkAirtelMerchant) dpkAirtelMerchant.value = companySettings.dpkAirtel?.merchant || "6874567";
   if (dpkAirtelName) dpkAirtelName.value = companySettings.dpkAirtel?.name || "PAY TO PAY UGANDA LTD";
+}
+
+// ===== UPDATE SUPPORT SETTINGS INPUT FIELDS =====
+function updateSupportSettingsInputs() {
+  const whatsappLink = document.getElementById('whatsappLinkInput');
+  const emailAddress = document.getElementById('emailAddressInput');
+  const phoneNumber = document.getElementById('phoneNumberInput');
+  const livechatUrl = document.getElementById('livechatUrlInput');
+  
+  if (whatsappLink) whatsappLink.value = supportSettings.whatsapp?.link || "https://wa.me/message/46VN6BN2FXN4J1";
+  if (emailAddress) emailAddress.value = supportSettings.email?.address || "support@uic.ug";
+  if (phoneNumber) phoneNumber.value = supportSettings.phone?.number || "0756673144";
+  if (livechatUrl) livechatUrl.value = supportSettings.livechat?.url || "https://t.me/uic_support";
+}
+
+// ===== UPDATE SUPPORT PAGE CONTACT INFO =====
+function updateSupportPageContactInfo() {
+  const whatsappDisplay = document.getElementById('whatsappNumberDisplay');
+  const emailDisplay = document.getElementById('emailDisplay');
+  const phoneDisplay = document.getElementById('phoneDisplay');
+  
+  if (whatsappDisplay) {
+    const link = supportSettings.whatsapp?.link || "https://wa.me/message/46VN6BN2FXN4J1";
+    const match = link.match(/\/(\d+)/);
+    if (match) {
+      whatsappDisplay.textContent = formatPhoneNumber(match[1]);
+    } else {
+      whatsappDisplay.textContent = "+256 756 673144";
+    }
+  }
+  
+  if (emailDisplay) {
+    emailDisplay.textContent = supportSettings.email?.address || "support@uic.ug";
+  }
+  
+  if (phoneDisplay) {
+    phoneDisplay.textContent = formatPhoneNumber(supportSettings.phone?.number || "0756673144");
+  }
+}
+
+function formatPhoneNumber(phone) {
+  if (!phone) return "";
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10) {
+    return cleaned.substring(0,4) + ' ' + cleaned.substring(4,7) + ' ' + cleaned.substring(7);
+  } else if (cleaned.length === 9) {
+    return '0' + cleaned.substring(0,3) + ' ' + cleaned.substring(3,6) + ' ' + cleaned.substring(6);
+  }
+  return phone;
 }
 
 // ===== SAVE COMPANY SETTING =====
@@ -5849,10 +6397,51 @@ function saveCompanySetting(section, field) {
     });
 }
 
+// ===== SAVE SUPPORT SETTING =====
+function saveSupportSetting(section, field) {
+  if (!isAdminLoggedIn) {
+    showConfirmModal('Error', 'Please login as admin first', 'warning');
+    return;
+  }
+  
+  let value;
+  if (section === 'whatsapp') {
+    value = document.getElementById('whatsappLinkInput').value;
+  } else if (section === 'email') {
+    value = document.getElementById('emailAddressInput').value;
+  } else if (section === 'phone') {
+    value = document.getElementById('phoneNumberInput').value;
+  } else if (section === 'livechat') {
+    value = document.getElementById('livechatUrlInput').value;
+  }
+  
+  if (!value) {
+    showConfirmModal('Error', 'Please enter a value', 'warning');
+    return;
+  }
+  
+  // Update local object
+  if (!supportSettings[section]) supportSettings[section] = {};
+  supportSettings[section][field === 'link' ? 'link' : field === 'address' ? 'address' : field === 'number' ? 'number' : 'url'] = value;
+  supportSettings.lastUpdated = new Date().toISOString();
+  
+  // Save to Firebase
+  db.ref('supportSettings').set(supportSettings)
+    .then(() => {
+      showConfirmModal('Success', `${section} updated successfully!`, 'success');
+      updateSupportPageContactInfo();
+    })
+    .catch(error => {
+      console.error('Error saving support settings:', error);
+      showConfirmModal('Error', 'Failed to save settings', 'warning');
+    });
+}
+
 // ========== SAVE TO FIREBASE ==========
 function saveUsers() { db.ref('users').set(users); }
 function saveDeposits() { db.ref('pendingDeposits').set(pendingDeposits); }
 function saveWithdrawals() { db.ref('pendingWithdrawals').set(pendingWithdrawals); }
+function saveSupportTickets() { db.ref('supportTickets').set(supportTickets); }
 function saveGirareConfig() { db.ref('girareConfig').set(girareConfig); }
 function saveStakesConfig() { db.ref('stakesConfig').set(stakesConfig); }
 
@@ -6377,7 +6966,9 @@ function handleRegister(e) {
     spinHistory: [],
     // ===== STAKES FIELDS =====
     activeStakes: [],
-    stakeHistory: []
+    stakeHistory: [],
+    // ===== SUPPORT FIELDS =====
+    supportTickets: []
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
@@ -6457,6 +7048,7 @@ function showPage(page) {
   document.getElementById('growthJourneyPage').style.display = page === 'growthJourney' ? 'flex' : 'none';
   document.getElementById('stakesPage').style.display = page === 'stakes' ? 'flex' : 'none';
   document.getElementById('girarePage').style.display = page === 'girare' ? 'flex' : 'none';
+  document.getElementById('supportPage').style.display = page === 'support' ? 'flex' : 'none';
 
   document.querySelectorAll('.bottom-nav').forEach(nav => {
     const items = nav.querySelectorAll('.nav-item');
@@ -6480,6 +7072,7 @@ function showPage(page) {
   if (page === 'growthJourney') loadGrowthJourney();
   if (page === 'stakes') loadStakesPage();
   if (page === 'girare') loadGirarePage();
+  if (page === 'support') loadSupportPage();
   
   resetInactivityTimer();
 }
@@ -6490,6 +7083,111 @@ function showTeamReport() { showPage('teamReport'); }
 function showGoldenHandshake() { showPage('goldenHandshake'); }
 function showTransactionHistory() { showPage('transactionHistory'); }
 function showGrowthJourney() { showPage('growthJourney'); }
+function showSupportPage() { showPage('support'); }
+
+// ========== SUPPORT PAGE FUNCTIONS ==========
+function loadSupportPage() {
+  updateSupportPageContactInfo();
+  loadSupportTickets();
+}
+
+function loadSupportTickets() {
+  const user = users[currentUser];
+  if (!user) return;
+  
+  const userTickets = supportTickets.filter(t => t.userPhone === user.phone).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const container = document.getElementById('recentTicketsList');
+  
+  if (userTickets.length === 0) {
+    container.innerHTML = '<p style="color: #999; text-align: center;">No support tickets yet</p>';
+    return;
+  }
+  
+  let html = '';
+  userTickets.slice(0, 3).forEach(ticket => {
+    const date = new Date(ticket.timestamp).toLocaleDateString();
+    const statusClass = ticket.status === 'answered' ? 'status-answered' : 'status-pending';
+    html += `
+      <div class="ticket-history-item">
+        <div class="ticket-history-header">
+          <span class="ticket-id">#${ticket.id}</span>
+          <span class="ticket-status ${statusClass}">${ticket.status}</span>
+        </div>
+        <div class="ticket-subject">${ticket.subject}</div>
+        <div class="ticket-date">${date}</div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function openWhatsAppSupport() {
+  const link = supportSettings.whatsapp?.link || "https://wa.me/message/46VN6BN2FXN4J1";
+  window.open(link, '_blank');
+}
+
+function openEmailSupport() {
+  const email = supportSettings.email?.address || "support@uic.ug";
+  const subject = "Support Request from UIC User";
+  const body = `User: ${users[currentUser]?.phone}\nName: ${users[currentUser]?.fullName}\n\n`;
+  window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+}
+
+function callSupport() {
+  const phone = supportSettings.phone?.number || "0756673144";
+  window.open(`tel:${phone}`, '_blank');
+}
+
+function openLiveChat() {
+  const url = supportSettings.livechat?.url || "https://t.me/uic_support";
+  window.open(url, '_blank');
+}
+
+function toggleFaq(element) {
+  element.classList.toggle('open');
+  const answer = element.nextElementSibling;
+  answer.classList.toggle('show');
+}
+
+function submitSupportTicket() {
+  const user = users[currentUser];
+  if (!user) {
+    showConfirmModal('Error', 'Please login first', 'warning');
+    return;
+  }
+  
+  const type = document.getElementById('ticketType').value;
+  const subject = document.getElementById('ticketSubject').value;
+  const message = document.getElementById('ticketMessage').value;
+  
+  if (!subject || !message) {
+    showConfirmModal('Error', 'Please fill all fields', 'warning');
+    return;
+  }
+  
+  const ticket = {
+    id: 'TKT' + Math.floor(Math.random() * 1000000),
+    userPhone: user.phone,
+    userName: user.fullName,
+    type: type,
+    subject: subject,
+    message: message,
+    timestamp: new Date().toISOString(),
+    status: 'pending',
+    replies: []
+  };
+  
+  supportTickets.push(ticket);
+  saveSupportTickets();
+  
+  // Clear form
+  document.getElementById('ticketSubject').value = '';
+  document.getElementById('ticketMessage').value = '';
+  
+  showConfirmModal('Success', 'Support ticket submitted! We\'ll respond within 24 hours.', 'success');
+  loadSupportTickets();
+}
 
 // ========== STAKES PAGE ==========
 function loadStakesPage() {
@@ -8814,6 +9512,7 @@ function logout() {
   document.getElementById('growthJourneyPage').style.display = 'none';
   document.getElementById('stakesPage').style.display = 'none';
   document.getElementById('girarePage').style.display = 'none';
+  document.getElementById('supportPage').style.display = 'none';
   
   closeUserDetailsModal();
   
@@ -8867,6 +9566,7 @@ function adminLoginModal() {
     loadAdminData();
     loadGirareAdminControls();
     loadStakesAdminControls();
+    updateSupportSettingsInputs();
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -8895,6 +9595,7 @@ function adminLogin() {
     loadAdminData();
     loadGirareAdminControls();
     loadStakesAdminControls();
+    updateSupportSettingsInputs();
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -8939,6 +9640,10 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[8].classList.add('active');
     document.getElementById('adminStakesSection').classList.add('active');
     loadStakesAdminControls();
+  } else if (tab === 'support') {
+    document.querySelectorAll('.admin-tab')[9].classList.add('active');
+    document.getElementById('adminSupportSection').classList.add('active');
+    updateSupportSettingsInputs();
   }
 }
 
@@ -9410,6 +10115,7 @@ function handleReferralLink() {
     document.getElementById('growthJourneyPage').style.display = 'none';
     document.getElementById('stakesPage').style.display = 'none';
     document.getElementById('girarePage').style.display = 'none';
+    document.getElementById('supportPage').style.display = 'none';
     
     document.getElementById('authContainer').style.display = 'block';
     document.getElementById('accessRestricted').style.display = 'none';
@@ -9556,6 +10262,7 @@ function getCurrentPage() {
   if (document.getElementById('growthJourneyPage').style.display === 'flex') return 'growthJourney';
   if (document.getElementById('stakesPage').style.display === 'flex') return 'stakes';
   if (document.getElementById('girarePage').style.display === 'flex') return 'girare';
+  if (document.getElementById('supportPage').style.display === 'flex') return 'support';
   return 'home';
 }
 
@@ -10516,6 +11223,7 @@ function showAuthPage() {
   document.getElementById('growthJourneyPage').style.display = 'none';
   document.getElementById('stakesPage').style.display = 'none';
   document.getElementById('girarePage').style.display = 'none';
+  document.getElementById('supportPage').style.display = 'none';
 }
   </script>
 </body>
