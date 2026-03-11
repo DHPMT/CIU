@@ -4276,6 +4276,103 @@
       font-size: 0.9rem;
       margin: 10px 0;
     }
+
+    /* ===== FIX 5: ANNOUNCEMENT OVERLAY STYLES (FULL SCREEN, ONLY DISMISS) ===== */
+    .announcement-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      backdrop-filter: blur(5px);
+    }
+    
+    .announcement-card {
+      max-width: 350px;
+      width: 90%;
+      background: white;
+      border-radius: 30px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .announcement-card.purple { background: linear-gradient(135deg, #7d5ba6, #b8a3d9); color: white; }
+    .announcement-card.green { background: linear-gradient(135deg, #2e7d32, #4caf50); color: white; }
+    .announcement-card.blue { background: linear-gradient(135deg, #003366, #87CEEB); color: white; }
+    .announcement-card.orange { background: linear-gradient(135deg, #ff9800, #ffc107); color: white; }
+    .announcement-card.red { background: linear-gradient(135deg, #d32f2f, #f44336); color: white; }
+    .announcement-card.yellow { background: linear-gradient(135deg, #fbc02d, #ffeb3b); color: #333; }
+    
+    .announcement-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    
+    .announcement-message {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 25px;
+      white-space: pre-line;
+    }
+    
+    .announcement-dismiss {
+      background: rgba(255,255,255,0.2);
+      border: 2px solid white;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s;
+    }
+    
+    .announcement-card.yellow .announcement-dismiss {
+      background: #333;
+      border-color: #333;
+      color: white;
+    }
+    
+    .announcement-dismiss:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.3);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ===== FIX 6: ENHANCED DEPOSIT TABLE ACTIONS ===== */
+    .deposit-action-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      margin: 0 3px;
+      padding: 5px;
+      border-radius: 5px;
+      transition: all 0.2s;
+    }
+    
+    .deposit-action-btn.approve { color: #28a745; }
+    .deposit-action-btn.reject { color: #dc3545; }
+    .deposit-action-btn.suspend { color: #ff9800; }
+    .deposit-action-btn.delete { color: #dc3545; }
+    
+    .deposit-action-btn:hover {
+      transform: scale(1.2);
+    }
   </style>
 </head>
 <body>
@@ -4338,9 +4435,11 @@
           <div class="admin-tab" onclick="switchAdminTab('support')"><i class="fas fa-headset"></i> Support</div>
           <!-- NEW WITHDRAWAL CONTROL TAB -->
           <div class="admin-tab" onclick="switchAdminTab('withdrawalControl')"><i class="fas fa-lock"></i> Withdrawal Control</div>
+          <!-- FIX 7: NEW ANNOUNCEMENT TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('announcement')"><i class="fas fa-bullhorn"></i> Announcement</div>
         </div>
 
-        <!-- Deposits Section -->
+        <!-- Deposits Section (UPDATED with FIX 6 actions) -->
         <div id="adminDepositsSection" class="admin-section active">
           <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
             <input type="text" id="searchDepositInput" placeholder="Search by user phone or name..." style="flex: 1; padding: 10px; border: 2px solid #e0d0eb; border-radius: 30px;">
@@ -4351,12 +4450,12 @@
             <thead>
               <tr>
                 <th>Date</th>
-                <th>User</th>
-                <th>Phone</th>
+                <th>Login Phone</th>
+                <th>Deposit Phone</th>
                 <th>Amount</th>
                 <th>TID</th>
-                <th>Detected #</th>
                 <th>Network</th>
+                <th>Method</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -4468,35 +4567,39 @@
           </div>
         </div>
 
-        <!-- Company Settings Section -->
+        <!-- Company Settings Section (FIX 2: UNKA PT SETTINGS) -->
         <div id="adminCompanySettingsSection" class="admin-section">
           <h3 style="margin-bottom: 20px;"><i class="fas fa-building"></i> Company Settings</h3>
           <div class="admin-company-settings">
-            <div style="margin-bottom: 20px;">
-              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📱 MTN</h4>
-              <div class="company-setting-row">
-                <label>Phone:</label>
-                <input type="text" id="mtnPhoneInput" placeholder="0766913235" value="0766913235">
-                <button onclick="saveCompanySetting('mtn', 'phone')">Save</button>
+            <!-- FIX 2: UNKA PT SETTINGS (MTN & Airtel) -->
+            <div style="margin-bottom: 20px; border: 2px solid #FFD700; padding: 15px; border-radius: 20px;">
+              <h4 style="color: #FFD700; margin-bottom: 15px;">📷 UNKA PT SETTINGS</h4>
+              <div style="margin-bottom: 20px;">
+                <h5 style="color: #7d5ba6;">📱 MTN</h5>
+                <div class="company-setting-row">
+                  <label>Phone:</label>
+                  <input type="text" id="mtnPhoneInput" placeholder="0766913235" value="0766913235">
+                  <button onclick="saveCompanySetting('mtn', 'phone')">Save</button>
+                </div>
+                <div class="company-setting-row">
+                  <label>Name:</label>
+                  <input type="text" id="mtnNameInput" placeholder="VERONIC NAIBOLYA NAMUHANGA" value="VERONIC NAIBOLYA NAMUHANGA">
+                  <button onclick="saveCompanySetting('mtn', 'name')">Save</button>
+                </div>
               </div>
-              <div class="company-setting-row">
-                <label>Name:</label>
-                <input type="text" id="mtnNameInput" placeholder="VERONIC NAIBOLYA NAMUHANGA" value="VERONIC NAIBOLYA NAMUHANGA">
-                <button onclick="saveCompanySetting('mtn', 'name')">Save</button>
-              </div>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-              <h4 style="color: #7d5ba6; margin-bottom: 15px;">📞 AIRTEL</h4>
-              <div class="company-setting-row">
-                <label>Phone:</label>
-                <input type="text" id="airtelPhoneInput" placeholder="0756673144" value="0756673144">
-                <button onclick="saveCompanySetting('airtel', 'phone')">Save</button>
-              </div>
-              <div class="company-setting-row">
-                <label>Name:</label>
-                <input type="text" id="airtelNameInput" placeholder="BUSINESS" value="BUSINESS">
-                <button onclick="saveCompanySetting('airtel', 'name')">Save</button>
+              
+              <div style="margin-bottom: 20px;">
+                <h5 style="color: #7d5ba6;">📞 AIRTEL</h5>
+                <div class="company-setting-row">
+                  <label>Phone:</label>
+                  <input type="text" id="airtelPhoneInput" placeholder="0756673144" value="0756673144">
+                  <button onclick="saveCompanySetting('airtel', 'phone')">Save</button>
+                </div>
+                <div class="company-setting-row">
+                  <label>Name:</label>
+                  <input type="text" id="airtelNameInput" placeholder="BUSINESS" value="BUSINESS">
+                  <button onclick="saveCompanySetting('airtel', 'name')">Save</button>
+                </div>
               </div>
             </div>
 
@@ -4832,7 +4935,81 @@
             </div>
           </div>
         </div>
+
+        <!-- FIX 7: NEW ANNOUNCEMENT SECTION -->
+        <div id="adminAnnouncementSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-bullhorn"></i> Announcement Control</h3>
+          
+          <div class="admin-company-settings">
+            <div style="margin-bottom: 20px; text-align: center;">
+              <div style="font-size: 2rem; margin-bottom: 10px;">📢</div>
+              <h4 style="color: #7d5ba6;">Current Announcement Status</h4>
+              
+              <div style="display: flex; justify-content: center; gap: 30px; margin: 20px 0;">
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 1.2rem; cursor: pointer;">
+                  <input type="radio" name="announcementStatus" value="active" onchange="toggleAnnouncementStatus(true)"> 🔘 ACTIVE
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 1.2rem; cursor: pointer;">
+                  <input type="radio" name="announcementStatus" value="inactive" onchange="toggleAnnouncementStatus(false)" checked> ○ INACTIVE
+                </label>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+              <h4 style="color: #7d5ba6; margin-bottom: 15px;">Announcement Details</h4>
+              
+              <div class="company-setting-row">
+                <label>Title:</label>
+                <input type="text" id="announcementTitle" placeholder="📢 SPECIAL PROMOTION!" style="flex: 1;">
+              </div>
+              
+              <div style="margin: 15px 0;">
+                <label>Message:</label>
+                <textarea id="announcementMessage" rows="4" style="width: 100%; padding: 10px; border: 2px solid #e0d0eb; border-radius: 15px; margin-top: 5px;" placeholder="Enter your announcement message here..."></textarea>
+              </div>
+              
+              <div class="company-setting-row">
+                <label>Background:</label>
+                <select id="announcementColor" style="flex: 1; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px;">
+                  <option value="purple">💜 Purple</option>
+                  <option value="green">💚 Green</option>
+                  <option value="blue">💙 Blue</option>
+                  <option value="orange">🧡 Orange</option>
+                  <option value="red">❤️ Red</option>
+                  <option value="yellow">💛 Yellow</option>
+                </select>
+              </div>
+              
+              <div class="company-setting-row">
+                <label>Show to:</label>
+                <select id="announcementTarget" style="flex: 1; padding: 8px; border: 2px solid #e0d0eb; border-radius: 20px;">
+                  <option value="all">👥 All Users</option>
+                  <option value="dlevel">⭐ D-Level Only</option>
+                  <option value="intern">🌱 Interns Only</option>
+                </select>
+              </div>
+            </div>
+            
+            <div style="background: #e8f0e8; padding: 15px; border-radius: 15px; margin-top: 20px;">
+              <p style="color: #28a745; font-weight: 600;"><i class="fas fa-info-circle"></i> When ACTIVE: Users see full-screen message with only DISMISS button</p>
+              <p style="color: #666; font-size: 0.9rem;">When INACTIVE: No message shown, system back to normal</p>
+            </div>
+            
+            <button onclick="saveAnnouncement()" style="background: #28a745; color: white; border: none; padding: 15px; border-radius: 30px; width: 100%; font-size: 1.2rem; font-weight: 600; margin-top: 20px; cursor: pointer;">
+              <i class="fas fa-save"></i> SAVE ANNOUNCEMENT
+            </button>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- FIX 5: ANNOUNCEMENT OVERLAY (FULL SCREEN, ONLY DISMISS) -->
+  <div id="announcementOverlay" class="announcement-overlay">
+    <div class="announcement-card" id="announcementCard">
+      <div class="announcement-title" id="announcementTitle">📢 SPECIAL PROMOTION!</div>
+      <div class="announcement-message" id="announcementMessage">Upgrade to D1 this week and get 10% bonus on your first deposit!</div>
+      <button class="announcement-dismiss" onclick="dismissAnnouncement()">DISMISS</button>
     </div>
   </div>
 
@@ -4976,9 +5153,18 @@
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg); font-size: 5rem; font-weight: 900; color: white; opacity: 0.15; animation: pulse 4s infinite;">UIC</div>
           </div>
           
-          <!-- Welcome Text (unchanged) -->
-          <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); position: relative; z-index: 2;">WELCOME</div>
-          <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); position: relative; z-index: 2;">Learn about coffee growing and earn rewards</div>
+          <!-- FIX 1: Bronze/Gold Logo Box added here -->
+          <div style="display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2;">
+            <div>
+              <div class="welcome-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); margin: 0;">WELCOME</div>
+              <div class="welcome-subtitle" style="color: rgba(255,255,255,0.9); text-shadow: 1px 1px 2px rgba(0,0,0,0.3); margin: 0;">Learn about coffee growing and earn rewards</div>
+            </div>
+            <!-- Bronze/Gold Logo Box -->
+            <div style="background: linear-gradient(135deg, #FF8C00, #FFD700); border-radius: 15px; padding: 10px 15px; text-align: center; box-shadow: 0 5px 15px rgba(255,140,0,0.3);">
+              <div style="font-size: 1.5rem; font-weight: 900; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">UIC</div>
+              <div style="font-size: 1rem; color: white;">☕</div>
+            </div>
+          </div>
         </div>
         
         <!-- NEW: Photo Gallery -->
@@ -4997,7 +5183,7 @@
         <!-- Member Card -->
         <div class="member-card" id="memberCard">
           <div class="member-type" id="memberTypeDisplay">INTERN MEMBER</div>
-          <div class="member-days" id="memberDaysDisplay">4 days remaining</div>
+          <div class="member-days" id="memberDaysDisplay">18 days remaining</div>
           <div class="progress-bar">
             <div class="progress-fill" id="memberProgress" style="width: 100%;"></div>
           </div>
@@ -5103,7 +5289,7 @@
         <!-- Member Stats -->
         <div style="background:#f5edff; border-radius:15px; padding:15px; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between;">
-            <span>Days Left: <span id="profileDaysLeft">4</span></span>
+            <span>Days Left: <span id="profileDaysLeft">18</span></span>
             <span>Books Today: <span id="profileBooksToday">0/1</span></span>
           </div>
         </div>
@@ -5499,7 +5685,7 @@
           <!-- Intern - UPDATED -->
           <div style="background: #f5edff; border-radius: 12px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #7d5ba6;">
             <div style="font-weight: 700; font-size: 1rem; margin-bottom: 4px;">📋 INTERN "The Foundation Builder"</div>
-            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Every empire starts with a solid foundation. 1,500 daily | 6,000 monthly across 4 days. Withdrawals not available during this trial period – focus on learning. After 4 days, upgrade to D1 to continue earning.</div>
+            <div style="font-size: 0.85rem; color: #333; line-height: 1.4;">Every empire starts with a solid foundation. 1,500 daily | 6,000 monthly across 18 days. Withdrawals not available during this trial period – focus on learning. After 18 days, upgrade to D1 to continue earning.</div>
           </div>
           
           <!-- D1 -->
@@ -5721,7 +5907,7 @@
       </div>
     </div>
 
-    <!-- NEW CUSTOMER SUPPORT PAGE -->
+    <!-- NEW CUSTOMER SUPPORT PAGE (FIX 4: REDESIGNED) -->
     <div id="supportPage">
       <div class="scroll-content">
         <button class="back-btn" onclick="showPage('profile')"><i class="fas fa-arrow-left"></i> Back to Profile</button>
@@ -5734,27 +5920,33 @@
           <p style="color: #8a7a9c;">We're here to help 24/7</p>
         </div>
 
-        <!-- Quick Contact Grid -->
-        <div class="support-grid">
-          <div class="support-card whatsapp" onclick="openWhatsAppSupport()">
-            <i class="fab fa-whatsapp"></i>
-            <span>WhatsApp</span>
-            <small id="whatsappNumberDisplay">+256 756 673144</small>
+        <!-- FIX 4: 4 Small Buttons in One Line -->
+        <div style="display: flex; gap: 8px; margin-bottom: 25px; justify-content: center;">
+          <!-- Customer Care (WhatsApp) -->
+          <div onclick="openWhatsAppSupport()" style="flex: 1; background: white; border: 2px solid #25D366; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
+            <i class="fab fa-whatsapp" style="font-size: 1.5rem; color: #25D366; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">CUSTOMER</span>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e; display: block;">CARE</span>
           </div>
-          <div class="support-card email" onclick="openEmailSupport()">
-            <i class="fas fa-envelope"></i>
-            <span>Email</span>
-            <small id="emailDisplay">support@uic.ug</small>
+          
+          <!-- Email -->
+          <div onclick="openEmailSupport()" style="flex: 1; background: white; border: 2px solid #EA4335; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
+            <i class="fas fa-envelope" style="font-size: 1.5rem; color: #EA4335; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">EMAIL</span>
           </div>
-          <div class="support-card phone" onclick="callSupport()">
-            <i class="fas fa-phone-alt"></i>
-            <span>Call Us</span>
-            <small id="phoneDisplay">0756 673144</small>
+          
+          <!-- Call Us -->
+          <div onclick="callSupport()" style="flex: 1; background: white; border: 2px solid #7d5ba6; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
+            <i class="fas fa-phone-alt" style="font-size: 1.5rem; color: #7d5ba6; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">CALL US</span>
+            <small style="font-size: 0.6rem; color: #8a7a9c; display: block;" id="phoneDisplay">0756***144</small>
           </div>
-          <div class="support-card livechat" onclick="openLiveChat()">
-            <i class="fas fa-comment-dots"></i>
-            <span>Live Chat</span>
-            <small>24/7 Available</small>
+          
+          <!-- Messaggiare (D-level only) -->
+          <div id="messaggiareButton" onclick="openMessaggiare()" style="flex: 1; background: white; border: 2px solid #ff9800; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
+            <i class="fas fa-comment-dots" style="font-size: 1.5rem; color: #ff9800; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">MESSAG-</span>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">GIARE</span>
           </div>
         </div>
 
@@ -6796,7 +6988,7 @@ let allBooks = [
 
 // Level definitions
 const levels = {
-  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 4, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 },
+  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 }, // FIX 5: Changed from 4 to 18 days
   1: { name: "D1", dailyBooks: 2, reward: 1125, deposit: 63000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 2 },
   2: { name: "D2", dailyBooks: 4, reward: 1775, deposit: 200000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 4 },
   3: { name: "D3", dailyBooks: 12, reward: 1584, deposit: 532000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 8 },
@@ -6980,6 +7172,15 @@ function loadFromFirebase() {
       loadWithdrawalAdminControls();
     }
   });
+  
+  // FIX 7: Load announcement configuration
+  db.ref('announcementConfig').on('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      announcementConfig = config;
+      updateAnnouncementUI();
+    }
+  });
 }
 
 // ===== UPDATE COMPANY SETTINGS INPUT FIELDS =====
@@ -7048,9 +7249,9 @@ function formatPhoneNumber(phone) {
   if (!phone) return "";
   const cleaned = phone.replace(/\D/g, '');
   if (cleaned.length === 10) {
-    return cleaned.substring(0,4) + ' ' + cleaned.substring(4,7) + ' ' + cleaned.substring(7);
+    return cleaned.substring(0,4) + '***' + cleaned.substring(7); // FIX 4: Masked number
   } else if (cleaned.length === 9) {
-    return '0' + cleaned.substring(0,3) + ' ' + cleaned.substring(3,6) + ' ' + cleaned.substring(6);
+    return '0' + cleaned.substring(0,3) + '***' + cleaned.substring(6);
   }
   return phone;
 }
@@ -7162,6 +7363,110 @@ function saveWithdrawals() { db.ref('pendingWithdrawals').set(pendingWithdrawals
 function saveSupportTickets() { db.ref('supportTickets').set(supportTickets); }
 function saveGirareConfig() { db.ref('girareConfig').set(girareConfig); }
 function saveStakesConfig() { db.ref('stakesConfig').set(stakesConfig); }
+
+// FIX 7: Announcement configuration
+let announcementConfig = {
+  isActive: false,
+  title: "📢 SPECIAL PROMOTION!",
+  message: "Upgrade to D1 this week and get 10% bonus on your first deposit!",
+  color: "purple",
+  target: "all"
+};
+
+function saveAnnouncementConfig() {
+  db.ref('announcementConfig').set(announcementConfig);
+}
+
+// FIX 7: Toggle announcement status
+function toggleAnnouncementStatus(active) {
+  announcementConfig.isActive = active;
+  saveAnnouncementConfig();
+  if (!active) {
+    document.getElementById('announcementOverlay').style.display = 'none';
+  }
+}
+
+// FIX 7: Save announcement from admin
+function saveAnnouncement() {
+  const title = document.getElementById('announcementTitle').value;
+  const message = document.getElementById('announcementMessage').value;
+  const color = document.getElementById('announcementColor').value;
+  const target = document.getElementById('announcementTarget').value;
+  
+  if (!title || !message) {
+    showConfirmModal('Error', 'Please fill title and message', 'warning');
+    return;
+  }
+  
+  announcementConfig.title = title;
+  announcementConfig.message = message;
+  announcementConfig.color = color;
+  announcementConfig.target = target;
+  
+  saveAnnouncementConfig();
+  showConfirmModal('Success', 'Announcement saved!', 'success');
+}
+
+// FIX 7: Update announcement UI
+function updateAnnouncementUI() {
+  const overlay = document.getElementById('announcementOverlay');
+  const card = document.getElementById('announcementCard');
+  const titleEl = document.getElementById('announcementTitle');
+  const messageEl = document.getElementById('announcementMessage');
+  
+  card.className = 'announcement-card ' + announcementConfig.color;
+  titleEl.textContent = announcementConfig.title;
+  messageEl.textContent = announcementConfig.message;
+  
+  // Check if should show to current user
+  if (announcementConfig.isActive && currentUser && users[currentUser]) {
+    const user = users[currentUser];
+    const userLevel = user.memberLevel || 0;
+    
+    let shouldShow = false;
+    if (announcementConfig.target === 'all') shouldShow = true;
+    else if (announcementConfig.target === 'dlevel' && userLevel > 0) shouldShow = true;
+    else if (announcementConfig.target === 'intern' && userLevel === 0) shouldShow = true;
+    
+    // Check if user has dismissed this announcement
+    const dismissed = user.dismissedAnnouncements || {};
+    if (shouldShow && !dismissed[announcementConfig.title]) {
+      overlay.style.display = 'flex';
+    } else {
+      overlay.style.display = 'none';
+    }
+  } else {
+    overlay.style.display = 'none';
+  }
+}
+
+// FIX 7: Dismiss announcement
+function dismissAnnouncement() {
+  if (currentUser && users[currentUser]) {
+    const user = users[currentUser];
+    if (!user.dismissedAnnouncements) user.dismissedAnnouncements = {};
+    user.dismissedAnnouncements[announcementConfig.title] = new Date().toISOString();
+    saveUsers();
+  }
+  document.getElementById('announcementOverlay').style.display = 'none';
+}
+
+// FIX 4: Open Messaggiare (D-level only)
+function openMessaggiare() {
+  if (!currentUser || !users[currentUser]) {
+    showConfirmModal('Error', 'Please login first', 'warning');
+    return;
+  }
+  
+  const user = users[currentUser];
+  if (user.memberLevel === 0) {
+    showConfirmModal('Access Denied', 'Upgrade to D level to access Messaggiare', 'warning');
+    return;
+  }
+  
+  const url = supportSettings.livechat?.url || "https://t.me/uic_support";
+  window.open(url, '_blank');
+}
 
 // ========== MOTIVATION MESSAGE FUNCTION ==========
 function updateMotivationMessage() {
@@ -7688,7 +7993,7 @@ function handleRegister(e) {
 
   const now = new Date();
   const expiry = new Date(now);
-  expiry.setDate(expiry.getDate() + 4);
+  expiry.setDate(expiry.getDate() + 18); // FIX 5: Changed from 4 to 18 days
 
   const newReferralCode = generateReferralCode();
   
@@ -7729,7 +8034,9 @@ function handleRegister(e) {
     activeStakes: [],
     stakeHistory: [],
     // ===== SUPPORT FIELDS =====
-    supportTickets: []
+    supportTickets: [],
+    // ===== FIX 7: ANNOUNCEMENT DISMISSAL =====
+    dismissedAnnouncements: {}
   };
 
   const referrer = Object.values(users).find(u => u.referralCode === referralCode);
@@ -7768,6 +8075,7 @@ function handleLogin(e) {
     loadUserData();
     showPage('home');
     resetInactivityTimer();
+    updateAnnouncementUI(); // FIX 7: Check for announcements
   } else {
     showConfirmModal('Error', 'Invalid phone or password', 'warning');
   }
@@ -7825,6 +8133,7 @@ function showPage(page) {
   if (page === 'home') {
     updateMotivationMessage();
     updateActivityTicker(); // FIX 1: Update ticker
+    updateAnnouncementUI(); // FIX 7: Check for announcements
   }
   if (page === 'taskRecord') loadActivityLog();
   if (page === 'teamReport') loadTeamReport();
@@ -9171,6 +9480,9 @@ function loadUserData() {
   processPendingRefunds();
   
   applyTheme(user.theme || 'purple');
+  
+  // FIX 7: Check for announcements
+  updateAnnouncementUI();
 }
 
 function getLevelTitle(level) {
@@ -10908,6 +11220,22 @@ function adminLoginModal() {
     loadStakesAdminControls();
     updateSupportSettingsInputs();
     loadWithdrawalAdminControls();
+    
+    // Set announcement radio
+    const radioActive = document.querySelector('input[name="announcementStatus"][value="active"]');
+    const radioInactive = document.querySelector('input[name="announcementStatus"][value="inactive"]');
+    if (announcementConfig.isActive) {
+      radioActive.checked = true;
+    } else {
+      radioInactive.checked = true;
+    }
+    
+    // Fill announcement fields
+    document.getElementById('announcementTitle').value = announcementConfig.title;
+    document.getElementById('announcementMessage').value = announcementConfig.message;
+    document.getElementById('announcementColor').value = announcementConfig.color;
+    document.getElementById('announcementTarget').value = announcementConfig.target;
+    
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -10990,6 +11318,9 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[10].classList.add('active');
     document.getElementById('adminWithdrawalControlSection').classList.add('active');
     loadWithdrawalAdminControls();
+  } else if (tab === 'announcement') { // FIX 7
+    document.querySelectorAll('.admin-tab')[11].classList.add('active');
+    document.getElementById('adminAnnouncementSection').classList.add('active');
   }
 }
 
@@ -11013,6 +11344,7 @@ function loadAdminData() {
   loadSystemStats();
 }
 
+// FIX 6: Enhanced deposits table with simplified actions
 function loadDepositsTable() {
   const tbody = document.getElementById('depositsTableBody');
   if (pendingDeposits.length === 0) {
@@ -11027,15 +11359,17 @@ function loadDepositsTable() {
     const date = new Date(deposit.timestamp).toLocaleString();
     html += `<tr>
       <td>${date}</td>
-      <td>${deposit.userId || 'Unknown'}</td>
-      <td>${deposit.mobileNumber || deposit.userPhone || 'N/A'}</td>
+      <td>${deposit.userPhone || 'N/A'}</td>
+      <td>${deposit.mobileNumber || 'N/A'}</td>
       <td>${deposit.amount.toLocaleString()} UGX</td>
       <td>${deposit.transactionId || '-'}</td>
-      <td>${deposit.mobileNumber || '-'}</td>
       <td>${deposit.network || '-'}</td>
+      <td>${deposit.method || '-'}</td>
       <td>
-        <button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button>
-        <button class="reject-btn" onclick="rejectDeposit(${deposit.id})">Reject</button>
+        <button class="deposit-action-btn approve" onclick="approveDeposit(${deposit.id})" title="Approve">✓</button>
+        <button class="deposit-action-btn reject" onclick="rejectDeposit(${deposit.id})" title="Reject">✗</button>
+        <button class="deposit-action-btn suspend" onclick="suspendUser('${deposit.userPhone}')" title="Suspend">⚠️</button>
+        <button class="deposit-action-btn delete" onclick="deleteUser('${deposit.userPhone}')" title="Delete Permanently">🗑️</button>
       </td>
     </tr>`;
   });
@@ -11062,19 +11396,34 @@ function searchDeposits() {
     const date = new Date(deposit.timestamp).toLocaleString();
     html += `<tr>
       <td>${date}</td>
-      <td>${deposit.userId || 'Unknown'}</td>
-      <td>${deposit.mobileNumber || deposit.userPhone || 'N/A'}</td>
+      <td>${deposit.userPhone || 'N/A'}</td>
+      <td>${deposit.mobileNumber || 'N/A'}</td>
       <td>${deposit.amount.toLocaleString()} UGX</td>
       <td>${deposit.transactionId || '-'}</td>
-      <td>${deposit.mobileNumber || '-'}</td>
       <td>${deposit.network || '-'}</td>
+      <td>${deposit.method || '-'}</td>
       <td>
-        <button class="approve-btn" onclick="approveDeposit(${deposit.id})">Approve</button>
-        <button class="reject-btn" onclick="rejectDeposit(${deposit.id})">Reject</button>
+        <button class="deposit-action-btn approve" onclick="approveDeposit(${deposit.id})" title="Approve">✓</button>
+        <button class="deposit-action-btn reject" onclick="rejectDeposit(${deposit.id})" title="Reject">✗</button>
+        <button class="deposit-action-btn suspend" onclick="suspendUser('${deposit.userPhone}')" title="Suspend">⚠️</button>
+        <button class="deposit-action-btn delete" onclick="deleteUser('${deposit.userPhone}')" title="Delete Permanently">🗑️</button>
       </td>
     </tr>`;
   });
   tbody.innerHTML = html;
+}
+
+// FIX 6: Suspend user function
+function suspendUser(phone) {
+  showConfirmModal('Suspend User', `Suspend user ${phone}?`, 'confirm', () => {
+    // Simple suspend - just mark them
+    if (users[phone]) {
+      users[phone].suspended = true;
+      users[phone].suspendedUntil = new Date(Date.now() + 7*24*60*60*1000).toISOString(); // 7 days
+      saveUsers();
+      showConfirmModal('Success', `User ${phone} suspended for 7 days`, 'success');
+    }
+  });
 }
 
 function approveDeposit(id) {
@@ -11322,15 +11671,16 @@ function editWallet(phone, walletType) {
 }
 
 function deleteUser(phone) {
-  showConfirmModal('Confirm Delete', `Are you sure you want to delete user ${phone}?`, 'delete', () => {
+  showConfirmModal('Confirm Delete', `Are you sure you want to permanently delete user ${phone}? This cannot be undone.`, 'delete', () => {
     Object.values(users).forEach(u => {
       if (u.referrals) u.referrals = u.referrals.filter(ref => ref !== phone);
     });
     delete users[phone];
     saveUsers();
-    showConfirmModal('Success', 'User deleted', 'success');
+    showConfirmModal('Success', 'User permanently deleted', 'success');
     loadUsersTable();
     loadAdminData();
+    loadDepositsTable(); // Refresh deposits to remove their pending deposits
   });
 }
 
@@ -11724,6 +12074,7 @@ function performRefresh() {
     if (currentPage === 'home') {
       updateMotivationMessage();
       updateActivityTicker();
+      updateAnnouncementUI(); // FIX 7
     } else if (currentPage === 'task') {
       loadTaskBooks();
     } else if (currentPage === 'profile') {
@@ -12770,7 +13121,7 @@ window.onload = function() {
             password: '123456',
             referralCode: internCode,
             memberLevel: 0,
-            memberExpiry: new Date(Date.now() + 4*24*60*60*1000).toISOString(),
+            memberExpiry: new Date(Date.now() + 18*24*60*60*1000).toISOString(), // FIX 5: 18 days
             operatingWallet: 100000,
             incentiveWallet: 1500,
             booksReadToday: 0,
@@ -12899,6 +13250,14 @@ window.onload = function() {
   
   // FIX 1: Start activity ticker
   startActivityTicker();
+  
+  // FIX 7: Load announcement config
+  db.ref('announcementConfig').once('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      announcementConfig = config;
+    }
+  });
 };
 
 // Helper function to show auth page
