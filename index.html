@@ -13,10 +13,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <!-- html2canvas for image download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- Tesseract.js for OCR screenshot detection (FIX 2) -->
+  <!-- Tesseract.js for OCR screenshot detection -->
   <script src='https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js'></script>
   <style>
-    /* ===== ALL YOUR ORIGINAL STYLES - UNCHANGED ===== */
+    /* ===== ALL ORIGINAL STYLES - UNCHANGED ===== */
     * {
       margin: 0;
       padding: 0;
@@ -5426,7 +5426,7 @@
         <div class="incentive-wallet-display" id="levelIncentiveWallet">Incentive Wallet: 0 UGX</div>
         
         <!-- D1 -->
-        <div class="level-card-ultra" style="background-color: #e6f7ff;">
+        <div class="level-card-ultra" style="background-color: #e6f0ff;">
           <div class="level-name-ultra" style="color: #0066cc;">D1</div>
           <div class="level-detail-ultra">UGX 63000. 2 tasks</div>
           <div class="level-detail-ultra">UGX 1125 per task</div>
@@ -5942,11 +5942,11 @@
             <small style="font-size: 0.6rem; color: #8a7a9c; display: block;" id="phoneDisplay">0756***144</small>
           </div>
           
-          <!-- Messaggiare (D-level only) -->
-          <div id="messaggiareButton" onclick="openMessaggiare()" style="flex: 1; background: white; border: 2px solid #ff9800; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
-            <i class="fas fa-comment-dots" style="font-size: 1.5rem; color: #ff9800; display: block;"></i>
-            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">MESSAG-</span>
-            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">GIARE</span>
+          <!-- Raggiungere (D-level only) - UPDATED NAME -->
+          <div id="raggiungereButton" onclick="openRaggiungere()" style="flex: 1; background: white; border: 2px solid #ff9800; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
+            <i class="fas fa-rocket" style="font-size: 1.5rem; color: #ff9800; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">RAGGIUN-</span>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">GERE</span>
           </div>
         </div>
 
@@ -6988,7 +6988,7 @@ let allBooks = [
 
 // Level definitions
 const levels = {
-  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 }, // FIX 5: Changed from 4 to 18 days
+  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 },
   1: { name: "D1", dailyBooks: 2, reward: 1125, deposit: 63000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 2 },
   2: { name: "D2", dailyBooks: 4, reward: 1775, deposit: 200000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 4 },
   3: { name: "D3", dailyBooks: 12, reward: 1584, deposit: 532000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 8 },
@@ -7005,6 +7005,19 @@ const referralRates = {
   a: 0.10,
   b: 0.04,
   c: 0.01
+};
+
+// ===== FIX 7: Level Locks (Default: D1-D3 unlocked, D4-D9 locked) =====
+let levelLocks = {
+  1: false, // D1 unlocked
+  2: false, // D2 unlocked
+  3: false, // D3 unlocked
+  4: true,  // D4 locked
+  5: true,  // D5 locked
+  6: true,  // D6 locked
+  7: true,  // D7 locked
+  8: true,  // D8 locked
+  9: true   // D9 locked
 };
 
 // Daily Motivation Messages
@@ -7173,12 +7186,20 @@ function loadFromFirebase() {
     }
   });
   
-  // FIX 7: Load announcement configuration
+  // Load announcement configuration
   db.ref('announcementConfig').on('value', (snapshot) => {
     const config = snapshot.val();
     if (config) {
       announcementConfig = config;
       updateAnnouncementUI();
+    }
+  });
+  
+  // Load level locks
+  db.ref('levelLocks').on('value', (snapshot) => {
+    const locks = snapshot.val();
+    if (locks) {
+      levelLocks = locks;
     }
   });
 }
@@ -7249,7 +7270,7 @@ function formatPhoneNumber(phone) {
   if (!phone) return "";
   const cleaned = phone.replace(/\D/g, '');
   if (cleaned.length === 10) {
-    return cleaned.substring(0,4) + '***' + cleaned.substring(7); // FIX 4: Masked number
+    return cleaned.substring(0,4) + '***' + cleaned.substring(7);
   } else if (cleaned.length === 9) {
     return '0' + cleaned.substring(0,3) + '***' + cleaned.substring(6);
   }
@@ -7363,6 +7384,7 @@ function saveWithdrawals() { db.ref('pendingWithdrawals').set(pendingWithdrawals
 function saveSupportTickets() { db.ref('supportTickets').set(supportTickets); }
 function saveGirareConfig() { db.ref('girareConfig').set(girareConfig); }
 function saveStakesConfig() { db.ref('stakesConfig').set(stakesConfig); }
+function saveLevelLocks() { db.ref('levelLocks').set(levelLocks); }
 
 // FIX 7: Announcement configuration
 let announcementConfig = {
@@ -7451,8 +7473,8 @@ function dismissAnnouncement() {
   document.getElementById('announcementOverlay').style.display = 'none';
 }
 
-// FIX 4: Open Messaggiare (D-level only)
-function openMessaggiare() {
+// FIX 5: Open Raggiungere (D-level only)
+function openRaggiungere() {
   if (!currentUser || !users[currentUser]) {
     showConfirmModal('Error', 'Please login first', 'warning');
     return;
@@ -7460,7 +7482,7 @@ function openMessaggiare() {
   
   const user = users[currentUser];
   if (user.memberLevel === 0) {
-    showConfirmModal('Access Denied', 'Upgrade to D level to access Messaggiare', 'warning');
+    showConfirmModal('Access Denied', 'Upgrade to D level to access Raggiungere', 'warning');
     return;
   }
   
@@ -7993,7 +8015,7 @@ function handleRegister(e) {
 
   const now = new Date();
   const expiry = new Date(now);
-  expiry.setDate(expiry.getDate() + 18); // FIX 5: Changed from 4 to 18 days
+  expiry.setDate(expiry.getDate() + 18);
 
   const newReferralCode = generateReferralCode();
   
@@ -9206,10 +9228,20 @@ function loadGoldenHandshake() {
   }
 }
 
-// ===== PURCHASE LEVEL FUNCTION =====
+// ===== FIX 7: UPDATED PURCHASE LEVEL FUNCTION WITH LEVEL LOCKS =====
 function purchaseLevel(level, cost) {
   const user = users[currentUser];
   if (!user) { showConfirmModal('Error', 'Please login first', 'warning'); return; }
+
+  // FIX 7: Check if level is locked (invisible lock)
+  if (levelLocks && levelLocks[level]) {
+    showConfirmModal(
+      '🔒 Company level only',
+      'This level is not allowed for regular users.\nIt\'s for companies.',
+      'warning'
+    );
+    return; // Stop here - no upgrade happens
+  }
 
   if (user.memberLevel >= level) {
     showConfirmModal('Error', `You are already at ${levels[level].name} or higher!`, 'warning');
@@ -11318,7 +11350,7 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[10].classList.add('active');
     document.getElementById('adminWithdrawalControlSection').classList.add('active');
     loadWithdrawalAdminControls();
-  } else if (tab === 'announcement') { // FIX 7
+  } else if (tab === 'announcement') {
     document.querySelectorAll('.admin-tab')[11].classList.add('active');
     document.getElementById('adminAnnouncementSection').classList.add('active');
   }
@@ -13251,11 +13283,22 @@ window.onload = function() {
   // FIX 1: Start activity ticker
   startActivityTicker();
   
-  // FIX 7: Load announcement config
+  // Load announcement config
   db.ref('announcementConfig').once('value', (snapshot) => {
     const config = snapshot.val();
     if (config) {
       announcementConfig = config;
+    }
+  });
+  
+  // Load level locks
+  db.ref('levelLocks').once('value', (snapshot) => {
+    const locks = snapshot.val();
+    if (locks) {
+      levelLocks = locks;
+    } else {
+      // Initialize default locks (D4-D9 locked)
+      saveLevelLocks();
     }
   });
 };
