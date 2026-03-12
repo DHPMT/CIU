@@ -7062,7 +7062,7 @@ let allBooks = [
 
 // Level definitions
 const levels = {
-  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 }, // FIX 5: Changed from 4 to 18 days
+  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 },
   1: { name: "D1", dailyBooks: 2, reward: 1125, deposit: 63000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 2 },
   2: { name: "D2", dailyBooks: 4, reward: 1775, deposit: 200000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 4 },
   3: { name: "D3", dailyBooks: 12, reward: 1584, deposit: 532000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 8 },
@@ -7711,10 +7711,13 @@ function payReferralCommissions(userPhone) {
   
   const referrers = findReferrers(userPhone);
   
-  // A Level (Direct) - 10% of the new user's investment
+  // A Level (Direct) - 10% of the lower level's deposit amount
   if (referrers.a && users[referrers.a]) {
     const aReferrer = users[referrers.a];
-    const aCommission = Math.floor(investmentAmount * 0.10); // 10% of new user's investment
+    const aReferrerLevel = aReferrer.memberLevel || 0;
+    const aReferrerDeposit = levels[aReferrerLevel]?.deposit || 0;
+    const lowerAmount = Math.min(aReferrerDeposit, investmentAmount);
+    const aCommission = Math.floor(lowerAmount * 0.10);
     
     if (aCommission > 0) {
       aReferrer.operatingWallet = (aReferrer.operatingWallet || 0) + aCommission;
@@ -7729,17 +7732,20 @@ function payReferralCommissions(userPhone) {
         level: 'A', 
         amount: aCommission, 
         date: new Date().toLocaleString(), 
-        desc: `🎯 A-level commission: 10% of D${userLevel} upgrade (${investmentAmount.toLocaleString()} UGX)` 
+        desc: `🎯 A-level commission: 10% of lower amount (D${aReferrerLevel} vs D${userLevel})` 
       });
       
-      console.log(`   A-level (${aReferrer.phone}): +${aCommission.toLocaleString()} UGX (10% of ${investmentAmount.toLocaleString()})`);
+      console.log(`   A-level (${aReferrer.phone}): +${aCommission.toLocaleString()} UGX (10% of lower amount ${lowerAmount.toLocaleString()} UGX)`);
     }
   }
   
-  // B Level - 4% of the new user's investment
+  // B Level - 4% of the lower level's deposit amount
   if (referrers.b && users[referrers.b]) {
     const bReferrer = users[referrers.b];
-    const bCommission = Math.floor(investmentAmount * 0.04); // 4% of new user's investment
+    const bReferrerLevel = bReferrer.memberLevel || 0;
+    const bReferrerDeposit = levels[bReferrerLevel]?.deposit || 0;
+    const lowerAmount = Math.min(bReferrerDeposit, investmentAmount);
+    const bCommission = Math.floor(lowerAmount * 0.04);
     
     if (bCommission > 0) {
       bReferrer.operatingWallet = (bReferrer.operatingWallet || 0) + bCommission;
@@ -7752,17 +7758,20 @@ function payReferralCommissions(userPhone) {
         level: 'B', 
         amount: bCommission, 
         date: new Date().toLocaleString(), 
-        desc: `🎯 B-level commission: 4% of D${userLevel} upgrade (${investmentAmount.toLocaleString()} UGX)` 
+        desc: `🎯 B-level commission: 4% of lower amount (D${bReferrerLevel} vs D${userLevel})` 
       });
       
-      console.log(`   B-level (${bReferrer.phone}): +${bCommission.toLocaleString()} UGX (4% of ${investmentAmount.toLocaleString()})`);
+      console.log(`   B-level (${bReferrer.phone}): +${bCommission.toLocaleString()} UGX (4% of lower amount ${lowerAmount.toLocaleString()} UGX)`);
     }
   }
   
-  // C Level - 1% of the new user's investment
+  // C Level - 1% of the lower level's deposit amount
   if (referrers.c && users[referrers.c]) {
     const cReferrer = users[referrers.c];
-    const cCommission = Math.floor(investmentAmount * 0.01); // 1% of new user's investment
+    const cReferrerLevel = cReferrer.memberLevel || 0;
+    const cReferrerDeposit = levels[cReferrerLevel]?.deposit || 0;
+    const lowerAmount = Math.min(cReferrerDeposit, investmentAmount);
+    const cCommission = Math.floor(lowerAmount * 0.01);
     
     if (cCommission > 0) {
       cReferrer.operatingWallet = (cReferrer.operatingWallet || 0) + cCommission;
@@ -7775,10 +7784,10 @@ function payReferralCommissions(userPhone) {
         level: 'C', 
         amount: cCommission, 
         date: new Date().toLocaleString(), 
-        desc: `🎯 C-level commission: 1% of D${userLevel} upgrade (${investmentAmount.toLocaleString()} UGX)` 
+        desc: `🎯 C-level commission: 1% of lower amount (D${cReferrerLevel} vs D${userLevel})` 
       });
       
-      console.log(`   C-level (${cReferrer.phone}): +${cCommission.toLocaleString()} UGX (1% of ${investmentAmount.toLocaleString()})`);
+      console.log(`   C-level (${cReferrer.phone}): +${cCommission.toLocaleString()} UGX (1% of lower amount ${lowerAmount.toLocaleString()} UGX)`);
     }
   }
   
@@ -9362,7 +9371,7 @@ function purchaseLevel(level, cost) {
     if (!user.transactions) user.transactions = [];
     user.transactions.unshift({ type: 'level_upgrade', level: level, amount: cost, date: new Date().toLocaleString(), desc: `Upgrade to ${levels[level].name}` });
     
-    // FIX 1: Pay referral commissions based on new user's investment
+    // FIX 1: Pay referral commissions based on lower level amount
     payReferralCommissions(user.phone);
     
     let totalRecovered = 0;
@@ -9594,6 +9603,32 @@ function loadUserData() {
   
   // FIX 7: Check for announcements
   updateAnnouncementUI();
+  
+  // FIX 2: Check intern reading days and auto-delete
+  if (level === 0) {
+    const daysSinceReg = Math.floor((Date.now() - new Date(user.registeredDate)) / (1000 * 60 * 60 * 24));
+    
+    // Auto-delete after 18 days
+    if (daysSinceReg >= 18) {
+      showConfirmModal('Trial Expired', 'Your 18-day trial period has ended. Please register again with a new referral link.', 'warning');
+      deleteUser(user.phone);
+      logout();
+      return;
+    }
+    
+    // Hide books after day 4
+    if (daysSinceReg >= 4 && document.getElementById('taskPage').style.display === 'flex') {
+      document.getElementById('taskBookGrid').innerHTML = `
+        <div style="grid-column: span 2; text-align: center; padding: 40px 20px; background: #f5edff; border-radius: 20px;">
+          <i class="fas fa-clock" style="font-size: 3rem; color: #ff9800; margin-bottom: 15px;"></i>
+          <h3 style="color: #b45f06; margin-bottom: 10px;">📢 4-Day Reading Complete!</h3>
+          <p style="color: #856404; margin-bottom: 20px;">You've completed your 4-day reading period and earned 6,000 UGX.</p>
+          <p style="color: #4a3b5e;">Upgrade to D1 to continue earning!</p>
+          <button class="upgrade-now-btn" onclick="showPage('level')" style="margin-top: 15px;">UPGRADE NOW</button>
+        </div>
+      `;
+    }
+  }
 }
 
 function getLevelTitle(level) {
@@ -10039,6 +10074,23 @@ function loadTaskBooks() {
   const levelData = levels[level];
   const bookLimit = levelData.dailyBooks;
   
+  // FIX 2: Check if intern is past day 4
+  if (level === 0) {
+    const daysSinceReg = Math.floor((Date.now() - new Date(user.registeredDate)) / (1000 * 60 * 60 * 24));
+    if (daysSinceReg >= 4) {
+      document.getElementById('taskBookGrid').innerHTML = `
+        <div style="grid-column: span 2; text-align: center; padding: 40px 20px; background: #f5edff; border-radius: 20px;">
+          <i class="fas fa-clock" style="font-size: 3rem; color: #ff9800; margin-bottom: 15px;"></i>
+          <h3 style="color: #b45f06; margin-bottom: 10px;">📢 4-Day Reading Complete!</h3>
+          <p style="color: #856404; margin-bottom: 20px;">You've completed your 4-day reading period and earned 6,000 UGX.</p>
+          <p style="color: #4a3b5e;">Upgrade to D1 to continue earning!</p>
+          <button class="upgrade-now-btn" onclick="showPage('level')" style="margin-top: 15px;">UPGRADE NOW</button>
+        </div>
+      `;
+      return;
+    }
+  }
+  
   const todaysBooks = getTodaysBooks();
   const booksWithStatus = getAllAvailableBooks(user, todaysBooks).slice(0, bookLimit);
   
@@ -10081,6 +10133,16 @@ function startReading(bookId) {
   const level = user.memberLevel || 0;
   const levelData = levels[level];
   const book = allBooks.find(b => b.id === bookId);
+
+  // FIX 2: Check if intern is past day 4
+  if (level === 0) {
+    const daysSinceReg = Math.floor((Date.now() - new Date(user.registeredDate)) / (1000 * 60 * 60 * 24));
+    if (daysSinceReg >= 4) {
+      showConfirmModal('Reading Complete', 'Your 4-day reading period is complete. Upgrade to D1 to continue earning!', 'warning');
+      loadTaskBooks();
+      return;
+    }
+  }
 
   if (user.booksReadToday >= levelData.dailyBooks) {
     showConfirmModal('Limit Reached', `Daily limit of ${levelData.dailyBooks} books reached`, 'warning');
@@ -11491,7 +11553,7 @@ function loadDepositsTable() {
         <button class="deposit-action-btn approve" onclick="approveDeposit(${deposit.id})" title="Approve">✓</button>
         <button class="deposit-action-btn reject" onclick="rejectDeposit(${deposit.id})" title="Reject">✗</button>
         <button class="deposit-action-btn suspend" onclick="suspendUser('${deposit.userPhone}')" title="Suspend">⚠️</button>
-        <button class="deposit-action-btn delete" onclick="deleteUser('${deposit.userPhone}')" title="Delete Permanently">🗑️</button>
+        <button class="deposit-action-btn delete" onclick="deleteUser('${deposit.userPhone}')" title="Delete Permanently">??️</button>
       </td>
     </tr>`;
   });
@@ -13321,7 +13383,7 @@ window.onload = function() {
             password: '123456',
             referralCode: internCode,
             memberLevel: 0,
-            memberExpiry: new Date(Date.now() + 18*24*60*60*1000).toISOString(), // FIX 5: 18 days
+            memberExpiry: new Date(Date.now() + 18*24*60*60*1000).toISOString(),
             operatingWallet: 100000,
             incentiveWallet: 1500,
             booksReadToday: 0,
