@@ -13,10 +13,10 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <!-- html2canvas for image download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- Tesseract.js for OCR screenshot detection -->
+  <!-- Tesseract.js for OCR screenshot detection (FIX 2) -->
   <script src='https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js'></script>
   <style>
-    /* ===== ALL ORIGINAL STYLES - UNCHANGED ===== */
+    /* ===== ALL YOUR ORIGINAL STYLES - UNCHANGED ===== */
     * {
       margin: 0;
       padding: 0;
@@ -3334,6 +3334,7 @@
       margin: 15px 0;
       text-align: center;
       border-left: 4px solid #ff9800;
+      font-weight: 600;
     }
 
     .spin-history {
@@ -4373,6 +4374,57 @@
     .deposit-action-btn:hover {
       transform: scale(1.2);
     }
+
+    /* ===== FIX 8: LEVEL LOCKING SYSTEM STYLES (ADMIN) ===== */
+    .level-lock-control {
+      background: #f5edff;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .level-lock-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 8px;
+      background: white;
+      border-radius: 10px;
+    }
+    
+    .level-lock-row .level-name {
+      min-width: 60px;
+      font-weight: 600;
+    }
+    
+    .level-lock-row .lock-toggle {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .level-lock-row .lock-toggle i {
+      font-size: 1.2rem;
+    }
+    
+    .level-lock-row .lock-toggle .locked {
+      color: #dc3545;
+    }
+    
+    .level-lock-row .lock-toggle .unlocked {
+      color: #28a745;
+    }
+    
+    .level-lock-info {
+      background: #e8f0e8;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #28a745;
+    }
   </style>
 </head>
 <body>
@@ -4417,7 +4469,7 @@
         <!-- Stats Cards -->
         <div class="admin-stats" id="adminStats"></div>
 
-        <!-- Tabs - ADDED REFERRAL NETWORK TAB (FIX 4) -->
+        <!-- Tabs - ADDED REFERRAL NETWORK TAB (FIX 4) and LEVEL LOCK TAB (FIX 8) -->
         <div class="admin-tabs">
           <div class="admin-tab active" onclick="switchAdminTab('deposits')"><i class="fas fa-arrow-down"></i> Deposits</div>
           <div class="admin-tab" onclick="switchAdminTab('withdrawals')"><i class="fas fa-arrow-up"></i> Withdrawals</div>
@@ -4437,6 +4489,8 @@
           <div class="admin-tab" onclick="switchAdminTab('withdrawalControl')"><i class="fas fa-lock"></i> Withdrawal Control</div>
           <!-- FIX 7: NEW ANNOUNCEMENT TAB -->
           <div class="admin-tab" onclick="switchAdminTab('announcement')"><i class="fas fa-bullhorn"></i> Announcement</div>
+          <!-- FIX 8: NEW LEVEL LOCK TAB -->
+          <div class="admin-tab" onclick="switchAdminTab('levelLock')"><i class="fas fa-ban"></i> Level Lock</div>
         </div>
 
         <!-- Deposits Section (UPDATED with FIX 6 actions) -->
@@ -5000,6 +5054,26 @@
             </button>
           </div>
         </div>
+
+        <!-- FIX 8: NEW LEVEL LOCK SECTION -->
+        <div id="adminLevelLockSection" class="admin-section">
+          <h3 style="margin-bottom: 20px;"><i class="fas fa-ban"></i> Level Lock Control</h3>
+          
+          <div class="level-lock-control">
+            <h4 style="color: #7d5ba6; margin-bottom: 15px;">🔒 Lock/Unlock Levels</h4>
+            <p style="color: #666; margin-bottom: 15px;">When locked, users see the level normally but get "Prossimamente" message when trying to join.</p>
+            
+            <div id="levelLockList"></div>
+            
+            <div class="level-lock-info">
+              <i class="fas fa-info-circle"></i> Locked levels appear normal to users. They only see "Prossimamente" when clicking "Click to join".
+            </div>
+            
+            <button onclick="saveAllLevelLocks()" style="background: #28a745; color: white; border: none; padding: 12px; border-radius: 30px; width: 100%; font-weight: 600; margin-top: 15px; cursor: pointer;">
+              <i class="fas fa-save"></i> SAVE ALL LEVEL LOCKS
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -5426,7 +5500,7 @@
         <div class="incentive-wallet-display" id="levelIncentiveWallet">Incentive Wallet: 0 UGX</div>
         
         <!-- D1 -->
-        <div class="level-card-ultra" style="background-color: #e6f0ff;">
+        <div class="level-card-ultra" style="background-color: #e6f7ff;">
           <div class="level-name-ultra" style="color: #0066cc;">D1</div>
           <div class="level-detail-ultra">UGX 63000. 2 tasks</div>
           <div class="level-detail-ultra">UGX 1125 per task</div>
@@ -5942,11 +6016,11 @@
             <small style="font-size: 0.6rem; color: #8a7a9c; display: block;" id="phoneDisplay">0756***144</small>
           </div>
           
-          <!-- Raggiungere (D-level only) - UPDATED NAME -->
-          <div id="raggiungereButton" onclick="openRaggiungere()" style="flex: 1; background: white; border: 2px solid #ff9800; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
-            <i class="fas fa-rocket" style="font-size: 1.5rem; color: #ff9800; display: block;"></i>
-            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">RAGGIUN-</span>
-            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">GERE</span>
+          <!-- Messaggiare (D-level only) -->
+          <div id="messaggiareButton" onclick="openMessaggiare()" style="flex: 1; background: white; border: 2px solid #ff9800; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer;">
+            <i class="fas fa-comment-dots" style="font-size: 1.5rem; color: #ff9800; display: block;"></i>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">MESSAG-</span>
+            <span style="font-size: 0.7rem; font-weight: 600; color: #4a3b5e;">GIARE</span>
           </div>
         </div>
 
@@ -6988,7 +7062,7 @@ let allBooks = [
 
 // Level definitions
 const levels = {
-  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 },
+  0: { name: "Intern", dailyBooks: 1, reward: 1500, duration: 18, canWithdraw: false, hasReferral: false, bookLimit: 1, deposit: 0 }, // FIX 5: Changed from 4 to 18 days
   1: { name: "D1", dailyBooks: 2, reward: 1125, deposit: 63000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 2 },
   2: { name: "D2", dailyBooks: 4, reward: 1775, deposit: 200000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 4 },
   3: { name: "D3", dailyBooks: 12, reward: 1584, deposit: 532000, duration: 365, canWithdraw: true, hasReferral: true, bookLimit: 8 },
@@ -7007,20 +7081,20 @@ const referralRates = {
   c: 0.01
 };
 
-// ===== FIX 7: Level Locks (Default: D1-D3 unlocked, D4-D9 locked) =====
-let levelLocks = {
-  1: false, // D1 unlocked
-  2: false, // D2 unlocked
-  3: false, // D3 unlocked
-  4: true,  // D4 locked
-  5: true,  // D5 locked
-  6: true,  // D6 locked
-  7: true,  // D7 locked
-  8: true,  // D8 locked
-  9: true   // D9 locked
+// ========== FIX 8: LEVEL LOCK CONFIGURATION ==========
+let levelLockConfig = {
+  1: { locked: false }, // D1
+  2: { locked: false }, // D2
+  3: { locked: false }, // D3
+  4: { locked: false }, // D4
+  5: { locked: false }, // D5
+  6: { locked: false }, // D6
+  7: { locked: false }, // D7
+  8: { locked: false }, // D8
+  9: { locked: false }  // D9
 };
 
-// Daily Motivation Messages
+// ========== DAILY MOTIVATION MESSAGES ==========
 const motivationMessages = {
   morning: {
     icon: '🌅',
@@ -7186,7 +7260,7 @@ function loadFromFirebase() {
     }
   });
   
-  // Load announcement configuration
+  // FIX 7: Load announcement configuration
   db.ref('announcementConfig').on('value', (snapshot) => {
     const config = snapshot.val();
     if (config) {
@@ -7195,11 +7269,14 @@ function loadFromFirebase() {
     }
   });
   
-  // Load level locks
-  db.ref('levelLocks').on('value', (snapshot) => {
-    const locks = snapshot.val();
-    if (locks) {
-      levelLocks = locks;
+  // FIX 8: Load level lock configuration
+  db.ref('levelLockConfig').on('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      levelLockConfig = config;
+    }
+    if (document.getElementById('adminLevelLockSection')?.classList.contains('active')) {
+      loadLevelLockControls();
     }
   });
 }
@@ -7270,7 +7347,7 @@ function formatPhoneNumber(phone) {
   if (!phone) return "";
   const cleaned = phone.replace(/\D/g, '');
   if (cleaned.length === 10) {
-    return cleaned.substring(0,4) + '***' + cleaned.substring(7);
+    return cleaned.substring(0,4) + '***' + cleaned.substring(7); // FIX 4: Masked number
   } else if (cleaned.length === 9) {
     return '0' + cleaned.substring(0,3) + '***' + cleaned.substring(6);
   }
@@ -7384,7 +7461,7 @@ function saveWithdrawals() { db.ref('pendingWithdrawals').set(pendingWithdrawals
 function saveSupportTickets() { db.ref('supportTickets').set(supportTickets); }
 function saveGirareConfig() { db.ref('girareConfig').set(girareConfig); }
 function saveStakesConfig() { db.ref('stakesConfig').set(stakesConfig); }
-function saveLevelLocks() { db.ref('levelLocks').set(levelLocks); }
+function saveLevelLockConfig() { db.ref('levelLockConfig').set(levelLockConfig); }
 
 // FIX 7: Announcement configuration
 let announcementConfig = {
@@ -7473,8 +7550,8 @@ function dismissAnnouncement() {
   document.getElementById('announcementOverlay').style.display = 'none';
 }
 
-// FIX 5: Open Raggiungere (D-level only)
-function openRaggiungere() {
+// FIX 4: Open Messaggiare (D-level only)
+function openMessaggiare() {
   if (!currentUser || !users[currentUser]) {
     showConfirmModal('Error', 'Please login first', 'warning');
     return;
@@ -7482,7 +7559,7 @@ function openRaggiungere() {
   
   const user = users[currentUser];
   if (user.memberLevel === 0) {
-    showConfirmModal('Access Denied', 'Upgrade to D level to access Raggiungere', 'warning');
+    showConfirmModal('Access Denied', 'Upgrade to D level to access Messaggiare', 'warning');
     return;
   }
   
@@ -7615,19 +7692,29 @@ function findReferrers(userPhone) {
   return referrers;
 }
 
-// ===== LOST COMMISSION RECOVERY =====
+// ===== FIX 1: UPDATED REFERRAL COMMISSION FUNCTION =====
 function payReferralCommissions(userPhone) {
   const user = users[userPhone];
   if (!user) return;
   
+  // Get the investment amount (deposit for the level they upgraded to)
+  const userLevel = user.memberLevel || 0;
+  const investmentAmount = levels[userLevel]?.deposit || 0;
+  
+  if (investmentAmount <= 0) {
+    console.log('ℹ️ No investment amount - no commissions paid');
+    return;
+  }
+  
+  console.log(`💰 Processing referral commissions for ${userPhone} (Level ${userLevel})`);
+  console.log(`   Investment amount: ${investmentAmount.toLocaleString()} UGX`);
+  
   const referrers = findReferrers(userPhone);
   
-  // A Level (Direct) - 10% of referrer's own deposit
+  // A Level (Direct) - 10% of the new user's investment
   if (referrers.a && users[referrers.a]) {
     const aReferrer = users[referrers.a];
-    const aLevel = aReferrer.memberLevel || 0;
-    const aDeposit = levels[aLevel]?.deposit || 0;
-    const aCommission = Math.floor(aDeposit * referralRates.a);
+    const aCommission = Math.floor(investmentAmount * 0.10); // 10% of new user's investment
     
     if (aCommission > 0) {
       aReferrer.operatingWallet = (aReferrer.operatingWallet || 0) + aCommission;
@@ -7637,42 +7724,22 @@ function payReferralCommissions(userPhone) {
       aReferrer.referralCommissions.total += aCommission;
       
       aReferrer.transactions = aReferrer.transactions || [];
-      aReferrer.transactions.unshift({ type:'referral', level:'A', amount:aCommission, date:new Date().toLocaleString(), desc:`A-level commission from ${userPhone}` });
+      aReferrer.transactions.unshift({ 
+        type: 'referral', 
+        level: 'A', 
+        amount: aCommission, 
+        date: new Date().toLocaleString(), 
+        desc: `🎯 A-level commission: 10% of D${userLevel} upgrade (${investmentAmount.toLocaleString()} UGX)` 
+      });
       
-      // Track lost commission
-      const downlineLevel = user.memberLevel || 0;
-      const downlineDeposit = levels[downlineLevel]?.deposit || 0;
-      const shouldHaveGotten = Math.floor(downlineDeposit * referralRates.a);
-      
-      if (shouldHaveGotten > aCommission) {
-        const lostAmount = shouldHaveGotten - aCommission;
-        const recoverAt = `D${downlineLevel}`;
-        
-        if (!aReferrer.lostCommissions) aReferrer.lostCommissions = [];
-        
-        aReferrer.lostCommissions.push({
-          fromUser: userPhone,
-          fromUserName: user.fullName,
-          fromUserLevel: `D${downlineLevel}`,
-          amount: lostAmount,
-          recoverAt: recoverAt,
-          recovered: false,
-          date: new Date().toISOString(),
-          downlineDeposit: downlineDeposit,
-          yourLevelAtThatTime: aLevel
-        });
-        
-        console.log(`📝 Lost commission tracked: ${aReferrer.phone} lost ${lostAmount} from ${userPhone} (${recoverAt})`);
-      }
+      console.log(`   A-level (${aReferrer.phone}): +${aCommission.toLocaleString()} UGX (10% of ${investmentAmount.toLocaleString()})`);
     }
   }
   
-  // B Level - 4% of referrer's own deposit
+  // B Level - 4% of the new user's investment
   if (referrers.b && users[referrers.b]) {
     const bReferrer = users[referrers.b];
-    const bLevel = bReferrer.memberLevel || 0;
-    const bDeposit = levels[bLevel]?.deposit || 0;
-    const bCommission = Math.floor(bDeposit * referralRates.b);
+    const bCommission = Math.floor(investmentAmount * 0.04); // 4% of new user's investment
     
     if (bCommission > 0) {
       bReferrer.operatingWallet = (bReferrer.operatingWallet || 0) + bCommission;
@@ -7680,16 +7747,22 @@ function payReferralCommissions(userPhone) {
       bReferrer.referralCommissions.b += bCommission;
       bReferrer.referralCommissions.total += bCommission;
       bReferrer.transactions = bReferrer.transactions || [];
-      bReferrer.transactions.unshift({ type:'referral', level:'B', amount:bCommission, date:new Date().toLocaleString(), desc:`B-level commission from ${userPhone}` });
+      bReferrer.transactions.unshift({ 
+        type: 'referral', 
+        level: 'B', 
+        amount: bCommission, 
+        date: new Date().toLocaleString(), 
+        desc: `🎯 B-level commission: 4% of D${userLevel} upgrade (${investmentAmount.toLocaleString()} UGX)` 
+      });
+      
+      console.log(`   B-level (${bReferrer.phone}): +${bCommission.toLocaleString()} UGX (4% of ${investmentAmount.toLocaleString()})`);
     }
   }
   
-  // C Level - 1% of referrer's own deposit
+  // C Level - 1% of the new user's investment
   if (referrers.c && users[referrers.c]) {
     const cReferrer = users[referrers.c];
-    const cLevel = cReferrer.memberLevel || 0;
-    const cDeposit = levels[cLevel]?.deposit || 0;
-    const cCommission = Math.floor(cDeposit * referralRates.c);
+    const cCommission = Math.floor(investmentAmount * 0.01); // 1% of new user's investment
     
     if (cCommission > 0) {
       cReferrer.operatingWallet = (cReferrer.operatingWallet || 0) + cCommission;
@@ -7697,10 +7770,19 @@ function payReferralCommissions(userPhone) {
       cReferrer.referralCommissions.c += cCommission;
       cReferrer.referralCommissions.total += cCommission;
       cReferrer.transactions = cReferrer.transactions || [];
-      cReferrer.transactions.unshift({ type:'referral', level:'C', amount:cCommission, date:new Date().toLocaleString(), desc:`C-level commission from ${userPhone}` });
+      cReferrer.transactions.unshift({ 
+        type: 'referral', 
+        level: 'C', 
+        amount: cCommission, 
+        date: new Date().toLocaleString(), 
+        desc: `🎯 C-level commission: 1% of D${userLevel} upgrade (${investmentAmount.toLocaleString()} UGX)` 
+      });
+      
+      console.log(`   C-level (${cReferrer.phone}): +${cCommission.toLocaleString()} UGX (1% of ${investmentAmount.toLocaleString()})`);
     }
   }
   
+  console.log('✅ Referral commissions complete\n');
   saveUsers();
 }
 
@@ -8015,7 +8097,7 @@ function handleRegister(e) {
 
   const now = new Date();
   const expiry = new Date(now);
-  expiry.setDate(expiry.getDate() + 18);
+  expiry.setDate(expiry.getDate() + 18); // FIX 5: Changed from 4 to 18 days
 
   const newReferralCode = generateReferralCode();
   
@@ -9228,23 +9310,19 @@ function loadGoldenHandshake() {
   }
 }
 
-// ===== FIX 7: UPDATED PURCHASE LEVEL FUNCTION WITH LEVEL LOCKS =====
+// ===== PURCHASE LEVEL FUNCTION =====
 function purchaseLevel(level, cost) {
   const user = users[currentUser];
   if (!user) { showConfirmModal('Error', 'Please login first', 'warning'); return; }
 
-  // FIX 7: Check if level is locked (invisible lock)
-  if (levelLocks && levelLocks[level]) {
-    showConfirmModal(
-      '🔒 Company level only',
-      'This level is not allowed for regular users.\nIt\'s for companies.',
-      'warning'
-    );
-    return; // Stop here - no upgrade happens
-  }
-
   if (user.memberLevel >= level) {
     showConfirmModal('Error', `You are already at ${levels[level].name} or higher!`, 'warning');
+    return;
+  }
+
+  // ===== FIX 8: Check if level is locked =====
+  if (levelLockConfig[level] && levelLockConfig[level].locked) {
+    showConfirmModal('🔒 Prossimamente', `This level is coming soon. Please check back later.`, 'warning');
     return;
   }
 
@@ -9284,6 +9362,7 @@ function purchaseLevel(level, cost) {
     if (!user.transactions) user.transactions = [];
     user.transactions.unshift({ type: 'level_upgrade', level: level, amount: cost, date: new Date().toLocaleString(), desc: `Upgrade to ${levels[level].name}` });
     
+    // FIX 1: Pay referral commissions based on new user's investment
     payReferralCommissions(user.phone);
     
     let totalRecovered = 0;
@@ -11268,6 +11347,9 @@ function adminLoginModal() {
     document.getElementById('announcementColor').value = announcementConfig.color;
     document.getElementById('announcementTarget').value = announcementConfig.target;
     
+    // FIX 8: Load level lock controls
+    loadLevelLockControls();
+    
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -11298,6 +11380,10 @@ function adminLogin() {
     loadStakesAdminControls();
     updateSupportSettingsInputs();
     loadWithdrawalAdminControls();
+    
+    // FIX 8: Load level lock controls
+    loadLevelLockControls();
+    
   } else {
     showConfirmModal('Error', 'Invalid admin password', 'warning');
   }
@@ -11350,9 +11436,13 @@ function switchAdminTab(tab) {
     document.querySelectorAll('.admin-tab')[10].classList.add('active');
     document.getElementById('adminWithdrawalControlSection').classList.add('active');
     loadWithdrawalAdminControls();
-  } else if (tab === 'announcement') {
+  } else if (tab === 'announcement') { // FIX 7
     document.querySelectorAll('.admin-tab')[11].classList.add('active');
     document.getElementById('adminAnnouncementSection').classList.add('active');
+  } else if (tab === 'levelLock') { // FIX 8
+    document.querySelectorAll('.admin-tab')[12].classList.add('active');
+    document.getElementById('adminLevelLockSection').classList.add('active');
+    loadLevelLockControls();
   }
 }
 
@@ -12812,6 +12902,84 @@ function processDailySpinAssignment() {
   console.log('✅ Daily spin assignment complete');
 }
 
+// ===== FIX 8: LEVEL LOCK FUNCTIONS =====
+function loadLevelLockControls() {
+  const container = document.getElementById('levelLockList');
+  if (!container) return;
+  
+  let html = '';
+  const levelNames = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9'];
+  
+  for (let i = 1; i <= 9; i++) {
+    const isLocked = levelLockConfig[i]?.locked || false;
+    html += `
+      <div class="level-lock-row">
+        <span class="level-name">${levelNames[i-1]}</span>
+        <span class="lock-toggle" onclick="toggleLevelLock(${i})">
+          ${isLocked ? 
+            '<i class="fas fa-lock locked"></i> <span style="color:#dc3545;">Locked</span>' : 
+            '<i class="fas fa-lock-open unlocked"></i> <span style="color:#28a745;">Unlocked</span>'}
+        </span>
+        <label style="display:flex; align-items:center; gap:5px; margin-left:auto;">
+          <input type="checkbox" id="levelLock${i}" ${isLocked ? 'checked' : ''} onchange="toggleLevelLockCheckbox(${i})">
+          Lock
+        </label>
+      </div>
+    `;
+  }
+  
+  container.innerHTML = html;
+}
+
+function toggleLevelLock(level) {
+  if (!levelLockConfig[level]) {
+    levelLockConfig[level] = { locked: false };
+  }
+  levelLockConfig[level].locked = !levelLockConfig[level].locked;
+  
+  // Update checkbox
+  const checkbox = document.getElementById(`levelLock${level}`);
+  if (checkbox) {
+    checkbox.checked = levelLockConfig[level].locked;
+  }
+  
+  // Update the display
+  loadLevelLockControls();
+  
+  // Save to Firebase
+  saveLevelLockConfig();
+  
+  showConfirmModal('Level Lock Updated', `D${level} is now ${levelLockConfig[level].locked ? 'locked' : 'unlocked'}`, 'success');
+}
+
+function toggleLevelLockCheckbox(level) {
+  const checkbox = document.getElementById(`levelLock${level}`);
+  if (!levelLockConfig[level]) {
+    levelLockConfig[level] = { locked: false };
+  }
+  levelLockConfig[level].locked = checkbox.checked;
+  
+  // Update the display
+  loadLevelLockControls();
+  
+  // Save to Firebase
+  saveLevelLockConfig();
+}
+
+function saveAllLevelLocks() {
+  for (let i = 1; i <= 9; i++) {
+    const checkbox = document.getElementById(`levelLock${i}`);
+    if (checkbox) {
+      if (!levelLockConfig[i]) levelLockConfig[i] = { locked: false };
+      levelLockConfig[i].locked = checkbox.checked;
+    }
+  }
+  
+  saveLevelLockConfig();
+  loadLevelLockControls();
+  showConfirmModal('Success', 'All level locks saved!', 'success');
+}
+
 // FIX 3: Forgot Password Modal Functions
 function openForgotPasswordModal() {
   document.getElementById('forgotPasswordModal').style.display = 'flex';
@@ -13283,7 +13451,7 @@ window.onload = function() {
   // FIX 1: Start activity ticker
   startActivityTicker();
   
-  // Load announcement config
+  // FIX 7: Load announcement config
   db.ref('announcementConfig').once('value', (snapshot) => {
     const config = snapshot.val();
     if (config) {
@@ -13291,14 +13459,11 @@ window.onload = function() {
     }
   });
   
-  // Load level locks
-  db.ref('levelLocks').once('value', (snapshot) => {
-    const locks = snapshot.val();
-    if (locks) {
-      levelLocks = locks;
-    } else {
-      // Initialize default locks (D4-D9 locked)
-      saveLevelLocks();
+  // FIX 8: Load level lock config
+  db.ref('levelLockConfig').once('value', (snapshot) => {
+    const config = snapshot.val();
+    if (config) {
+      levelLockConfig = config;
     }
   });
 };
