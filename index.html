@@ -13633,6 +13633,118 @@ function deleteTestimonianza(index) {
   });
 }
 
+// ========== FIX: Modal Close Functions ==========
+// ===== FIX: Close Withdraw Modal - ALL buttons =====
+function closeWithdrawModal() {
+  console.log('🔒 Closing withdraw modal');
+  const modal = document.getElementById('withdrawModal');
+  if (modal) {
+    modal.style.display = 'none';
+    
+    // Reset form fields
+    document.getElementById('withdrawPassword').value = '';
+    document.getElementById('selectedWithdrawAmount').value = '';
+    
+    // Remove selected states
+    document.querySelectorAll('.withdrawal-amount-btn').forEach(btn => {
+      btn.classList.remove('selected');
+    });
+    
+    // Reset wallet selections
+    document.getElementById('walletOperatingOption').classList.add('selected');
+    document.getElementById('walletIncentiveOption').classList.remove('selected');
+    selectedWallet = 'operating';
+  }
+}
+
+// ===== FIX: Close Deposit Modal =====
+function closeDepositModal() {
+  console.log('💰 Closing deposit modal');
+  const modal = document.getElementById('depositModal');
+  if (modal) {
+    modal.style.display = 'none';
+    if (typeof resetDepositModal === 'function') {
+      resetDepositModal();
+    }
+  }
+}
+
+// ===== FIX: Initialize all modal close buttons =====
+function initModalCloseButtons() {
+  console.log('Initializing modal close buttons');
+  
+  // 1. Fix for Withdraw Modal "X" button
+  const withdrawCloseBtn = document.querySelector('#withdrawModal .close-btn');
+  if (withdrawCloseBtn) {
+    withdrawCloseBtn.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeWithdrawModal();
+      return false;
+    };
+  }
+  
+  // 2. Fix for all "I UNDERSTAND" buttons (lock messages)
+  const understandBtns = document.querySelectorAll('.lock-dismiss-btn');
+  understandBtns.forEach(btn => {
+    btn.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeWithdrawModal();
+      return false;
+    };
+  });
+  
+  // 3. Fix for Deposit Modal "X" button
+  const depositCloseBtn = document.querySelector('#depositModal .close-btn');
+  if (depositCloseBtn) {
+    depositCloseBtn.onclick = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeDepositModal();
+      return false;
+    };
+  }
+  
+  // 4. Fix for modal overlays (click outside to close)
+  const withdrawModal = document.getElementById('withdrawModal');
+  if (withdrawModal) {
+    withdrawModal.onclick = function(e) {
+      if (e.target === this) {
+        closeWithdrawModal();
+      }
+    };
+  }
+  
+  const depositModal = document.getElementById('depositModal');
+  if (depositModal) {
+    depositModal.onclick = function(e) {
+      if (e.target === this) {
+        closeDepositModal();
+      }
+    };
+  }
+}
+
+// ===== FIX: Override openWithdrawModal to ensure buttons work =====
+const originalOpenWithdrawModal = window.openWithdrawModal;
+window.openWithdrawModal = function() {
+  if (originalOpenWithdrawModal) {
+    originalOpenWithdrawModal();
+  }
+  // Re-initialize buttons after modal opens
+  setTimeout(initModalCloseButtons, 100);
+};
+
+// ===== FIX: Override openDepositModal =====
+const originalOpenDepositModal = window.openDepositModal;
+window.openDepositModal = function() {
+  if (originalOpenDepositModal) {
+    originalOpenDepositModal();
+  }
+  setTimeout(initModalCloseButtons, 100);
+};
+
 // ========== INIT ==========
 window.onload = function() {
   loadFromFirebase();
@@ -13951,6 +14063,9 @@ window.onload = function() {
     testimonianzaPhotos = snapshot.val() || [];
     displayTestimonianzaGallery();
   });
+
+  // Initialize modal close buttons
+  initModalCloseButtons();
 };
 
 function showAuthPage() {
