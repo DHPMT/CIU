@@ -6688,20 +6688,20 @@
     </div>
   </div>
 
-  <!-- WITHDRAW MODAL -->
+  <!-- WITHDRAW MODAL - FIXED WITH CLICKABLE BUTTONS -->
   <div class="modal-overlay" id="withdrawModal">
-    <div class="modal-content">
-      <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
+    <div class="modal-content" style="position: relative; z-index: 1001;">
+      <div class="modal-header" style="display:flex; justify-content:space-between; margin-bottom:20px; position: relative; z-index: 1002;">
         <h2>Withdraw</h2>
-        <button class="close-btn" onclick="closeWithdrawModal()" style="font-size:1.8rem; background:none; border:none;">&times;</button>
+        <button class="close-btn" onclick="closeWithdrawModal()" style="font-size:1.8rem; background:none; border:none; cursor: pointer; z-index: 1003; position: relative;">&times;</button>
       </div>
       
-      <div id="withdrawalLockMessageContainer" class="lock-message-container" style="display: none;">
+      <div id="withdrawalLockMessageContainer" class="lock-message-container" style="display: none; position: relative; z-index: 1002;">
         <div class="lock-icon" id="lockIcon">🔧</div>
         <div class="lock-title" id="lockTitle">SYSTEM MAINTENANCE</div>
         <div class="lock-reason" id="lockReason">We're upgrading our withdrawal system. Please check back later.</div>
         <div class="lock-resume-time" id="lockResumeTime">⏱️ Estimated: 2-3 hours</div>
-        <button class="lock-dismiss-btn" onclick="closeWithdrawModal()">I UNDERSTAND</button>
+        <button class="lock-dismiss-btn" onclick="closeWithdrawModal()" style="cursor: pointer; position: relative; z-index: 1003;">I UNDERSTAND</button>
       </div>
       
       <div id="withdrawalNormalContent">
@@ -6741,7 +6741,7 @@
         
         <input type="password" id="withdrawPassword" placeholder="Withdrawal Password" style="width:100%; padding:15px; border:1px solid #ddd; border-radius:15px; margin-bottom:10px;">
         
-        <button onclick="submitWithdraw()" id="withdrawSubmitBtn" style="background:#7d5ba6; color:white; width:100%; padding:15px; border:none; border-radius:30px;">Withdraw</button>
+        <button onclick="submitWithdraw()" id="withdrawSubmitBtn" style="background:#7d5ba6; color:white; width:100%; padding:15px; border:none; border-radius:30px; cursor: pointer;">Withdraw</button>
       </div>
     </div>
   </div>
